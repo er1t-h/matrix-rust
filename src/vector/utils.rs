@@ -1,4 +1,5 @@
-use std::{fmt::Display, ops::Index, slice::SliceIndex};
+use std::{fmt::Display, ops::{Index, Deref, DerefMut}, slice::SliceIndex};
+// mod iterator;
 
 use super::Vector;
 use crate::traits::Space;
@@ -44,7 +45,6 @@ impl<K: Space, const SIZE: usize> PartialEq<[K; SIZE]> for Vector<K> {
     }
 }
 
-
 impl<K: Space> PartialEq<&[K]> for Vector<K> {
     #[inline]
     fn eq(&self, other: &&[K]) -> bool {
@@ -61,6 +61,25 @@ where
     #[inline]
     fn index(&self, index: Idx) -> &Self::Output {
         self.content.index(index)
+    }
+}
+
+impl <K: Space> IntoIterator for Vector<K> {
+    type Item = K;
+    type IntoIter = <Vec<K> as IntoIterator>::IntoIter;
+    fn into_iter(self) -> Self::IntoIter {
+        self.content.into_iter()
+    }
+}
+impl <K: Space> Deref for Vector<K> {
+    type Target = [K];
+    fn deref(&self) -> &Self::Target {
+        &self.content
+    }
+}
+impl <K: Space> DerefMut for Vector<K> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.content
     }
 }
 
@@ -169,5 +188,44 @@ mod test {
     fn from_tab() {
         let test = Vector::from([45, 454, 42, 48884, 33154]);
         assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]")
+    }
+
+    #[test]
+    fn iterators() {
+        // Using iter()
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in test.iter() {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
+        // Using iter_mut()
+        {
+            let mut test = Vector::from([1, 2, 3, 4, 5_u64]);
+            for i in test.iter_mut() {
+                *i = (*i).pow(2);
+            }
+            assert_eq!(test, [1, 4, 9, 16, 25]);
+        }
+        // Using IntoIter
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in test {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
+        // Using IntoIter as reference
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in &test {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
     }
 }

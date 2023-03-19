@@ -265,4 +265,24 @@ mod test {
 		assert_eq!(vec1.clone() - vec1.clone() - vec1.clone() - &vec1, [-2, -4, -6]);
 		assert_eq!(vec1, [1, 2, 3]);
     }
+
+    #[test]
+    fn example() {
+        let mut u = Vector::from([2., 3.]);
+        let v = Vector::from([5., 7.]);
+        u += v;
+        println!("{}", u);
+        assert_eq!(u, [7., 10.]);
+
+        let mut u = Vector::from([2., 3.]);
+        let v = Vector::from([5., 7.]);
+        u -= v;
+        println!("{}", u);
+        assert_eq!(u, [-3., -4.]);
+
+        let mut u = Vector::from([2., 3.]);
+        u *= 2.;
+        println!("{}", u);
+        assert_eq!(u, [4., 6.]);
+    }
 }
