@@ -3,13 +3,11 @@ use std::ops::{AddAssign, DivAssign, MulAssign, SubAssign};
 ///
 /// Trait used to describe a structure that act as a mathematical space.
 ///
-pub trait Space:
-    Sized
-    + PartialEq<Self>
-    + Clone
+pub trait Space: Sized + PartialEq<Self> + Clone
 where
-    for<'a> Self: AddAssign<&'a Self> + SubAssign<&'a Self> + MulAssign<&'a Self> + DivAssign<&'a Self>,
-    for<'a, 'b> &'a Self: PartialEq<&'b Self>
+    for<'a> Self:
+        AddAssign<&'a Self> + SubAssign<&'a Self> + MulAssign<&'a Self> + DivAssign<&'a Self>,
+    for<'a, 'b> &'a Self: PartialEq<&'b Self>,
 {
 }
 

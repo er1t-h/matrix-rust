@@ -3,6 +3,6 @@
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum VectorOperationError {
-	/// Contains the `size` of `(lhs, rhs)`
-	NotSameSize(usize, usize)
+    /// Contains the `size` of `(lhs, rhs)`
+    NotSameSize(usize, usize),
 }
