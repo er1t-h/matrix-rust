@@ -280,21 +280,25 @@ mod test {
 
     #[test]
     fn example() {
-        let mut u = Vector::from([2., 3.]);
-        let v = Vector::from([5., 7.]);
-        u += v;
-        println!("{}", u);
-        assert_eq!(u, [7., 10.]);
-
-        let mut u = Vector::from([2., 3.]);
-        let v = Vector::from([5., 7.]);
-        u -= v;
-        println!("{}", u);
-        assert_eq!(u, [-3., -4.]);
-
-        let mut u = Vector::from([2., 3.]);
-        u *= 2.;
-        println!("{}", u);
-        assert_eq!(u, [4., 6.]);
+        {
+            let mut u = Vector::from([2., 3.]);
+            let v = Vector::from([5., 7.]);
+            u += v;
+            println!("{}", u);
+            assert_eq!(u, [7., 10.]);
+        }
+        {
+            let mut u = Vector::from([2., 3.]);
+            let v = Vector::from([5., 7.]);
+            u -= v;
+            println!("{}", u);
+            assert_eq!(u, [-3., -4.]);
+        }
+        {
+            let mut u = Vector::from([2., 3.]);
+            u *= 2.;
+            println!("{}", u);
+            assert_eq!(u, [4., 6.]);
+        }
     }
 }

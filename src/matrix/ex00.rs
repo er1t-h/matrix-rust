@@ -258,4 +258,28 @@ mod test {
         let mat4 = mat3 - &mat1;
         assert_eq!(mat4, mat2);
     }
+
+    #[test]
+    fn example() {
+        {
+            let mut u = Matrix::from([[1., 2.], [3., 4.]]);
+            let v = Matrix::from([[7., 4.], [-2., 2.]]);
+            u += v;
+            println!("{}", u);
+            assert_eq!(u, [[8., 6.], [1., 6.]]);
+        }
+        {
+            let mut u = Matrix::from([[1., 2.], [3., 4.]]);
+            let v = Matrix::from([[7., 4.], [-2., 2.]]);
+            u -= v;
+            println!("{}", u);
+            assert_eq!(u, [[-6., -2.], [5., 2.]]);
+        }
+        {
+            let mut u = Matrix::from([[1., 2.], [3., 4.]]);
+            u *= 2.;
+            println!("{}", u);
+            assert_eq!(u, [[2., 4.], [6., 8.]]);
+        }
+    }
 }

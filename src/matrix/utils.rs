@@ -1,4 +1,4 @@
-use std::ops::{Deref, DerefMut};
+use std::{ops::{Deref, DerefMut}, fmt::Display};
 
 use crate::{traits::Space, Matrix, Vector};
 
@@ -6,6 +6,26 @@ use self::iterator::{MatrixColumnIterator, MatrixColumnIteratorMut};
 use super::Dimensions;
 
 pub mod iterator;
+
+// Display
+impl<K: Space + Display> Display for Matrix<K> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.content.is_empty() {
+            return write!(f, "[[]]");
+        }
+        let mut str = String::new();
+        for y in (0..self.content.len()).step_by(self.dimensions.width) {
+            str.push('[');
+            str += &self.content[y..y + self.dimensions.width]
+                .iter()
+                .map(|x| x.to_string())
+                .reduce(|accumulator, elt| accumulator + &", " + &elt)
+                .unwrap();
+            str += "], ";
+        }
+        write!(f, "[{}]", &str[..str.len() - 2])
+    }
+}
 
 // From [[K]]
 impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUMN_SIZE]; LINE_SIZE]>
