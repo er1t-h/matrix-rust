@@ -6,7 +6,7 @@ use std::{
 // mod iterator;
 
 use super::Vector;
-use crate::traits::Space;
+use crate::{traits::Space, Matrix};
 
 impl<K: Space + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

@@ -62,7 +62,6 @@ impl<K: Space> Sub for Vector<K> {
 impl<K: Space> MulAssign<&K> for Vector<K> {
     ///
     /// Multiplies a scalar into self.
-    /// If the size of the two Vectors differ, a `VectorOperationError` is returned.
     ///
     /// # Example:
     /// ```
@@ -270,6 +269,13 @@ mod test {
             [-2, -4, -6]
         );
         assert_eq!(vec1, [1, 2, 3]);
+    }
+
+    #[test]
+    fn mul_assign() {
+        let mut vec = Vector::from([1, 5, 8, 4]);
+        vec *= 4;
+        assert_eq!(vec, [4, 20, 32, 16]);
     }
 
     #[test]

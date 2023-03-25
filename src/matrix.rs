@@ -7,14 +7,14 @@ pub struct Dimensions {
     /// The number of `columns` of the `Matrix`
     width: usize,
     /// The number of `lines` of the `Matrix`
-    height: usize
+    height: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 ///
 /// Implementation of a Matrix
 ///
 pub struct Matrix<K: Space> {
     content: Vec<K>,
-    dimensions: Dimensions
+    dimensions: Dimensions,
 }
