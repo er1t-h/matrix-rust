@@ -10,7 +10,7 @@ impl <'a, K: Space> Iterator for MatrixColumnIterator<'a, K> {
 	type Item = &'a K;
 	fn next(&mut self) -> Option<Self::Item> {
 		let tmp = self.matrix.get(self.current_line, self.current_column)?;
-		if self.current_line == self.matrix.height - 1 {
+		if self.current_line == self.matrix.dimensions.height - 1 {
 			self.current_line = 0;
 			self.current_column += 1;
 		} else {
@@ -38,7 +38,7 @@ impl <'a, K: Space> Iterator for MatrixColumnIteratorMut<'a, K> {
 	// Due to the the incrementation at each call, we know we will never return
 	// twice the same object, so the use to unsafe won't introduce any errors
 	fn next(&mut self) -> Option<Self::Item> {
-		let height = self.matrix.height;
+		let height = self.matrix.dimensions.height;
 		let tmp = self.matrix.get_mut(self.current_line, self.current_column)?;
 		if self.current_line == height - 1 {
 			self.current_line = 0;

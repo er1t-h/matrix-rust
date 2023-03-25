@@ -1,39 +1,49 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{traits::Space, Matrix};
+use crate::{traits::Space, Matrix, Vector};
 
 use self::iterator::{MatrixColumnIterator, MatrixColumnIteratorMut};
+use super::Dimensions;
 
 pub mod iterator;
 
+// From [[K]]
 impl <K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUMN_SIZE]; LINE_SIZE]> for Matrix<K> {
+	#[inline(always)]
 	fn from(value: [[K; COLUMN_SIZE]; LINE_SIZE]) -> Self {
 		Self {
 			content: value.into_iter().flatten().collect(),
-			width: COLUMN_SIZE,
-			height: LINE_SIZE
+			dimensions: Dimensions { width: COLUMN_SIZE, height: LINE_SIZE }
 		}
 	}
 }
 impl <K: Space + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix<K> {
+	#[inline(always)]
 	fn from(value: &[[K; LINE_SIZE]]) -> Self {
 		Self {
 			content: value.into_iter().flatten().map(|x| *x).collect(),
-			width: value.len(),
-			height: LINE_SIZE
+			dimensions: Dimensions { width: value.len(), height: LINE_SIZE }
 		}
 	}
 }
 impl <K: Space + Copy> From<&[&[K]]> for Matrix<K> {
+	#[inline(always)]
 	fn from(value: &[&[K]]) -> Self {
 		Self {
 			content: value.into_iter().flat_map(|x| *x).map(|x| *x).collect(),
-			width: value.len(),
-			height: value.get(0).and_then(|x| Some(x.len())).unwrap_or(0)
+			dimensions: Dimensions { width: value.len(), height: value.get(0).and_then(|x| Some(x.len())).unwrap_or(0) }
 		}
 	}
 }
+impl <K: Space> From<Vector<K>> for Matrix<K> {
+	#[inline(always)]
+	fn from(value: Vector<K>) -> Self {
+		let len = value.len();
+		Matrix { content: value.into_iter().collect(), dimensions: Dimensions { width: 1, height: len } }
+	}
+}
 
+//IntoIters
 impl <K: Space> IntoIterator for Matrix<K> {
     type Item = K;
     type IntoIter = <Vec<K> as IntoIterator>::IntoIter;
@@ -58,6 +68,8 @@ impl <'a, K: Space> IntoIterator for &'a mut Matrix<K> {
 		self.content.iter_mut()
 	}
 }
+
+// Derefs
 impl<K: Space> Deref for Matrix<K> {
     type Target = [K];
     #[inline(always)]
@@ -72,6 +84,13 @@ impl<K: Space> DerefMut for Matrix<K> {
     }
 }
 
+impl <K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize> PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]> for Matrix<K> {
+	fn eq(&self, other: &[[K; COLUMN_SIZE]; LINE_SIZE]) -> bool {
+		Iterator::eq(self.iter(), other.into_iter().flatten())
+	}
+}
+
+// Utils
 impl <'a, K: Space> Matrix<K> {
 	///
 	/// Returns the number of (`lines`, `columns`) in the `Matrix`.
@@ -88,7 +107,7 @@ impl <'a, K: Space> Matrix<K> {
 	/// Constant
 	///
 	pub fn size(&self) -> (usize, usize) {
-		(self.height, self.width)
+		(self.dimensions.height, self.dimensions.width)
 	}
 
 	///
@@ -108,7 +127,7 @@ impl <'a, K: Space> Matrix<K> {
 	/// Constant
 	///
 	pub fn is_square(&self) -> bool {
-		self.height == self.width
+		self.dimensions.height == self.dimensions.width
 	}
 
 	///
@@ -130,8 +149,8 @@ impl <'a, K: Space> Matrix<K> {
 	/// Constant
 	///
 	pub fn get(&'a self, line: usize, column: usize) -> Option<&'a K> {
-		if column < self.width {
-			self.content.get(line * self.width + column)
+		if column < self.dimensions.width {
+			self.content.get(line * self.dimensions.width + column)
 		} else {
 			None
 		}
@@ -152,8 +171,8 @@ impl <'a, K: Space> Matrix<K> {
 	/// # Complexity:
 	/// Constant
 	pub fn get_mut(&'a mut self, line: usize, column: usize) -> Option<&'a mut K> {
-		if column < self.width {
-			self.content.get_mut(line * self.width + column)
+		if column < self.dimensions.width {
+			self.content.get_mut(line * self.dimensions.width + column)
 		} else {
 			None
 		}
@@ -207,14 +226,6 @@ impl <'a, K: Space> Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::Matrix;
-
-	#[test]
-	fn from() {
-		{
-			let mat1 = Matrix::from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-			println!("{:?}", mat1);
-		}
-	}
 
 	#[test]
 	fn columns_iter() {
