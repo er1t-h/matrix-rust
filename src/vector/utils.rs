@@ -1,7 +1,12 @@
-use std::{fmt::Display, ops::Index, slice::SliceIndex};
+use std::{
+    fmt::Display,
+    ops::{Deref, DerefMut, Index},
+    slice::SliceIndex,
+};
+// mod iterator;
 
 use super::Vector;
-use crate::traits::Space;
+use crate::{traits::Space, Matrix};
 
 impl<K: Space + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -20,7 +25,7 @@ impl<K: Space + Display> Display for Vector<K> {
 }
 
 impl<K: Space> From<&[K]> for Vector<K> {
-    #[inline]
+    #[inline(always)]
     fn from(base: &[K]) -> Self {
         Self {
             content: Vec::from(base),
@@ -29,7 +34,7 @@ impl<K: Space> From<&[K]> for Vector<K> {
 }
 
 impl<K: Space, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
-    #[inline]
+    #[inline(always)]
     fn from(base: [K; SIZE]) -> Self {
         Self {
             content: Vec::from(base),
@@ -38,15 +43,14 @@ impl<K: Space, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
 }
 
 impl<K: Space, const SIZE: usize> PartialEq<[K; SIZE]> for Vector<K> {
-    #[inline]
+    #[inline(always)]
     fn eq(&self, other: &[K; SIZE]) -> bool {
         &self.content == other
     }
 }
 
-
 impl<K: Space> PartialEq<&[K]> for Vector<K> {
-    #[inline]
+    #[inline(always)]
     fn eq(&self, other: &&[K]) -> bool {
         &self.content == other
     }
@@ -58,9 +62,47 @@ where
 {
     type Output = K;
 
-    #[inline]
+    #[inline(always)]
     fn index(&self, index: Idx) -> &Self::Output {
         self.content.index(index)
+    }
+}
+
+impl<K: Space> IntoIterator for Vector<K> {
+    type Item = K;
+    type IntoIter = <Vec<K> as IntoIterator>::IntoIter;
+    #[inline(always)]
+    fn into_iter(self) -> Self::IntoIter {
+        self.content.into_iter()
+    }
+}
+impl<'a, K: Space> IntoIterator for &'a Vector<K> {
+    type Item = &'a K;
+    type IntoIter = <&'a Vec<K> as IntoIterator>::IntoIter;
+    #[inline(always)]
+    fn into_iter(self) -> Self::IntoIter {
+        self.content.iter()
+    }
+}
+impl<'a, K: Space> IntoIterator for &'a mut Vector<K> {
+    type Item = &'a mut K;
+    type IntoIter = <&'a mut Vec<K> as IntoIterator>::IntoIter;
+    #[inline(always)]
+    fn into_iter(self) -> Self::IntoIter {
+        self.content.iter_mut()
+    }
+}
+impl<K: Space> Deref for Vector<K> {
+    type Target = [K];
+    #[inline(always)]
+    fn deref(&self) -> &Self::Target {
+        &self.content
+    }
+}
+impl<K: Space> DerefMut for Vector<K> {
+    #[inline(always)]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.content
     }
 }
 
@@ -76,7 +118,7 @@ impl<K: Space> Vector<K> {
     /// assert_eq!(vec.size(), 3);
     /// ```
     ///
-    #[inline]
+    #[inline(always)]
     pub fn size(&self) -> usize {
         self.content.len()
     }
@@ -94,7 +136,7 @@ impl<K: Space> Vector<K> {
     /// assert_eq!(vec.get(4), None);
     /// ```
     ///
-    #[inline]
+    #[inline(always)]
     pub fn get<Idx: SliceIndex<[K], Output = K>>(&self, index: Idx) -> Option<&K> {
         self.content.get(index)
     }
@@ -113,7 +155,7 @@ impl<K: Space> Vector<K> {
     /// assert_eq!(vec.get(0), Some(&6));
     /// ```
     ///
-    #[inline]
+    #[inline(always)]
     pub fn get_mut<Idx: SliceIndex<[K], Output = K>>(&mut self, index: Idx) -> Option<&mut K> {
         self.content.get_mut(index)
     }
@@ -169,5 +211,52 @@ mod test {
     fn from_tab() {
         let test = Vector::from([45, 454, 42, 48884, 33154]);
         assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]")
+    }
+
+    #[test]
+    fn iterators() {
+        // Using iter()
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in test.iter() {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
+        // Using iter_mut()
+        {
+            let mut test = Vector::from([1, 2, 3, 4, 5_u64]);
+            for i in test.iter_mut() {
+                *i = (*i).pow(2);
+            }
+            assert_eq!(test, [1, 4, 9, 16, 25]);
+        }
+        // Using IntoIter
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in test {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
+        // Using IntoIter as reference
+        {
+            let test = Vector::from([1, 2, 3, 4, 5_u64]);
+            let mut accumulator = 0;
+            for i in &test {
+                accumulator += i;
+            }
+            assert_eq!(accumulator, 15);
+        }
+        // Using IntoIter as mutable reference
+        {
+            let mut test = Vector::from([1, 2, 3, 4, 5_u64]);
+            for i in &mut test {
+                *i = (*i).pow(2);
+            }
+            assert_eq!(test, [1, 4, 9, 16, 25]);
+        }
     }
 }
