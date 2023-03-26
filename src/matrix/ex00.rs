@@ -1,9 +1,13 @@
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
-use crate::{error::MatrixOperationError, traits::Space, Matrix};
+use crate::{error::MatrixOperationError, Matrix};
 
 // Add/Sub implementation
-impl<K: Space> Matrix<K> {
+impl<K> Matrix<K>
+where
+    K: Clone,
+    for<'a> K: AddAssign<&'a K>,
+{
     ///
     /// Adds another `Matrix` to self.
     ///
@@ -33,7 +37,13 @@ impl<K: Space> Matrix<K> {
         }
         Ok(())
     }
+}
 
+impl<K> Matrix<K>
+where
+    K: Clone,
+    for<'a> K: SubAssign<&'a K>,
+{
     ///
     /// Subs another `Matrix` from self.
     ///
@@ -66,19 +76,31 @@ impl<K: Space> Matrix<K> {
 }
 
 // Add traits
-impl<K: Space> AddAssign<&Self> for Matrix<K> {
+impl<K> AddAssign<&Self> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: AddAssign<&'a K>,
+{
     #[inline(always)]
     fn add_assign(&mut self, rhs: &Self) {
         let _ = self.safe_add_assign(rhs);
     }
 }
-impl<K: Space> AddAssign for Matrix<K> {
+impl<K> AddAssign for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: AddAssign<&'a K>,
+{
     #[inline(always)]
     fn add_assign(&mut self, rhs: Self) {
         *self += &rhs;
     }
 }
-impl<K: Space> Add<&Self> for Matrix<K> {
+impl<K> Add<&Self> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: AddAssign<&'a K>,
+{
     type Output = Self;
     #[inline(always)]
     fn add(mut self, rhs: &Self) -> Self::Output {
@@ -86,7 +108,11 @@ impl<K: Space> Add<&Self> for Matrix<K> {
         self
     }
 }
-impl<K: Space> Add for Matrix<K> {
+impl<K> Add for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: AddAssign<&'a K>,
+{
     type Output = Self;
     #[inline(always)]
     fn add(self, rhs: Self) -> Self::Output {
@@ -95,19 +121,31 @@ impl<K: Space> Add for Matrix<K> {
 }
 
 // Sub traits
-impl<K: Space> SubAssign<&Self> for Matrix<K> {
+impl<K> SubAssign<&Self> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: SubAssign<&'a K>,
+{
     #[inline(always)]
     fn sub_assign(&mut self, rhs: &Self) {
         let _ = self.safe_sub_assign(rhs);
     }
 }
-impl<K: Space> SubAssign for Matrix<K> {
+impl<K> SubAssign for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: SubAssign<&'a K>,
+{
     #[inline(always)]
     fn sub_assign(&mut self, rhs: Self) {
         *self -= &rhs;
     }
 }
-impl<K: Space> Sub<&Self> for Matrix<K> {
+impl<K> Sub<&Self> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: SubAssign<&'a K>,
+{
     type Output = Self;
     #[inline(always)]
     fn sub(mut self, rhs: &Self) -> Self::Output {
@@ -115,7 +153,11 @@ impl<K: Space> Sub<&Self> for Matrix<K> {
         self
     }
 }
-impl<K: Space> Sub for Matrix<K> {
+impl<K> Sub for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: SubAssign<&'a K>,
+{
     type Output = Self;
     #[inline(always)]
     fn sub(self, rhs: Self) -> Self::Output {
@@ -124,7 +166,11 @@ impl<K: Space> Sub for Matrix<K> {
 }
 
 // Multiplication by a scalar
-impl<K: Space> MulAssign<&K> for Matrix<K> {
+impl<K> MulAssign<&K> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
     ///
     /// Multiply a scalar into self.
     ///
@@ -145,13 +191,21 @@ impl<K: Space> MulAssign<&K> for Matrix<K> {
         }
     }
 }
-impl<K: Space> MulAssign<K> for Matrix<K> {
+impl<K> MulAssign<K> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
     #[inline(always)]
     fn mul_assign(&mut self, rhs: K) {
         *self *= &rhs;
     }
 }
-impl<K: Space> Mul<&K> for Matrix<K> {
+impl<K> Mul<&K> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
     type Output = Matrix<K>;
     #[inline(always)]
     fn mul(mut self, rhs: &K) -> Self::Output {
@@ -159,7 +213,11 @@ impl<K: Space> Mul<&K> for Matrix<K> {
         self
     }
 }
-impl<K: Space> Mul<K> for Matrix<K> {
+impl<K> Mul<K> for Matrix<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
     type Output = Matrix<K>;
     #[inline(always)]
     fn mul(self, rhs: K) -> Self::Output {
