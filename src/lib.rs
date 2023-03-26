@@ -7,6 +7,7 @@ pub mod vector;
 pub use crate::matrix::Matrix;
 pub use crate::vector::Vector;
 
+#[cfg(test)]
 macro_rules! assert_eq_float {
 	($lhs: expr, $rhs: expr, $($args: expr),+) => {
 		let diff = $lhs - $rhs as f64;
@@ -18,4 +19,5 @@ macro_rules! assert_eq_float {
 	};
 }
 
+#[cfg(test)]
 pub(crate) use assert_eq_float;
