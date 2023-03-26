@@ -2,12 +2,15 @@ mod ex00;
 mod utils;
 use crate::traits::Space;
 
+///
+/// A structure that store the size of a Matrix
+///
 #[derive(Clone, Copy, PartialEq, Debug, Default, Hash)]
 pub struct Dimensions {
     /// The number of `columns` of the `Matrix`
-    width: usize,
+    pub width: usize,
     /// The number of `lines` of the `Matrix`
-    height: usize,
+    pub height: usize,
 }
 
 #[derive(Debug, Clone, PartialEq)]

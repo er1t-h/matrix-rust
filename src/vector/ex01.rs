@@ -2,8 +2,8 @@ use crate::{error::LinearCombinationError, traits::Space, Vector};
 
 ///
 /// Returns the linear combination of the `vectors` with each of the `coefficients`
-/// or a `LinearCombinationError` if the parameters don't allow for such operation.
-/// See `linear_combination` for more informations.
+/// or a [LinearCombinationError] if the parameters don't allow for such operation.
+/// See [linear_combination] for more informations.
 ///
 /// # Example:
 /// ```
@@ -49,7 +49,7 @@ pub fn safe_linear_combination<K: Space>(
 /// Returns the linear combination of the `vectors` with each of the `coefficients`
 /// The linear combination is the sum of the multiplication of each vectors by a coefficient.
 ///
-/// Using `safe_linear_combination` returns a `Result`, whereas this function will return
+/// Using [safe_linear_combination] returns a [Result], whereas this function will return
 /// a wrong answer in case of a bad input
 ///
 /// # Example:

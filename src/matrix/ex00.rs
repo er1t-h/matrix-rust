@@ -5,8 +5,9 @@ use crate::{error::MatrixOperationError, traits::Space, Matrix};
 // Add/Sub implementation
 impl<K: Space> Matrix<K> {
     ///
-    /// Adds another `Matrix` to self
-    /// If the size of the two Matrixes differ, a `MatrixOperationError` is returned
+    /// Adds another `Matrix` to self.
+    ///
+    /// If the size of the two Matrixes differ, a [MatrixOperationError] is returned
     ///
     /// # Example:
     /// ```
@@ -34,8 +35,9 @@ impl<K: Space> Matrix<K> {
     }
 
     ///
-    /// Subs another `Matrix` from self
-    /// If the size of the two Matrixes differ, a `MatrixOperationError` is returned
+    /// Subs another `Matrix` from self.
+    ///
+    /// If the size of the two Matrixes differ, a [MatrixOperationError] is returned
     ///
     /// # Example:
     /// ```

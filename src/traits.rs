@@ -15,7 +15,8 @@ where
         + Sum<&'a Self>
         + Mul<&'a Self, Output = Self>,
     for<'a, 'b> &'a Self: PartialEq<&'b Self>,
-{}
+{
+}
 
 pub trait Float: Space {}
 

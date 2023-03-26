@@ -117,7 +117,7 @@ impl<K: Space> Mul<K> for Vector<K> {
 impl<K: Space> Vector<K> {
     ///
     /// Adds another `Vector` to self.
-    /// If the size of the two Vectors differ, a `VectorOperationError` is returned.
+    /// If the size of the two Vectors differ, a [VectorOperationError] is returned.
     ///
     /// # Example:
     /// ```
@@ -144,7 +144,7 @@ impl<K: Space> Vector<K> {
 
     ///
     /// Substracts another `Vector` from self.
-    /// If the size of the two Vectors differ, a `VectorOperationError` is returned.
+    /// If the size of the two Vectors differ, a [VectorOperationError] is returned.
     ///
     /// # Example:
     /// ```

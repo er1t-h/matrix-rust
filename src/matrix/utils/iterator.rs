@@ -1,5 +1,9 @@
 use crate::{traits::Space, Matrix};
 
+///
+/// An iterator that go through a [Matrix] column by column instead of line by
+/// line
+///
 pub struct MatrixColumnIterator<'a, K: Space> {
     matrix: &'a Matrix<K>,
     current_line: usize,
@@ -30,6 +34,10 @@ impl<'a, K: Space> MatrixColumnIterator<'a, K> {
     }
 }
 
+///
+/// An iterator that go through a [Matrix] column by column instead of line by
+/// line, yielding mutable references
+///
 pub struct MatrixColumnIteratorMut<'a, K: Space> {
     matrix: &'a mut Matrix<K>,
     current_line: usize,
