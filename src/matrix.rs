@@ -1,6 +1,5 @@
 mod ex00;
 mod utils;
-use crate::traits::Space;
 
 ///
 /// A structure that store the size of a Matrix
@@ -17,7 +16,7 @@ pub struct Dimensions {
 ///
 /// Implementation of a Matrix
 ///
-pub struct Matrix<K: Space> {
+pub struct Matrix<K: Clone> {
     content: Vec<K>,
     dimensions: Dimensions,
 }

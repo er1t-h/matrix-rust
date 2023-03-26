@@ -1,16 +1,16 @@
-use crate::{traits::Space, Matrix};
+use crate::Matrix;
 
 ///
 /// An iterator that go through a [Matrix] column by column instead of line by
 /// line
 ///
-pub struct MatrixColumnIterator<'a, K: Space> {
+pub struct MatrixColumnIterator<'a, K: Clone> {
     matrix: &'a Matrix<K>,
     current_line: usize,
     current_column: usize,
 }
 
-impl<'a, K: Space> Iterator for MatrixColumnIterator<'a, K> {
+impl<'a, K: Clone> Iterator for MatrixColumnIterator<'a, K> {
     type Item = &'a K;
     fn next(&mut self) -> Option<Self::Item> {
         let tmp = self.matrix.get(self.current_line, self.current_column)?;
@@ -24,7 +24,7 @@ impl<'a, K: Space> Iterator for MatrixColumnIterator<'a, K> {
     }
 }
 
-impl<'a, K: Space> MatrixColumnIterator<'a, K> {
+impl<'a, K: Clone> MatrixColumnIterator<'a, K> {
     pub(super) fn new(matrix: &'a Matrix<K>) -> MatrixColumnIterator<'a, K> {
         Self {
             matrix,
@@ -38,13 +38,13 @@ impl<'a, K: Space> MatrixColumnIterator<'a, K> {
 /// An iterator that go through a [Matrix] column by column instead of line by
 /// line, yielding mutable references
 ///
-pub struct MatrixColumnIteratorMut<'a, K: Space> {
+pub struct MatrixColumnIteratorMut<'a, K: Clone> {
     matrix: &'a mut Matrix<K>,
     current_line: usize,
     current_column: usize,
 }
 
-impl<'a, K: Space> Iterator for MatrixColumnIteratorMut<'a, K> {
+impl<'a, K: Clone> Iterator for MatrixColumnIteratorMut<'a, K> {
     type Item = &'a mut K;
     // Forced to use unsafe code because of borrow checker.
     // Due to the the incrementation at each call, we know we will never return
@@ -65,7 +65,7 @@ impl<'a, K: Space> Iterator for MatrixColumnIteratorMut<'a, K> {
     }
 }
 
-impl<'a, K: Space> MatrixColumnIteratorMut<'a, K> {
+impl<'a, K: Clone> MatrixColumnIteratorMut<'a, K> {
     pub(super) fn new(matrix: &'a mut Matrix<K>) -> MatrixColumnIteratorMut<'a, K> {
         Self {
             matrix,

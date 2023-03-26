@@ -1,7 +1,7 @@
 use crate::matrix::Dimensions;
 
 ///
-/// Describes the reason for which a [crate::Vector] operation can fail.
+/// Describes the reason for which a [Vector](crate::Vector) operation can fail.
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum VectorOperationError {
@@ -10,7 +10,7 @@ pub enum VectorOperationError {
 }
 
 ///
-/// Describes the reason for which a [crate::Matrix] operation can fail.
+/// Describes the reason for which a [Matrix](crate::Matrix) operation can fail.
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MatrixOperationError {
@@ -21,7 +21,7 @@ pub enum MatrixOperationError {
 ///
 /// Describes the reason for which a linear combination can fail.
 ///
-/// See [crate::vector::safe_linear_combination].
+/// See [safe_linear_combination](crate::vector::safe_linear_combination).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LinearCombinationError {
@@ -35,7 +35,7 @@ pub enum LinearCombinationError {
 ///
 /// Describes the reason a linear interpolation
 ///
-/// See [crate::utils::safe_lerp].
+/// See [safe_lerp](crate::utils::safe_lerp).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LinearInterpolationError {

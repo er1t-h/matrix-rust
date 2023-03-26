@@ -1,4 +1,6 @@
-use crate::{error::LinearCombinationError, traits::Space, Vector};
+use std::ops::{AddAssign, Mul};
+
+use crate::{error::LinearCombinationError, Vector};
 
 ///
 /// Returns the linear combination of the `vectors` with each of the `coefficients`
@@ -19,10 +21,15 @@ use crate::{error::LinearCombinationError, traits::Space, Vector};
 /// # Complexity:
 /// Linear: O(n) with `n` the total number inside the vectors
 ///
-pub fn safe_linear_combination<K: Space>(
+pub fn safe_linear_combination<K>(
     vectors: &[Vector<K>],
     coefficients: &[K],
-) -> Result<Vector<K>, LinearCombinationError> {
+) -> Result<Vector<K>, LinearCombinationError>
+where
+    K: Clone,
+    for<'a> Vector<K>: AddAssign<&'a Vector<K>>,
+    for<'a> &'a Vector<K>: Mul<&'a K, Output = Vector<K>>,
+{
     if coefficients.len() != vectors.len() {
         return Err(LinearCombinationError::VectorsAndCoefficientSizeDifference(
             vectors.len(),
@@ -63,9 +70,14 @@ pub fn safe_linear_combination<K: Space>(
 /// ```
 ///
 /// # Complexity:
-/// Linear: O(n) with `n` the total number inside the vectors
+/// Linear: O(n) with `n` the total number of coordinates inside the vectors.
 ///
-pub fn linear_combination<K: Space>(u: &[Vector<K>], coefs: &[K]) -> Vector<K> {
+pub fn linear_combination<K>(u: &[Vector<K>], coefs: &[K]) -> Vector<K>
+where
+    K: Clone,
+    for<'a> Vector<K>: AddAssign<&'a Vector<K>>,
+    for<'a> &'a Vector<K>: Mul<&'a K, Output = Vector<K>>,
+{
     let mut return_vector;
     if let (Some(vec), Some(coef)) = (u.get(0), coefs.get(0)) {
         return_vector = vec * coef;
@@ -73,7 +85,7 @@ pub fn linear_combination<K: Space>(u: &[Vector<K>], coefs: &[K]) -> Vector<K> {
         return Vector::new();
     }
     for (vec, coef) in u.iter().zip(coefs.iter()).skip(1) {
-        return_vector += vec * coef;
+        return_vector += &(vec * coef);
     }
     return_vector
 }

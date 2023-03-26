@@ -3,14 +3,14 @@ mod ex00;
 mod ex01;
 pub use ex01::{linear_combination, safe_linear_combination};
 
-mod utils;
+mod ex03;
 
-use crate::traits::Space;
+mod utils;
 
 ///
 /// Implementation of a Vector
 ///
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct Vector<K: Space> {
+pub struct Vector<K: Clone> {
     content: Vec<K>,
 }

@@ -6,9 +6,8 @@ use std::{
 // mod iterator;
 
 use super::Vector;
-use crate::traits::Space;
 
-impl<K: Space + Display> Display for Vector<K> {
+impl<K: Clone + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if !self.content.is_empty() {
             let buff = self
@@ -24,7 +23,7 @@ impl<K: Space + Display> Display for Vector<K> {
     }
 }
 
-impl<K: Space> From<&[K]> for Vector<K> {
+impl<K: Clone> From<&[K]> for Vector<K> {
     #[inline(always)]
     fn from(base: &[K]) -> Self {
         Self {
@@ -33,7 +32,7 @@ impl<K: Space> From<&[K]> for Vector<K> {
     }
 }
 
-impl<K: Space, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
+impl<K: Clone, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
     #[inline(always)]
     fn from(base: [K; SIZE]) -> Self {
         Self {
@@ -42,21 +41,27 @@ impl<K: Space, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
     }
 }
 
-impl<K: Space, const SIZE: usize> PartialEq<[K; SIZE]> for Vector<K> {
+impl<K, const SIZE: usize> PartialEq<[K; SIZE]> for Vector<K>
+where
+    K: PartialEq + Clone,
+{
     #[inline(always)]
     fn eq(&self, other: &[K; SIZE]) -> bool {
         self.content == other
     }
 }
 
-impl<K: Space> PartialEq<&[K]> for Vector<K> {
+impl<K> PartialEq<&[K]> for Vector<K>
+where
+    K: PartialEq + Clone,
+{
     #[inline(always)]
     fn eq(&self, other: &&[K]) -> bool {
         &self.content == other
     }
 }
 
-impl<K: Space, Idx> Index<Idx> for Vector<K>
+impl<K: Clone, Idx> Index<Idx> for Vector<K>
 where
     Idx: SliceIndex<[K], Output = K>,
 {
@@ -68,7 +73,7 @@ where
     }
 }
 
-impl<K: Space> IntoIterator for Vector<K> {
+impl<K: Clone> IntoIterator for Vector<K> {
     type Item = K;
     type IntoIter = <Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -76,7 +81,7 @@ impl<K: Space> IntoIterator for Vector<K> {
         self.content.into_iter()
     }
 }
-impl<'a, K: Space> IntoIterator for &'a Vector<K> {
+impl<'a, K: Clone> IntoIterator for &'a Vector<K> {
     type Item = &'a K;
     type IntoIter = <&'a Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -84,7 +89,7 @@ impl<'a, K: Space> IntoIterator for &'a Vector<K> {
         self.content.iter()
     }
 }
-impl<'a, K: Space> IntoIterator for &'a mut Vector<K> {
+impl<'a, K: Clone> IntoIterator for &'a mut Vector<K> {
     type Item = &'a mut K;
     type IntoIter = <&'a mut Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -92,21 +97,21 @@ impl<'a, K: Space> IntoIterator for &'a mut Vector<K> {
         self.content.iter_mut()
     }
 }
-impl<K: Space> Deref for Vector<K> {
+impl<K: Clone> Deref for Vector<K> {
     type Target = [K];
     #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.content
     }
 }
-impl<K: Space> DerefMut for Vector<K> {
+impl<K: Clone> DerefMut for Vector<K> {
     #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.content
     }
 }
 
-impl<K: Space> Vector<K> {
+impl<K: Clone> Vector<K> {
     ///
     /// Returns the `size` of the `Vector`
     ///

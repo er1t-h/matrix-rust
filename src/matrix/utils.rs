@@ -3,7 +3,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::{traits::Space, Matrix, Vector};
+use crate::{Matrix, Vector};
 
 use self::iterator::{MatrixColumnIterator, MatrixColumnIteratorMut};
 use super::Dimensions;
@@ -11,7 +11,7 @@ use super::Dimensions;
 pub mod iterator;
 
 // Display
-impl<K: Space + Display> Display for Matrix<K> {
+impl<K: Clone + Display> Display for Matrix<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if self.content.is_empty() {
             return write!(f, "[[]]");
@@ -31,7 +31,7 @@ impl<K: Space + Display> Display for Matrix<K> {
 }
 
 // From [[K]]
-impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUMN_SIZE]; LINE_SIZE]>
+impl<K: Clone, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUMN_SIZE]; LINE_SIZE]>
     for Matrix<K>
 {
     #[inline(always)]
@@ -45,7 +45,7 @@ impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUM
         }
     }
 }
-impl<K: Space + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix<K> {
+impl<K: Clone + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix<K> {
     #[inline(always)]
     fn from(value: &[[K; LINE_SIZE]]) -> Self {
         Self {
@@ -57,7 +57,7 @@ impl<K: Space + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix
         }
     }
 }
-impl<K: Space + Copy> From<&[&[K]]> for Matrix<K> {
+impl<K: Clone + Copy> From<&[&[K]]> for Matrix<K> {
     #[inline(always)]
     fn from(value: &[&[K]]) -> Self {
         Self {
@@ -69,7 +69,7 @@ impl<K: Space + Copy> From<&[&[K]]> for Matrix<K> {
         }
     }
 }
-impl<K: Space> From<Vector<K>> for Matrix<K> {
+impl<K: Clone> From<Vector<K>> for Matrix<K> {
     #[inline(always)]
     fn from(value: Vector<K>) -> Self {
         let len = value.len();
@@ -84,7 +84,7 @@ impl<K: Space> From<Vector<K>> for Matrix<K> {
 }
 
 //IntoIters
-impl<K: Space> IntoIterator for Matrix<K> {
+impl<K: Clone> IntoIterator for Matrix<K> {
     type Item = K;
     type IntoIter = <Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -92,7 +92,7 @@ impl<K: Space> IntoIterator for Matrix<K> {
         self.content.into_iter()
     }
 }
-impl<'a, K: Space> IntoIterator for &'a Matrix<K> {
+impl<'a, K: Clone> IntoIterator for &'a Matrix<K> {
     type Item = &'a K;
     type IntoIter = <&'a Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -100,7 +100,7 @@ impl<'a, K: Space> IntoIterator for &'a Matrix<K> {
         self.content.iter()
     }
 }
-impl<'a, K: Space> IntoIterator for &'a mut Matrix<K> {
+impl<'a, K: Clone> IntoIterator for &'a mut Matrix<K> {
     type Item = &'a mut K;
     type IntoIter = <&'a mut Vec<K> as IntoIterator>::IntoIter;
     #[inline(always)]
@@ -110,22 +110,24 @@ impl<'a, K: Space> IntoIterator for &'a mut Matrix<K> {
 }
 
 // Derefs
-impl<K: Space> Deref for Matrix<K> {
+impl<K: Clone> Deref for Matrix<K> {
     type Target = [K];
     #[inline(always)]
     fn deref(&self) -> &Self::Target {
         &self.content
     }
 }
-impl<K: Space> DerefMut for Matrix<K> {
+impl<K: Clone> DerefMut for Matrix<K> {
     #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.content
     }
 }
 
-impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize>
-    PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]> for Matrix<K>
+impl<K, const LINE_SIZE: usize, const COLUMN_SIZE: usize> PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]>
+    for Matrix<K>
+where
+    K: Clone + PartialEq<K>,
 {
     fn eq(&self, other: &[[K; COLUMN_SIZE]; LINE_SIZE]) -> bool {
         Iterator::eq(self.iter(), other.iter().flatten())
@@ -133,7 +135,7 @@ impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize>
 }
 
 // Utils
-impl<'a, K: Space> Matrix<K> {
+impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns the number of (`lines`, `columns`) in the `Matrix`.
     ///
