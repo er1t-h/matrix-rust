@@ -18,6 +18,8 @@ where
 {
 }
 
+pub trait Float: Space {}
+
 pub trait AddIdentity {
     fn add_identity() -> Self;
 }
@@ -53,13 +55,13 @@ macro_rules! impl_add_identity {
     };
 }
 
-macro_rules! impl_space {
-    ($current: ident, $($types: ident),+) => {
-        impl_space!($current);
-        impl_space!($($types),+);
+macro_rules! impl_empty_trait {
+    ($trait: ident, $current: ident, $($types: ident),+) => {
+        impl_empty_trait!($trait, $current);
+        impl_empty_trait!($trait, $($types),+);
     };
-    ($current: ident) => {
-        impl Space for $current {}
+    ($trait: ident, $current: ident) => {
+        impl $trait for $current {}
     };
 }
 
@@ -68,4 +70,5 @@ impl_mul_identity!(1.0, f32, f64);
 impl_add_identity!(0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_add_identity!(0.0, f32, f64);
 
-impl_space!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, f32, f64);
+impl_empty_trait!(Space, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, f32, f64);
+impl_empty_trait!(Float, f32, f64);
