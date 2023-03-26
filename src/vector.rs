@@ -4,6 +4,7 @@ mod ex01;
 pub use ex01::{linear_combination, safe_linear_combination};
 
 mod ex03;
+mod ex04;
 
 mod utils;
 
