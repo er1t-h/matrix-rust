@@ -1,7 +1,7 @@
 use crate::matrix::Dimensions;
 
 ///
-/// Contains all kinds of error an operation between two vector can return
+/// Describes the reason for which a Vector operation can fail
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum VectorOperationError {
@@ -9,8 +9,23 @@ pub enum VectorOperationError {
     NotSameSize(usize, usize),
 }
 
+///
+/// Describes the reason for which a Matrix operation can fail
+///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MatrixOperationError {
     /// Contains the `size` of `(lhs, rhs)`
     NotSameSize(Dimensions, Dimensions),
+}
+
+///
+/// Describes the reason for which a linear operation can fail
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum LinearCombinationError {
+    /// Contains the `size` of `(vectors, coefficients)`
+    VectorsAndCoefficientSizeDifference(usize, usize),
+    VectorArrayIsEmpty,
+    /// Contains the `size` of `(first_vector, first_mismatch)`
+    VectorSizeMismatch(usize, usize)
 }

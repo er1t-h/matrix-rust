@@ -168,6 +168,7 @@ impl<K: Space> Mul<K> for Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::{matrix::Dimensions, Matrix};
+	use pretty_assertions::assert_eq;
 
     #[test]
     fn safe_add_assign() {

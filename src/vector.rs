@@ -1,4 +1,6 @@
 mod ex00;
+mod ex01;
+pub use ex01::{linear_combination, safe_linear_combination};
 mod utils;
 
 use crate::traits::Space;

@@ -96,6 +96,15 @@ impl<K: Space> Mul<&K> for Vector<K> {
         self
     }
 }
+impl<K: Space> Mul<&K> for &Vector<K> {
+    type Output = Vector<K>;
+    #[inline]
+    fn mul(self, rhs: &K) -> Self::Output {
+        let mut tmp = self.clone();
+        tmp *= rhs;
+        tmp
+    }
+}
 impl<K: Space> Mul<K> for Vector<K> {
     type Output = Self;
     #[inline]

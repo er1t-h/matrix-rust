@@ -6,7 +6,7 @@ use std::{
 // mod iterator;
 
 use super::Vector;
-use crate::{traits::Space, Matrix};
+use crate::traits::Space;
 
 impl<K: Space + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -159,6 +159,28 @@ impl<K: Space> Vector<K> {
     pub fn get_mut<Idx: SliceIndex<[K], Output = K>>(&mut self, index: Idx) -> Option<&mut K> {
         self.content.get_mut(index)
     }
+
+    ///
+    /// Adds another item at the end of the `Vector`
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Vector;
+    ///
+    /// let mut vec = Vector::from([1, 2]);
+    /// vec.append(3);
+    /// assert_eq!(vec, [1, 2, 3]);
+    /// ```
+    #[inline(always)]
+    pub fn append(&mut self, number: K) {
+        self.content.push(number);
+    }
+
+    pub fn new() -> Self {
+        Vector {
+            content: Vec::new()
+        }
+    }
 }
 
 #[cfg(test)]
@@ -211,6 +233,15 @@ mod test {
     fn from_tab() {
         let test = Vector::from([45, 454, 42, 48884, 33154]);
         assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]")
+    }
+
+    #[test]
+    fn append() {
+        let mut vec: Vector<u32> = Vector::new();
+        vec.append(1);
+        vec.append(2);
+        vec.append(3);
+        assert_eq!(vec, [1, 2, 3]);
     }
 
     #[test]

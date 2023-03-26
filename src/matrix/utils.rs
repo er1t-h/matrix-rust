@@ -265,6 +265,7 @@ impl<'a, K: Space> Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::Matrix;
+	use pretty_assertions::assert_eq;
 
     #[test]
     fn columns_iter() {
