@@ -56,7 +56,7 @@ where
     }
 
     #[inline(always)]
-    fn dot_internal(&self, v: &Self) -> K {
+    pub(crate) fn dot_internal(&self, v: &Self) -> K {
         self.content
             .iter()
             .zip(v.content.iter())

@@ -7,6 +7,8 @@ use crate::matrix::Dimensions;
 pub enum VectorOperationError {
     /// Contains the `size` of `(lhs, rhs)`
     NotSameSize(usize, usize),
+    /// The Vector only contains 0s
+    ZeroVector,
 }
 
 ///

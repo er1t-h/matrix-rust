@@ -27,7 +27,7 @@ where
     for<'a> V: AddAssign<&'a V> + SubAssign<&'a V> + MulAssign<&'a Ratio>,
 {
     let bounds: f64 = ratio.clone().into();
-    if bounds > 1. || bounds < 0. {
+    if !(0. ..=1.).contains(&bounds) {
         Err(LinearInterpolationError::RatioOffBound)
     } else {
         Ok(lerp(u, v, ratio))

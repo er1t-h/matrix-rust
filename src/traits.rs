@@ -19,6 +19,10 @@ pub trait Max {
     fn max(self, other: Self) -> Self;
 }
 
+pub trait Divisor {
+    fn can_be_divisor(&self) -> bool;
+}
+
 macro_rules! impl_mul_identity {
     ($value: expr, $current: ident, $($types: ident),+) => {
         impl_mul_identity!($value, $current);
@@ -26,6 +30,7 @@ macro_rules! impl_mul_identity {
     };
     ($value: expr, $current: ident) => {
         impl MulIdentity for $current {
+            #[inline(always)]
             fn mul_identity() -> Self {
                 $value
             }
@@ -40,8 +45,24 @@ macro_rules! impl_add_identity {
     };
     ($value: expr, $current: ident) => {
         impl AddIdentity for $current {
+            #[inline(always)]
             fn add_identity() -> Self {
                 $value
+            }
+        }
+    };
+}
+
+macro_rules! impl_divisor {
+    ($value: expr, $current: ident, $($types: ident),+) => {
+        impl_divisor!($value, $current);
+        impl_divisor!($value, $($types),+);
+    };
+    ($value: expr, $current: ident) => {
+        impl Divisor for $current {
+            #[inline(always)]
+            fn can_be_divisor(&self) -> bool {
+                self != $value
             }
         }
     };
@@ -106,6 +127,8 @@ impl_mul_identity!(1, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_mul_identity!(1.0, f32, f64);
 impl_add_identity!(0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_add_identity!(0.0, f32, f64);
+impl_divisor!(&0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+impl_divisor!(&0.0, f32, f64);
 
 impl_abs!(i8, i16, i32, i64, i128, f32, f64);
 impl_sqrt!(f32, f64);
