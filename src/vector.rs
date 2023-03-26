@@ -8,7 +8,7 @@ use crate::traits::Space;
 ///
 /// Implementation of a Vector
 ///
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Vector<K: Space> {
     content: Vec<K>,
 }

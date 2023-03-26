@@ -29,7 +29,7 @@ pub fn safe_linear_combination<K: Space>(
             coefficients.len(),
         ));
     }
-    if vectors.len() == 0 {
+    if vectors.is_empty() {
         return Err(LinearCombinationError::VectorArrayIsEmpty);
     }
     let mut iter = vectors.iter();

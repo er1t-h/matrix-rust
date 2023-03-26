@@ -15,7 +15,7 @@ impl<K: Space + Display> Display for Vector<K> {
                 .content
                 .iter()
                 .map(|x| x.to_string())
-                .reduce(|accumulator, elt| accumulator + &", " + &elt)
+                .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
             write!(f, "[{}]", buff)
         } else {
@@ -45,7 +45,7 @@ impl<K: Space, const SIZE: usize> From<[K; SIZE]> for Vector<K> {
 impl<K: Space, const SIZE: usize> PartialEq<[K; SIZE]> for Vector<K> {
     #[inline(always)]
     fn eq(&self, other: &[K; SIZE]) -> bool {
-        &self.content == other
+        self.content == other
     }
 }
 

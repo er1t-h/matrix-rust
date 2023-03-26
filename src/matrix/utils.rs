@@ -22,7 +22,7 @@ impl<K: Space + Display> Display for Matrix<K> {
             str += &self.content[y..y + self.dimensions.width]
                 .iter()
                 .map(|x| x.to_string())
-                .reduce(|accumulator, elt| accumulator + &", " + &elt)
+                .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
             str += "], ";
         }
@@ -49,7 +49,7 @@ impl<K: Space + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix
     #[inline(always)]
     fn from(value: &[[K; LINE_SIZE]]) -> Self {
         Self {
-            content: value.into_iter().flatten().map(|x| *x).collect(),
+            content: value.iter().flatten().copied().collect(),
             dimensions: Dimensions {
                 width: value.len(),
                 height: LINE_SIZE,
@@ -61,10 +61,10 @@ impl<K: Space + Copy> From<&[&[K]]> for Matrix<K> {
     #[inline(always)]
     fn from(value: &[&[K]]) -> Self {
         Self {
-            content: value.into_iter().flat_map(|x| *x).map(|x| *x).collect(),
+            content: value.iter().flat_map(|x| *x).copied().collect(),
             dimensions: Dimensions {
                 width: value.len(),
-                height: value.get(0).and_then(|x| Some(x.len())).unwrap_or(0),
+                height: value.get(0).map(|x| x.len()).unwrap_or(0),
             },
         }
     }
@@ -128,7 +128,7 @@ impl<K: Space, const LINE_SIZE: usize, const COLUMN_SIZE: usize>
     PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]> for Matrix<K>
 {
     fn eq(&self, other: &[[K; COLUMN_SIZE]; LINE_SIZE]) -> bool {
-        Iterator::eq(self.iter(), other.into_iter().flatten())
+        Iterator::eq(self.iter(), other.iter().flatten())
     }
 }
 
