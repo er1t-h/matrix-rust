@@ -1,12 +1,19 @@
-use std::{ops::{AddAssign, DivAssign, MulAssign, SubAssign, Mul}, iter::Sum};
+use std::{
+    iter::Sum,
+    ops::{AddAssign, DivAssign, Mul, MulAssign, SubAssign},
+};
 
 ///
 /// Trait used to describe a structure that act as a mathematical space.
 ///
 pub trait Space: Sized + PartialEq<Self> + Clone + AddIdentity + MulIdentity
 where
-    for<'a> Self:
-        AddAssign<&'a Self> + SubAssign<&'a Self> + MulAssign<&'a Self> + DivAssign<&'a Self> + Sum<&'a Self> + Mul<&'a Self, Output = Self>,
+    for<'a> Self: AddAssign<&'a Self>
+        + SubAssign<&'a Self>
+        + MulAssign<&'a Self>
+        + DivAssign<&'a Self>
+        + Sum<&'a Self>
+        + Mul<&'a Self, Output = Self>,
     for<'a, 'b> &'a Self: PartialEq<&'b Self>,
 {
 }

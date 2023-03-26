@@ -27,5 +27,5 @@ pub enum LinearCombinationError {
     VectorsAndCoefficientSizeDifference(usize, usize),
     VectorArrayIsEmpty,
     /// Contains the `size` of `(first_vector, first_mismatch)`
-    VectorSizeMismatch(usize, usize)
+    VectorSizeMismatch(usize, usize),
 }

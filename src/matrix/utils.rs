@@ -1,4 +1,7 @@
-use std::{ops::{Deref, DerefMut}, fmt::Display};
+use std::{
+    fmt::Display,
+    ops::{Deref, DerefMut},
+};
 
 use crate::{traits::Space, Matrix, Vector};
 
@@ -265,7 +268,7 @@ impl<'a, K: Space> Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::Matrix;
-	use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn columns_iter() {

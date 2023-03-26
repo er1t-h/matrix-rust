@@ -178,7 +178,7 @@ impl<K: Space> Vector<K> {
 
     pub fn new() -> Self {
         Vector {
-            content: Vec::new()
+            content: Vec::new(),
         }
     }
 }
