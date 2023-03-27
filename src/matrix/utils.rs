@@ -5,9 +5,13 @@ use std::{
 
 use crate::{Matrix, Vector};
 
-use self::iterator::{MatrixColumnIterator, MatrixColumnIteratorMut};
+use self::{
+    columns::{MatrixColumn, MatrixColumnMut},
+    iterator::{MatrixIterByColumn, MatrixIterByColumnMut},
+};
 use super::Dimensions;
 
+pub mod columns;
 pub mod iterator;
 
 // Display
@@ -222,6 +226,30 @@ impl<'a, K: Clone> Matrix<K> {
         }
     }
 
+    pub fn get_column(&'a self, column_number: usize) -> Option<MatrixColumn<'a, K>> {
+        if self.dimensions.width < column_number || self.dimensions.height == 0 {
+            None
+        } else {
+            Some(MatrixColumn::new(
+                &self.content,
+                column_number,
+                self.dimensions.width,
+            ))
+        }
+    }
+
+    pub fn get_column_mut(&'a mut self, column_number: usize) -> Option<MatrixColumnMut<'a, K>> {
+        if self.dimensions.width < column_number || self.dimensions.height == 0 {
+            None
+        } else {
+            Some(MatrixColumnMut::new(
+                &mut self.content,
+                column_number,
+                self.dimensions.width,
+            ))
+        }
+    }
+
     ///
     /// Returns an iterator over the `columns` of a `Matrix`
     ///
@@ -238,8 +266,8 @@ impl<'a, K: Clone> Matrix<K> {
     /// assert_eq!(iter.next(), None);
     /// ```
     #[inline(always)]
-    pub fn columns(&'a self) -> MatrixColumnIterator<'a, K> {
-        MatrixColumnIterator::new(self)
+    pub fn columns(&'a self) -> MatrixIterByColumn<'a, K> {
+        MatrixIterByColumn::new(self)
     }
 
     ///
@@ -262,8 +290,8 @@ impl<'a, K: Clone> Matrix<K> {
     /// assert_eq!(iter.next(), None);
     /// ```
     #[inline(always)]
-    pub fn columns_mut(&'a mut self) -> MatrixColumnIteratorMut<'a, K> {
-        MatrixColumnIteratorMut::new(self)
+    pub fn columns_mut(&'a mut self) -> MatrixIterByColumnMut<'a, K> {
+        MatrixIterByColumnMut::new(self)
     }
 }
 
