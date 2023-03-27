@@ -23,6 +23,10 @@ pub trait Divisor {
     fn can_be_divisor(&self) -> bool;
 }
 
+pub trait FMA<Multiple = Self, Add = Self, Output = Self> {
+    fn fma(&self, a: &Multiple, b: &Add) -> Output;
+}
+
 macro_rules! impl_mul_identity {
     ($value: expr, $current: ident, $($types: ident),+) => {
         impl_mul_identity!($value, $current);
@@ -123,6 +127,31 @@ macro_rules! impl_max_ord {
     };
 }
 
+macro_rules! impl_fma {
+    (float, $current: ident, $($types: ident),+) => {
+        impl_fma!(float, $current);
+        impl_fma!(float, $($types),+);
+    };
+    (float, $current: ident) => {
+        impl FMA for $current {
+            fn fma(&self, a: &Self, b: &Self) -> Self {
+                (*self).mul_add(*a, *b)
+            }
+        }
+    };
+    (int, $current: ident, $($types: ident),+) => {
+        impl_fma!(int, $current);
+        impl_fma!(int, $($types),+);
+    };
+    (int, $current: ident) => {
+        impl FMA for $current {
+            fn fma(&self, a: &Self, b: &Self) -> Self {
+                self * a + b
+            }
+        }
+    };
+}
+
 impl_mul_identity!(1, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_mul_identity!(1.0, f32, f64);
 impl_add_identity!(0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
@@ -134,3 +163,5 @@ impl_abs!(i8, i16, i32, i64, i128, f32, f64);
 impl_sqrt!(f32, f64);
 impl_max!(f32, f64);
 impl_max_ord!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+impl_fma!(float, f32, f64);
+impl_fma!(int, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);

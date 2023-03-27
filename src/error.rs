@@ -35,11 +35,22 @@ pub enum LinearCombinationError {
 }
 
 ///
-/// Describes the reason a linear interpolation
+/// Describes the reason a linear interpolation can fail.
 ///
 /// See [safe_lerp](crate::utils::safe_lerp).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LinearInterpolationError {
     RatioOffBound,
+}
+
+///
+/// Describes the reason a cross product can fail.
+///
+/// See [safe_cross_product](crate::utils::safe_cross_product).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum CrossProductError {
+    LeftVectorShouldBeThreeDimensional,
+    RightVectorShouldBeThreeDimensional,
 }

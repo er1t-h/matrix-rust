@@ -128,6 +128,26 @@ where
         *self *= &rhs;
     }
 }
+impl<K> MulAssign<&K> for &mut Vector<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
+    #[inline]
+    fn mul_assign(&mut self, rhs: &K) {
+        **self *= rhs;
+    }
+}
+impl<K: Clone> MulAssign<K> for &mut Vector<K>
+where
+    K: Clone,
+    for<'a> K: MulAssign<&'a K>,
+{
+    #[inline]
+    fn mul_assign(&mut self, rhs: K) {
+        **self *= &rhs;
+    }
+}
 impl<K: Clone> Mul<&K> for Vector<K>
 where
     K: Clone,
@@ -157,6 +177,18 @@ impl<K: Clone> Mul<K> for Vector<K>
 where
     K: Clone,
     for<'a> K: MulAssign<&'a K>,
+{
+    type Output = Self;
+    #[inline]
+    fn mul(mut self, rhs: K) -> Self::Output {
+        self *= &rhs;
+        self
+    }
+}
+impl<K: Clone> Mul<K> for &Vector<K>
+where
+    K: Clone,
+    for<'a, 'b> &'a Vector<K>: MulAssign<&'b K>,
 {
     type Output = Self;
     #[inline]

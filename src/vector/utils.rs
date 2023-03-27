@@ -1,9 +1,11 @@
 use std::{
     fmt::Display,
-    ops::{Deref, DerefMut, Index},
+    ops::{AddAssign, Deref, DerefMut, Index, Mul},
     slice::SliceIndex,
 };
 // mod iterator;
+
+use crate::traits::FMA;
 
 use super::Vector;
 
@@ -108,6 +110,19 @@ impl<K: Clone> DerefMut for Vector<K> {
     #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.content
+    }
+}
+
+impl<K> FMA<K> for Vector<K>
+where
+    K: Clone,
+    for<'a> &'a Vector<K>: Mul<&'a K, Output = Vector<K>>,
+    for<'a> Vector<K>: AddAssign<&'a Vector<K>>,
+{
+    fn fma(&self, a: &K, b: &Self) -> Self {
+        let mut tmp = self * a;
+        tmp += b;
+        tmp
     }
 }
 
