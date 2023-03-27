@@ -2,7 +2,12 @@ use crate::Matrix;
 
 ///
 /// An iterator that go through a [Matrix] column by column instead of line by
-/// line
+/// line.
+///
+/// # Notes:
+///
+/// See [MatrixColumn](crate::matrix::utils::columns::MatrixColumn) to go
+/// through only one column.
 ///
 pub struct MatrixIterByColumn<'a, K: Clone> {
     matrix: &'a Matrix<K>,
@@ -36,7 +41,12 @@ impl<'a, K: Clone> MatrixIterByColumn<'a, K> {
 
 ///
 /// An iterator that go through a [Matrix] column by column instead of line by
-/// line, yielding mutable references
+/// line, yielding mutable references.
+///
+/// # Notes:
+///
+/// See [MatrixColumnMut](crate::matrix::utils::columns::MatrixColumnMut) to go
+/// through only one column.
 ///
 pub struct MatrixIterByColumnMut<'a, K: Clone> {
     matrix: &'a mut Matrix<K>,

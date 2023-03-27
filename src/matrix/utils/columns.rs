@@ -1,3 +1,11 @@
+///
+/// An iterator that go through a single column of a [Matrix](crate::Matrix).
+///
+/// # Notes:
+///
+/// See [MatrixIterByColumn](crate::matrix::utils::iterator::MatrixIterByColumn)
+/// to go through all the columns of a [Matrix](crate::Matrix)
+///
 pub struct MatrixColumn<'a, K: Clone> {
     matrix: &'a [K],
     line_length: usize,
@@ -31,6 +39,15 @@ impl<'a, K: Clone> Iterator for MatrixColumn<'a, K> {
     }
 }
 
+///
+/// An iterator that go through a single column of a [Matrix](crate::Matrix),
+/// yielding mutable references.
+///
+/// # Notes:
+///
+/// See [MatrixIterByColumnMut](crate::matrix::utils::iterator::MatrixIterByColumnMut)
+/// to go through all the columns of a [Matrix](crate::Matrix).
+///
 pub struct MatrixColumnMut<'a, K: Clone> {
     matrix: &'a mut [K],
     line_length: usize,
