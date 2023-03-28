@@ -73,7 +73,7 @@ where
     K: Clone + Sum + Sqrt + Mul<Output = K> + Div<Output = K>,
     for<'a> &'a K: Mul<&'a K, Output = K>,
 {
-    let tmp = u.dot(v);
+    let tmp = u.dot_internal(v);
     tmp / (u.norm() * v.norm())
 }
 

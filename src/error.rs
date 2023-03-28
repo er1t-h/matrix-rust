@@ -54,3 +54,27 @@ pub enum CrossProductError {
     LeftVectorShouldBeThreeDimensional,
     RightVectorShouldBeThreeDimensional,
 }
+
+///
+/// Describes the reason the multiplication of a [Matrix](crate::Matrix) by a
+/// [Vector](crate::Vector) can fail.
+///
+/// See [mul_vec](crate::Matrix#method.mul_vec).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MulVecError {
+    /// Contains the `(number_of_matrix_column, vector_size)`
+    SizeMismatch(usize, usize),
+}
+
+///
+/// Describes the reason the multiplication of a [Matrix](crate::Matrix) by
+/// another one can fail.
+///
+/// See [mul_mat](crate::Matrix#method.mul_mat).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MulMatError {
+    /// Contains the `(left_matrix_column, right_matrix_line)`
+    SizeMismatch(usize, usize),
+}

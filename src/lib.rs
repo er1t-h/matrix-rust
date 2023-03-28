@@ -1,3 +1,5 @@
+#![deny(unsafe_op_in_unsafe_fn)]
+
 pub mod error;
 pub mod matrix;
 pub mod traits;
