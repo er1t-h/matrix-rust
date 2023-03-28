@@ -23,7 +23,7 @@ pub enum MatrixOperationError {
 ///
 /// Describes the reason for which a linear combination can fail.
 ///
-/// See [safe_linear_combination](crate::vector::safe_linear_combination).
+/// See [linear_combination](crate::vector::linear_combination).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LinearCombinationError {
@@ -37,7 +37,7 @@ pub enum LinearCombinationError {
 ///
 /// Describes the reason a linear interpolation can fail.
 ///
-/// See [safe_lerp](crate::utils::safe_lerp).
+/// See [lerp](crate::utils::lerp).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LinearInterpolationError {
@@ -47,10 +47,22 @@ pub enum LinearInterpolationError {
 ///
 /// Describes the reason a cross product can fail.
 ///
-/// See [safe_cross_product](crate::utils::safe_cross_product).
+/// See [cross_product](crate::utils::cross_product).
 ///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum CrossProductError {
     LeftVectorShouldBeThreeDimensional,
     RightVectorShouldBeThreeDimensional,
+}
+
+///
+/// Describes the reason the multiplication of a [Matrix](crate::Matrix) by a
+/// [Vector](crate::Vector) can fail.
+///
+/// See [mul_vec](crate::Matrix#method.mul_vec).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum MulVecError {
+    /// Contains the `(number_of_matrix_column, vector_size)`
+    SizeMismatch(usize, usize),
 }
