@@ -83,12 +83,16 @@ where
         result_vec
     }
 
-    // pub fn mul_mat(&self, rhs: &Self) -> Result<&Self, ()> {
-    //     for index in (0..rhs.dimensions.width) {
-    //         let resulting_vec self.
-    //     }
-    //     Err(())
-    // }
+    pub fn mul_mat(&self, rhs: &Self) -> Result<Self, ()> {
+        let return_matrix =
+            Matrix::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
+        for index in 1..rhs.dimensions.width {
+            let return_vec =
+                self.mul_vec_internal(rhs.get_column(index).unwrap(), rhs.dimensions.height);
+            return_matrix.append_column(&return_vec);
+        }
+        Ok(return_matrix)
+    }
 }
 
 #[cfg(test)]
@@ -96,7 +100,7 @@ mod test {
     use crate::{error::MulVecError, Matrix, Vector};
 
     #[test]
-    fn example() {
+    fn example_vec() {
         {
             let u = Matrix::from([[1., 0.], [0., 1.]]);
             let v = Vector::from([4., 2.]);
@@ -116,6 +120,34 @@ mod test {
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
             assert_eq!(res, [4., -4.]);
+            println!("{} * {} = {}", u, v, res);
+        }
+    }
+
+    #[test]
+    fn example_mat() {
+        {
+            let u = Matrix::from([[1., 0.], [0., 1.]]);
+            let v = Matrix::from([[1., 0.], [0., 1.]]);
+            let res = u.mul_mat(&v).unwrap();
+            let expect = [[1., 0.], [0., 1.]];
+            assert_eq!(res, expect);
+            println!("{} * {} = {}", u, v, res);
+        }
+        {
+            let u = Matrix::from([[1., 0.], [0., 1.]]);
+            let v = Matrix::from([[2., 1.], [4., 2.]]);
+            let res = u.mul_mat(&v).unwrap();
+            let expect = [[2., 1.], [4., 2.]];
+            assert_eq!(res, expect);
+            println!("{} * {} = {}", u, v, res);
+        }
+        {
+            let u = Matrix::from([[3., -5.], [6., 8.]]);
+            let v = Matrix::from([[2., 1.], [4., 2.]]);
+            let res = u.mul_mat(&v).unwrap();
+            let expect = [[-14., 7.], [44., 22.]];
+            assert_eq!(res, expect);
             println!("{} * {} = {}", u, v, res);
         }
     }

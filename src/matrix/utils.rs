@@ -124,13 +124,35 @@ impl<K: Clone> DerefMut for Matrix<K> {
     }
 }
 
+// impl<K> PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]>
+//     for Matrix<K>
+// where
+//     K: Clone + PartialEq<K>,
+// {
+//     fn eq(&self, other: &[[K; COLUMN_SIZE]]) -> bool {
+//         self.dimensions.width == COLUMN_SIZE && self.dimensions.height == LINE_SIZE &&
+//         Iterator::eq(self.iter(), other.iter().flatten())
+//     }
+// }
+// impl<K, const COLUMN_SIZE: usize> PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]>
+//     for Matrix<K>
+// where
+//     K: Clone + PartialEq<K>,
+// {
+//     fn eq(&self, other: &[[K; COLUMN_SIZE]]) -> bool {
+//         self.dimensions.width == COLUMN_SIZE && self.dimensions.height == LINE_SIZE &&
+//         Iterator::eq(self.iter(), other.iter().flatten())
+//     }
+// }
 impl<K, const LINE_SIZE: usize, const COLUMN_SIZE: usize> PartialEq<[[K; COLUMN_SIZE]; LINE_SIZE]>
     for Matrix<K>
 where
     K: Clone + PartialEq<K>,
 {
     fn eq(&self, other: &[[K; COLUMN_SIZE]; LINE_SIZE]) -> bool {
-        Iterator::eq(self.iter(), other.iter().flatten())
+        self.dimensions.width == COLUMN_SIZE
+            && self.dimensions.height == LINE_SIZE
+            && Iterator::eq(self.iter(), other.iter().flatten())
     }
 }
 
@@ -265,12 +287,20 @@ impl<'a, K: Clone> Matrix<K> {
     pub fn columns_mut(&'a mut self) -> MatrixColumnIteratorMut<'a, K> {
         MatrixColumnIteratorMut::new(self)
     }
+
+    pub fn append_column(&mut self, content: &[K]) {
+        for (index, elt) in content.iter().enumerate().rev() {
+            self.content
+                .insert((index + 1) * self.dimensions.width, elt.clone());
+        }
+        self.dimensions.width += 1;
+    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::Matrix;
-    use pretty_assertions::assert_eq;
+    // use pretty_assertions::assert_eq;
 
     #[test]
     fn columns_iter() {
@@ -297,5 +327,12 @@ mod test {
             assert_eq!(iter.next(), Some(&4));
             assert_eq!(iter.next(), None);
         }
+    }
+
+    #[test]
+    fn append_column() {
+        let mut mat = Matrix::from([[1, 2], [4, 5]]);
+        mat.append_column(&[3, 6]);
+        assert_eq!(mat, [[1, 2, 3], [4, 5, 6]]);
     }
 }
