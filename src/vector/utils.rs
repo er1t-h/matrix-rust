@@ -201,6 +201,18 @@ impl<K: Clone> Vector<K> {
             content: Vec::new(),
         }
     }
+
+    pub fn with_capacity(cap: usize) -> Self {
+        Vector {
+            content: Vec::with_capacity(cap),
+        }
+    }
+
+    pub fn fill(item: &K, size: usize) -> Self {
+        let mut vec: Vec<K> = Vec::with_capacity(size);
+        vec.resize(size, item.clone());
+        Vector { content: vec }
+    }
 }
 
 #[cfg(test)]

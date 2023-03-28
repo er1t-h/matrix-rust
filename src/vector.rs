@@ -1,7 +1,7 @@
 mod ex00;
 
 mod ex01;
-pub use ex01::{linear_combination, safe_linear_combination};
+pub use ex01::{linear_combination, linear_combination_unchecked};
 
 mod ex03;
 mod ex04;

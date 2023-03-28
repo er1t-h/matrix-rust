@@ -9,23 +9,23 @@ use crate::{error::CrossProductError, Vector};
 /// Never.
 ///
 /// # Note:
-/// You can use [cross_product] if your inputs are already checked.
+/// You can use [cross_product_unchecked] if your inputs are already checked.
 ///
 /// # Example:
 /// ```
-/// use matrix::utils::safe_cross_product;
+/// use matrix::utils::cross_product;
 /// use matrix::Vector;
 /// use matrix::error::CrossProductError;
 ///
 /// let v1 = Vector::from([1, 0, 0]);
 /// let v2 = Vector::from([0, 1, 0, 2]);
-/// assert_eq!(safe_cross_product(&v1, &v2), Err(CrossProductError::RightVectorShouldBeThreeDimensional));
+/// assert_eq!(cross_product(&v1, &v2), Err(CrossProductError::RightVectorShouldBeThreeDimensional));
 /// ```
 ///
 /// # Complexity:
 /// Constant
 ///
-pub fn safe_cross_product<K>(u: &Vector<K>, v: &Vector<K>) -> Result<Vector<K>, CrossProductError>
+pub fn cross_product<K>(u: &Vector<K>, v: &Vector<K>) -> Result<Vector<K>, CrossProductError>
 where
     K: Clone,
     for<'a> &'a K: Mul<&'a K, Output = K> + Sub<&'a K, Output = K>,
@@ -42,24 +42,25 @@ where
 ///
 /// Computes the cross product of two vectors.
 ///
-/// # Panics:
-/// If one of the two vectors is not three dimensional, the behaviour is undefined.
-/// Please use [safe_cross_product] if you're not sure of your inputs.
+/// # Safety
+/// If one of the two vectors is not three dimensional, the behaviour is
+/// undefined.
+/// Please use [cross_product] for a safe alternative.
 ///
 /// # Example:
 /// ```
-/// use matrix::utils::cross_product;
+/// use matrix::utils::cross_product_unchecked;
 /// use matrix::Vector;
 ///
 /// let v1 = Vector::from([1, 0, 0]);
 /// let v2 = Vector::from([0, 1, 0]);
-/// assert_eq!(cross_product(&v1, &v2), [0, 0, 1]);
+/// assert_eq!(unsafe { cross_product_unchecked(&v1, &v2) }, [0, 0, 1]);
 /// ```
 ///
 /// # Complexity:
 /// Constant
 ///
-pub fn cross_product<K>(u: &Vector<K>, v: &Vector<K>) -> Vector<K>
+pub unsafe fn cross_product_unchecked<K>(u: &Vector<K>, v: &Vector<K>) -> Vector<K>
 where
     K: Clone,
     for<'a> &'a K: Mul<&'a K, Output = K> + Sub<&'a K, Output = K>,
@@ -82,28 +83,28 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{error::CrossProductError, utils::safe_cross_product, Vector};
+    use crate::{error::CrossProductError, utils::cross_product, Vector};
 
     #[test]
     fn example() {
         {
             let u = Vector::from([0., 0., 1.]);
             let v = Vector::from([1., 0., 0.]);
-            let res = safe_cross_product(&u, &v).unwrap();
+            let res = cross_product(&u, &v).unwrap();
             assert_eq!(res, [0., 1., 0.]);
             println!("cross({}, {}) = {}", u, v, res);
         }
         {
             let u = Vector::from([1., 2., 3.]);
             let v = Vector::from([4., 5., 6.]);
-            let res = safe_cross_product(&u, &v).unwrap();
+            let res = cross_product(&u, &v).unwrap();
             assert_eq!(res, [-3., 6., -3.]);
             println!("cross({}, {}) = {}", u, v, res);
         }
         {
             let u = Vector::from([4., 2., -3.]);
             let v = Vector::from([-2., -5., 16.]);
-            let res = safe_cross_product(&u, &v).unwrap();
+            let res = cross_product(&u, &v).unwrap();
             assert_eq!(res, [17., -58., -16.]);
             println!("cross({}, {}) = {}", u, v, res);
         }
@@ -113,14 +114,14 @@ mod test {
     fn errors() {
         let u = Vector::from([2., -3.]);
         let v = Vector::from([-2., -5., 16.]);
-        let res = safe_cross_product(&u, &v);
+        let res = cross_product(&u, &v);
         assert_eq!(
             res,
             Err(CrossProductError::LeftVectorShouldBeThreeDimensional)
         );
         let u = Vector::from([2., -3., 16.]);
         let v = Vector::from([-2., -5., 16., 5.]);
-        let res = safe_cross_product(&u, &v);
+        let res = cross_product(&u, &v);
         assert_eq!(
             res,
             Err(CrossProductError::RightVectorShouldBeThreeDimensional)

@@ -2,15 +2,20 @@ use crate::Matrix;
 
 ///
 /// An iterator that go through a [Matrix] column by column instead of line by
-/// line
+/// line.
 ///
-pub struct MatrixColumnIterator<'a, K: Clone> {
+/// # Notes:
+///
+/// See [MatrixColumn](crate::matrix::utils::columns::MatrixColumn) to go
+/// through only one column.
+///
+pub struct MatrixIterByColumn<'a, K: Clone> {
     matrix: &'a Matrix<K>,
     current_line: usize,
     current_column: usize,
 }
 
-impl<'a, K: Clone> Iterator for MatrixColumnIterator<'a, K> {
+impl<'a, K: Clone> Iterator for MatrixIterByColumn<'a, K> {
     type Item = &'a K;
     fn next(&mut self) -> Option<Self::Item> {
         let tmp = self.matrix.get(self.current_line, self.current_column)?;
@@ -24,8 +29,8 @@ impl<'a, K: Clone> Iterator for MatrixColumnIterator<'a, K> {
     }
 }
 
-impl<'a, K: Clone> MatrixColumnIterator<'a, K> {
-    pub(super) fn new(matrix: &'a Matrix<K>) -> MatrixColumnIterator<'a, K> {
+impl<'a, K: Clone> MatrixIterByColumn<'a, K> {
+    pub(super) fn new(matrix: &'a Matrix<K>) -> MatrixIterByColumn<'a, K> {
         Self {
             matrix,
             current_line: 0,
@@ -36,19 +41,27 @@ impl<'a, K: Clone> MatrixColumnIterator<'a, K> {
 
 ///
 /// An iterator that go through a [Matrix] column by column instead of line by
-/// line, yielding mutable references
+/// line, yielding mutable references.
 ///
-pub struct MatrixColumnIteratorMut<'a, K: Clone> {
+/// # Notes:
+///
+/// See [MatrixColumnMut](crate::matrix::utils::columns::MatrixColumnMut) to go
+/// through only one column.
+///
+pub struct MatrixIterByColumnMut<'a, K: Clone> {
     matrix: &'a mut Matrix<K>,
     current_line: usize,
     current_column: usize,
 }
 
-impl<'a, K: Clone> Iterator for MatrixColumnIteratorMut<'a, K> {
+impl<'a, K: Clone> Iterator for MatrixIterByColumnMut<'a, K> {
     type Item = &'a mut K;
-    // Forced to use unsafe code because of borrow checker.
-    // Due to the the incrementation at each call, we know we will never return
-    // twice the same object, so the use to unsafe won't introduce any errors
+    // !
+    // ! About unsafe:
+    // ! Forced to use unsafe code because of borrow checker.
+    // ! Due to the the incrementation at each call, we know we will never return
+    // ! twice the same object, so the use to unsafe won't introduce any errors
+    // !
     fn next(&mut self) -> Option<Self::Item> {
         let height = self.matrix.dimensions.height;
         let tmp = self
@@ -65,8 +78,8 @@ impl<'a, K: Clone> Iterator for MatrixColumnIteratorMut<'a, K> {
     }
 }
 
-impl<'a, K: Clone> MatrixColumnIteratorMut<'a, K> {
-    pub(super) fn new(matrix: &'a mut Matrix<K>) -> MatrixColumnIteratorMut<'a, K> {
+impl<'a, K: Clone> MatrixIterByColumnMut<'a, K> {
+    pub(super) fn new(matrix: &'a mut Matrix<K>) -> MatrixIterByColumnMut<'a, K> {
         Self {
             matrix,
             current_line: 0,

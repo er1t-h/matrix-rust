@@ -8,9 +8,9 @@ where
     for<'a> &'a K: Mul<&'a K, Output = K>,
 {
     ///
-    /// Returns the dot product of the the two vectors.
+    /// Returns the dot_unchecked product of the the two vectors.
     ///
-    /// If you're sure that your input is valid, you can use [dot](Vector::dot).
+    /// If you're sure that your input is valid, you can use [dot_unchecked](Vector#method.dot_unchecked).
     ///
     /// # Example
     /// ```
@@ -19,13 +19,13 @@ where
     ///
     /// let vec1 = Vector::from([4, 2, 3]);
     /// let vec2 = Vector::from([2, 3]);
-    /// assert_eq!(vec1.safe_dot(&vec2), Err(VectorOperationError::NotSameSize(3, 2)));
+    /// assert_eq!(vec1.dot(&vec2), Err(VectorOperationError::NotSameSize(3, 2)));
     /// ```
     ///
     /// Complexity:
     /// Linear: O(n) with `n` the total number of coordinates of the vectors.
     ///
-    pub fn safe_dot(&self, v: &Self) -> Result<K, VectorOperationError> {
+    pub fn dot(&self, v: &Self) -> Result<K, VectorOperationError> {
         if self.len() != v.len() {
             Err(VectorOperationError::NotSameSize(self.len(), v.len()))
         } else {
@@ -34,10 +34,14 @@ where
     }
 
     ///
-    /// Returns the dot product of the the two vectors.
+    /// Returns the dot_unchecked product of the the two vectors.
     ///
-    /// Using the [safe_dot](Vector::safe_dot) method, you get a [Result], whereas this function
+    /// Using the [dot](Vector#method.dot) method, you get a [Result], whereas this function
     /// will return a wrong answer in case of a bad input.
+    ///
+    /// # Safety
+    /// Make sure both vectors have the same size, or a non-sensical result
+    /// might be returned.
     ///
     /// # Example
     /// ```
@@ -45,13 +49,13 @@ where
     ///
     /// let vec1 = Vector::from([4, 2, 3]);
     /// let vec2 = Vector::from([4, 2, 3]);
-    /// assert_eq!(vec1.dot(&vec2), 29);
+    /// assert_eq!(unsafe { vec1.dot_unchecked(&vec2) }, 29);
     /// ```
     ///
-    /// Complexity:
+    /// # Complexity:
     /// Linear: O(n) with `n` the total number of coordinates of the vectors.
     ///
-    pub fn dot(&self, v: &Self) -> K {
+    pub unsafe fn dot_unchecked(&self, v: &Self) -> K {
         self.dot_internal(v)
     }
 
@@ -74,21 +78,21 @@ mod test {
         {
             let u = Vector::from([0., 0.]);
             let v = Vector::from([1., 1.]);
-            let res = u.safe_dot(&v).unwrap();
+            let res = u.dot(&v).unwrap();
             assert_eq!(res, 0.0);
             println!("{}", res);
         }
         {
             let u = Vector::from([1., 1.]);
             let v = Vector::from([1., 1.]);
-            let res = u.safe_dot(&v).unwrap();
+            let res = u.dot(&v).unwrap();
             assert_eq!(res, 2.0);
             println!("{}", res);
         }
         {
             let u = Vector::from([-1., 6.]);
             let v = Vector::from([3., 2.]);
-            let res = u.safe_dot(&v).unwrap();
+            let res = u.dot(&v).unwrap();
             assert_eq!(res, 9.0);
             println!("{}", res);
         }
@@ -98,7 +102,7 @@ mod test {
     fn error() {
         let u = Vector::from([0., 0., 1.]);
         let v = Vector::from([1., 1.]);
-        let res = u.safe_dot(&v);
+        let res = u.dot(&v);
         assert_eq!(
             res,
             Err(crate::error::VectorOperationError::NotSameSize(3, 2))
