@@ -70,7 +70,7 @@ where
     #[inline(always)]
     fn mul_vec_internal<'a, T>(&self, vec: T, size: usize) -> Vector<K>
     where
-        T: Iterator<Item = &'a K> + Clone,
+        T: Iterator<Item = &'a K>,
         K: 'a,
     {
         let mut result_vec: Vector<K> = Vector::fill(&K::default(), size);
@@ -84,7 +84,7 @@ where
     }
 
     pub fn mul_mat(&self, rhs: &Self) -> Result<Self, ()> {
-        let return_matrix =
+        let mut return_matrix =
             Matrix::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
         for index in 1..rhs.dimensions.width {
             let return_vec =
@@ -146,7 +146,7 @@ mod test {
             let u = Matrix::from([[3., -5.], [6., 8.]]);
             let v = Matrix::from([[2., 1.], [4., 2.]]);
             let res = u.mul_mat(&v).unwrap();
-            let expect = [[-14., 7.], [44., 22.]];
+            let expect = [[-14., -7.], [44., 22.]];
             assert_eq!(res, expect);
             println!("{} * {} = {}", u, v, res);
         }
