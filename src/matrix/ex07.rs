@@ -3,7 +3,10 @@ use std::{
     ops::{AddAssign, Mul},
 };
 
-use crate::{error::MulVecError, Matrix, Vector};
+use crate::{
+    error::{MulMatError, MulVecError},
+    Matrix, Vector,
+};
 
 impl<K> Matrix<K>
 where
@@ -32,6 +35,7 @@ where
     /// Time: O(mn)
     /// Space: O(m)
     ///
+    #[must_use = "you might want to use the returned vector"]
     pub fn mul_vec(&self, vec: &Vector<K>) -> Result<Vector<K>, MulVecError> {
         if self.dimensions.width != vec.len() {
             return Err(MulVecError::SizeMismatch(self.dimensions.width, vec.len()));
@@ -63,6 +67,7 @@ where
     /// Time: O(mn)
     /// Space: O(m)
     ///
+    #[must_use = "you might want to use the returned vector"]
     pub unsafe fn mul_vec_unchecked(&self, vec: &Vector<K>) -> Vector<K> {
         self.mul_vec_internal(vec.iter(), vec.size())
     }
@@ -83,7 +88,72 @@ where
         result_vec
     }
 
-    pub fn mul_mat(&self, rhs: &Self) -> Result<Self, ()> {
+    ///
+    /// Multiplies a [Matrix] by another one, and returns the corresponding
+    /// Matrix.
+    ///
+    /// If your input is already verified, you can use
+    /// [mul_mat_unchecked](Matrix#method.mul_mat_unchecked).
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    /// use matrix::error::MulMatError;
+    ///
+    /// let mat1 = Matrix::from([[1, 2], [3, 4]]);
+    /// let mat2 = Matrix::from([[1, 2], [3, 4], [5, 6]]);
+    /// assert_eq!(mat1.mul_mat(&mat2), Err(MulMatError::SizeMismatch(2, 3)));
+    /// ```
+    ///
+    /// # Complexity
+    /// For a `m` * `n` matrix, and a `n` * `p` matrix.
+    ///
+    /// Time: O(mnp)
+    /// Space: O(mp)
+    ///
+    #[must_use = "you might want to use the returned matrix"]
+    pub fn mul_mat(&self, rhs: &Self) -> Result<Self, MulMatError> {
+        if self.dimensions.width != rhs.dimensions.height {
+            return Err(MulMatError::SizeMismatch(
+                self.dimensions.width,
+                rhs.dimensions.height,
+            ));
+        }
+        Ok(self.mul_mat_internal(rhs))
+    }
+
+    ///
+    /// Multiplies a [Matrix] by another one, and returns the corresponding
+    /// Matrix.
+    ///
+    /// # Safety
+    /// The number of column of the left matrix must match the number of line of
+    /// the right matrix. See [mul_mat](Matrix#method.mul_mat) for a safe
+    /// method.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    /// use matrix::error::MulMatError;
+    ///
+    /// let mat1 = Matrix::from([[3., -5.], [6., 8.]]);
+    /// let mat2 = Matrix::from([[2., 1.], [4., 2.]]);
+    /// assert_eq!(unsafe { mat1.mul_mat_unchecked(&mat2) }, [[-14., -7.], [44., 22.]]);
+    /// ```
+    ///
+    /// # Complexity
+    /// For a `m` * `n` matrix, and a `n` * `p` matrix.
+    ///
+    /// Time: O(mnp)
+    /// Space: O(mp)
+    ///
+    #[must_use = "you might want to use the returned matrix"]
+    pub unsafe fn mul_mat_unchecked(&self, rhs: &Self) -> Self {
+        self.mul_mat_internal(rhs)
+    }
+
+    #[inline(always)]
+    fn mul_mat_internal(&self, rhs: &Self) -> Self {
         let mut return_matrix =
             Matrix::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
         for index in 1..rhs.dimensions.width {
@@ -91,7 +161,7 @@ where
                 self.mul_vec_internal(rhs.get_column(index).unwrap(), rhs.dimensions.height);
             return_matrix.append_column(&return_vec);
         }
-        Ok(return_matrix)
+        return_matrix
     }
 }
 
@@ -112,6 +182,7 @@ mod test {
             let u = Matrix::from([[2., 0.], [0., 2.]]);
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
+            unsafe { u.mul_vec_unchecked(&v) };
             assert_eq!(res, [8., 4.]);
             println!("{} * {} = {}", u, v, res);
         }

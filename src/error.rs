@@ -78,3 +78,13 @@ pub enum MulMatError {
     /// Contains the `(left_matrix_column, right_matrix_line)`
     SizeMismatch(usize, usize),
 }
+
+///
+/// Describes the reason the trace of a [Matrix](crate::Matrix) can fail.
+///
+/// See [trace](crate::Matrix#method.trace).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TraceError {
+    NotSquareMatrix,
+}
