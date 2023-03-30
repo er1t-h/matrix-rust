@@ -384,6 +384,32 @@ impl<'a, K: Clone> Matrix<K> {
     }
 
     ///
+    /// Returns a slice of the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut slice = mat.get_line_slice(1).unwrap();
+    /// assert_eq!(slice, &[3, 4]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_slice(&self, line_number: usize) -> Option<&[K]> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(&self.content[begin_line..begin_line + self.dimensions.width])
+        }
+    }
+
+    ///
     /// Returns an iterator that go through the column `column_number`, yielding
     /// mutable references
     ///
@@ -441,6 +467,32 @@ impl<'a, K: Clone> Matrix<K> {
         } else {
             let begin_line = self.dimensions.width * line_number;
             Some(self.content[begin_line..begin_line + self.dimensions.width].iter_mut())
+        }
+    }
+
+    ///
+    /// Returns a mutable slice of the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut slice = mat.get_line_slice(1).unwrap();
+    /// assert_eq!(slice, &[3, 4]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_mut_slice(&mut self, line_number: usize) -> Option<&mut [K]> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(&mut self.content[begin_line..begin_line + self.dimensions.width])
         }
     }
 
@@ -511,6 +563,28 @@ impl<'a, K: Clone> Matrix<K> {
                 .insert((index + 1) * self.dimensions.width, elt.clone());
         }
         self.dimensions.width += 1;
+        true
+    }
+
+    ///
+    /// Adds a column at the end of a matrix
+    ///
+    /// Returns true if the operation succeeded, false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    /// let mut mat = Matrix::from([[1, 2], [3, 4]]);
+    /// mat.append_line(&[5, 6]);
+    /// assert_eq!(mat, [[1, 2], [3, 4], [5, 6]]);
+    /// ```
+    ///
+    pub fn append_line(&mut self, content: &[K]) -> bool {
+        if self.dimensions.width != content.len() {
+            return false;
+        }
+        self.content.extend_from_slice(content);
+        self.dimensions.height += 1;
         true
     }
 
