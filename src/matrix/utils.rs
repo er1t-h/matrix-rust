@@ -1,6 +1,7 @@
 use std::{
     fmt::Display,
     ops::{Deref, DerefMut},
+    slice::{Iter, IterMut},
 };
 
 use crate::{Matrix, Vector};
@@ -355,6 +356,34 @@ impl<'a, K: Clone> Matrix<K> {
     }
 
     ///
+    /// Returns an iterator that go through the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_line(1).unwrap();
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&4));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line(&'a self, line_number: usize) -> Option<Iter<'a, K>> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(self.content[begin_line..begin_line + self.dimensions.width].iter())
+        }
+    }
+
+    ///
     /// Returns an iterator that go through the column `column_number`, yielding
     /// mutable references
     ///
@@ -383,6 +412,35 @@ impl<'a, K: Clone> Matrix<K> {
                 column_number,
                 self.dimensions.width,
             ))
+        }
+    }
+
+    ///
+    /// Returns an iterator that go through the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mut mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_line_mut(1).unwrap();
+    /// for elt in iter {
+    ///     *elt *= 2;
+    /// }
+    /// assert_eq!(mat, [[1, 2], [6, 8]]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_mut(&'a mut self, line_number: usize) -> Option<IterMut<'a, K>> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(self.content[begin_line..begin_line + self.dimensions.width].iter_mut())
         }
     }
 
