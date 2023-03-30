@@ -25,5 +25,7 @@ mod test {
     fn basic() {
         let mat = Matrix::from([[1, 2, 3], [4, 5, 6]]);
         let res = mat.transpose();
+        assert_eq!(res, [[1, 4], [2, 5], [3, 6]]);
+        println!("Transpose of {} is {}", mat, res);
     }
 }

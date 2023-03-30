@@ -160,6 +160,80 @@ where
     }
 }
 
+// Creating new matrices
+impl<K> Matrix<K>
+where
+    K: Clone + Default,
+{
+    ///
+    /// Creates an identity matrix, setting all elements to Default, and the
+    /// diagonal to `diagonal_value`.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::identity(&1., 3).unwrap();
+    /// assert_eq!(mat, [[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]);
+    /// let mat = Matrix::identity(&5., 2).unwrap();
+    /// assert_eq!(mat, [[5., 0.], [0., 5.]]);
+    /// ```
+    ///
+    pub fn identity(diagonal_value: &K, size: usize) -> Option<Self> {
+        if size == 0 {
+            return None;
+        }
+        let mut content: Vec<K> = Vec::with_capacity(size * size);
+        for i in 0..size {
+            for j in 0..size {
+                if i == j {
+                    content.push(diagonal_value.clone());
+                } else {
+                    content.push(K::default());
+                }
+            }
+        }
+        Some(Self {
+            content,
+            dimensions: Dimensions {
+                width: size,
+                height: size,
+            },
+        })
+    }
+
+    ///
+    /// Creates a matrix filled with the default value of the type `K`.
+    ///
+    /// If one of the parameters is equal to 0, returns `None`.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat: Matrix<f64> = Matrix::fill_default(3, 2).unwrap();
+    /// assert_eq!(mat, [[0., 0., 0.], [0., 0., 0.]]);
+    /// let mat = Matrix::fill_default(1, 2).unwrap();
+    /// assert_eq!(mat, [[0.], [0.]]);
+    /// ```
+    ///
+    pub fn fill_default(number_of_column: usize, number_of_line: usize) -> Option<Self> {
+        if number_of_column == 0 || number_of_line == 0 {
+            return None;
+        }
+        let total_size = number_of_column * number_of_line;
+        let mut content: Vec<K> = Vec::with_capacity(total_size);
+        content.resize(total_size, K::default());
+        Some(Self {
+            content,
+            dimensions: Dimensions {
+                width: number_of_column,
+                height: number_of_line,
+            },
+        })
+    }
+}
+
 // Utils
 impl<'a, K: Clone> Matrix<K> {
     ///
@@ -240,6 +314,7 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     /// # Complexity:
     /// Constant
+    ///
     pub fn get_mut(&'a mut self, line: usize, column: usize) -> Option<&'a mut K> {
         if column < self.dimensions.width {
             self.content.get_mut(line * self.dimensions.width + column)
@@ -248,6 +323,25 @@ impl<'a, K: Clone> Matrix<K> {
         }
     }
 
+    ///
+    /// Returns an iterator that go through the column `column_number`.
+    ///
+    /// Returns None if `column_number` is off bounds
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_column(0).unwrap();
+    /// assert_eq!(iter.next(), Some(&1));
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
     pub fn get_column(&'a self, column_number: usize) -> Option<MatrixColumn<'a, K>> {
         if self.dimensions.width < column_number || self.dimensions.height == 0 {
             None
@@ -260,6 +354,26 @@ impl<'a, K: Clone> Matrix<K> {
         }
     }
 
+    ///
+    /// Returns an iterator that go through the column `column_number`, yielding
+    /// mutable references
+    ///
+    /// Returns None if `column_number` is off bounds
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mut mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_column_mut(0).unwrap();
+    /// *iter.next().unwrap() = 5;
+    /// *iter.next().unwrap() = 6;
+    /// assert_eq!(mat, [[5, 2], [6, 4]]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
     pub fn get_column_mut(&'a mut self, column_number: usize) -> Option<MatrixColumnMut<'a, K>> {
         if self.dimensions.width < column_number || self.dimensions.height == 0 {
             None
@@ -311,17 +425,66 @@ impl<'a, K: Clone> Matrix<K> {
     /// assert_eq!(iter.next(), Some(&4));
     /// assert_eq!(iter.next(), None);
     /// ```
+    ///
     #[inline(always)]
     pub fn columns_mut(&'a mut self) -> MatrixIterByColumnMut<'a, K> {
         MatrixIterByColumnMut::new(self)
     }
 
-    pub fn append_column(&mut self, content: &[K]) {
+    ///
+    /// Adds a column at the end of a matrix
+    ///
+    /// Returns true if the operation succeeded, false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    /// let mut mat = Matrix::from([[1, 2], [4, 5]]);
+    /// mat.append_column(&[3, 6]);
+    /// assert_eq!(mat, [[1, 2, 3], [4, 5, 6]]);
+    /// ```
+    ///
+    pub fn append_column(&mut self, content: &[K]) -> bool {
+        if self.dimensions.height != content.len() {
+            return false;
+        }
         for (index, elt) in content.iter().enumerate().rev() {
             self.content
                 .insert((index + 1) * self.dimensions.width, elt.clone());
         }
         self.dimensions.width += 1;
+        true
+    }
+
+    ///
+    /// Creates a matrix filled with the default value of the type `K`.
+    ///
+    /// If one of the parameters is equal to 0, returns `None`.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat: Matrix<f64> = Matrix::fill(2.5, 3, 2).unwrap();
+    /// assert_eq!(mat, [[2.5, 2.5, 2.5], [2.5, 2.5, 2.5]]);
+    /// let mat = Matrix::fill(-5, 1, 2).unwrap();
+    /// assert_eq!(mat, [[-5], [-5]]);
+    /// ```
+    ///
+    pub fn fill(default: K, number_of_column: usize, number_of_line: usize) -> Option<Self> {
+        if number_of_column == 0 || number_of_line == 0 {
+            return None;
+        }
+        let total_size = number_of_column * number_of_line;
+        let mut content: Vec<K> = Vec::with_capacity(total_size);
+        content.resize(total_size, default);
+        Some(Self {
+            content,
+            dimensions: Dimensions {
+                width: number_of_column,
+                height: number_of_line,
+            },
+        })
     }
 }
 
