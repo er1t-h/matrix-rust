@@ -256,6 +256,23 @@ impl<'a, K: Clone> Matrix<K> {
     }
 
     ///
+    /// Swap the two lines given in parameter
+    ///
+    /// Panics if input is wrong (line out of bound)
+    ///
+    pub(super) fn swap_line(&mut self, first_line: usize, second_line: usize) {
+        if first_line == second_line {
+            return;
+        }
+        let (min, max) = (first_line.min(second_line), first_line.max(second_line));
+        let split_index = self.dimensions.width * (min + 1);
+        let (left, right) = self.content.as_mut_slice().split_at_mut(split_index);
+        let max_slice_begin = max * self.dimensions.width - split_index;
+        left[split_index - self.dimensions.width..]
+            .swap_with_slice(&mut right[max_slice_begin..max_slice_begin + self.dimensions.width])
+    }
+
+    ///
     /// Returns `true` if the matrix is a square, `false` otherwise
     ///
     /// # Example
@@ -657,5 +674,19 @@ mod test {
         let mut mat = Matrix::from([[1, 2], [4, 5]]);
         mat.append_column(&[3, 6]);
         assert_eq!(mat, [[1, 2, 3], [4, 5, 6]]);
+    }
+
+    #[test]
+    fn swap_line() {
+        {
+            let mut mat: Matrix<u64> = Matrix::identity(&1, 3).unwrap();
+            mat.swap_line(0, 2);
+            assert_eq!(mat, [[0, 0, 1], [0, 1, 0], [1, 0, 0]]);
+        }
+        {
+            let mut mat: Matrix<u64> = Matrix::identity(&1, 3).unwrap();
+            mat.swap_line(2, 1);
+            assert_eq!(mat, [[1, 0, 0], [0, 0, 1], [0, 1, 0]]);
+        }
     }
 }

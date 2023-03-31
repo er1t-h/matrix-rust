@@ -1,11 +1,14 @@
-use crate::Matrix;
+use std::ops::{Div, Mul, MulAssign, SubAssign};
+
+use crate::{traits::IsZero, Matrix};
 
 use super::Dimensions;
 
 impl<K> Matrix<K>
 where
-    K: Clone + Default,
-    for<'a> &'a K: PartialEq,
+    for<'a> K: Clone + Default + MulAssign<&'a K> + SubAssign<&'a K>,
+    for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K>,
+    for<'a> &'a mut K: IsZero,
 {
     pub fn row_echelon(&self) -> Self {
         // First, we skip all zero columns
@@ -22,17 +25,24 @@ where
                 break;
             }
         }
+        let mut return_matrix = self.clone();
         if first_non_zero_column == self.dimensions.width {
-            return self.clone(); // If all columns are zero, we return a clone of self
+            return return_matrix;
         }
-        let first_line = self.get_line_slice(first_non_zero_line).unwrap();
-        let mut return_matrix = Matrix {
-            content: Vec::from(first_line),
-            dimensions: Dimensions {
-                height: 1,
-                width: self.dimensions.width,
-            },
-        };
+        return_matrix.swap_line(0, first_non_zero_line);
+        for non_treated_line in 1..return_matrix.dimensions.height {
+            let coeff = {
+                let first_number_of_new_line = return_matrix
+                    .get(non_treated_line, first_non_zero_column)
+                    .unwrap();
+                let pivot = return_matrix.get(0, first_non_zero_column).unwrap();
+                first_number_of_new_line / pivot
+            };
+            for elt_index in first_non_zero_column..return_matrix.dimensions.width {
+                let tmp = &coeff * return_matrix.get(0, elt_index).unwrap();
+                *return_matrix.get_mut(non_treated_line, elt_index).unwrap() -= &tmp;
+            }
+        }
         return_matrix
     }
 }
@@ -52,7 +62,7 @@ mod test {
         {
             let u = Matrix::from([[1., 2.], [3., 4.]]);
             let res = u.row_echelon();
-            assert_eq!(res, [[1.0, 0.0], [0.0, 1.0]]);
+            assert_eq!(res, [[1.0, 2.0], [0.0, -2.0]]);
             println!("Row echelon of {u} = {res}");
         }
         {
