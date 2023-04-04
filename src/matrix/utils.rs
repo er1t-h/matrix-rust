@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Deref, DerefMut},
+    ops::{Add, Deref, DerefMut, Sub, SubAssign},
     slice::{Iter, IterMut},
 };
 
@@ -158,6 +158,30 @@ where
         self.dimensions.width == COLUMN_SIZE
             && self.dimensions.height == LINE_SIZE
             && Iterator::eq(self.iter(), other.iter().flatten())
+    }
+}
+
+impl<K> Matrix<K>
+where
+    for<'a> K: Clone + PartialOrd<K>,
+    for<'a> &'a K: Sub<&'a K, Output = K> + Add<&'a K, Output = K>,
+{
+    pub fn approx_eq<const LINE_SIZE: usize, const COLUMN_SIZE: usize>(
+        &self,
+        other: &[[K; COLUMN_SIZE]; LINE_SIZE],
+        delta: &K,
+    ) -> bool {
+        if !(self.dimensions.width == COLUMN_SIZE && self.dimensions.height == LINE_SIZE) {
+            return false;
+        }
+        for (mat, cmp) in self.iter().zip(other.iter().flatten()) {
+            let low = cmp - delta;
+            let high = cmp + delta;
+            if mat < &low || mat > &high {
+                return false;
+            }
+        }
+        true
     }
 }
 
