@@ -2,6 +2,7 @@ mod ex00;
 mod ex07;
 mod ex08;
 mod ex09;
+mod ex10;
 mod utils;
 
 ///

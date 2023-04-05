@@ -23,6 +23,10 @@ pub trait Divisor {
     fn can_be_divisor(&self) -> bool;
 }
 
+pub trait IsZero {
+    fn is_zero(&self) -> bool;
+}
+
 pub trait FMA<Multiple = Self, Add = Self, Output = Self> {
     fn fma(&self, a: &Multiple, b: &Add) -> Output;
 }
@@ -67,6 +71,35 @@ macro_rules! impl_divisor {
             #[inline(always)]
             fn can_be_divisor(&self) -> bool {
                 self != $value
+            }
+        }
+    };
+}
+
+macro_rules! impl_is_zero {
+    ($value: expr, $current: ident, $($types: ident),+) => {
+        impl_is_zero!($value, $current);
+        impl_is_zero!($value, $($types),+);
+    };
+    ($value: expr, $current: ident) => {
+        impl IsZero for $current {
+            #[inline(always)]
+            fn is_zero(&self) -> bool {
+                self == $value
+            }
+        }
+
+        impl IsZero for &$current {
+            #[inline(always)]
+            fn is_zero(&self) -> bool {
+                self == &$value
+            }
+        }
+
+        impl IsZero for &mut $current {
+            #[inline(always)]
+            fn is_zero(&self) -> bool {
+                self == &$value
             }
         }
     };
@@ -158,6 +191,8 @@ impl_add_identity!(0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_add_identity!(0.0, f32, f64);
 impl_divisor!(&0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_divisor!(&0.0, f32, f64);
+impl_is_zero!(&0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+impl_is_zero!(&0.0, f32, f64);
 
 impl_abs!(i8, i16, i32, i64, i128, f32, f64);
 impl_sqrt!(f32, f64);

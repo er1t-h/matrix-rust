@@ -4,7 +4,7 @@ use crate::Matrix;
 /// An iterator that go through a [Matrix] column by column instead of line by
 /// line.
 ///
-/// # Notes:
+/// # Notes
 ///
 /// See [MatrixColumn](crate::matrix::utils::columns::MatrixColumn) to go
 /// through only one column.
@@ -43,7 +43,7 @@ impl<'a, K: Clone> MatrixIterByColumn<'a, K> {
 /// An iterator that go through a [Matrix] column by column instead of line by
 /// line, yielding mutable references.
 ///
-/// # Notes:
+/// # Notes
 ///
 /// See [MatrixColumnMut](crate::matrix::utils::columns::MatrixColumnMut) to go
 /// through only one column.

@@ -1,6 +1,7 @@
 use std::{
     fmt::Display,
-    ops::{Deref, DerefMut},
+    ops::{Add, Deref, DerefMut, Sub, SubAssign},
+    slice::{Iter, IterMut},
 };
 
 use crate::{Matrix, Vector};
@@ -160,6 +161,30 @@ where
     }
 }
 
+impl<K> Matrix<K>
+where
+    for<'a> K: Clone + PartialOrd<K>,
+    for<'a> &'a K: Sub<&'a K, Output = K> + Add<&'a K, Output = K>,
+{
+    pub fn approx_eq<const LINE_SIZE: usize, const COLUMN_SIZE: usize>(
+        &self,
+        other: &[[K; COLUMN_SIZE]; LINE_SIZE],
+        delta: &K,
+    ) -> bool {
+        if !(self.dimensions.width == COLUMN_SIZE && self.dimensions.height == LINE_SIZE) {
+            return false;
+        }
+        for (mat, cmp) in self.iter().zip(other.iter().flatten()) {
+            let low = cmp - delta;
+            let high = cmp + delta;
+            if mat < &low || mat > &high {
+                return false;
+            }
+        }
+        true
+    }
+}
+
 // Creating new matrices
 impl<K> Matrix<K>
 where
@@ -252,6 +277,23 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     pub fn size(&self) -> (usize, usize) {
         (self.dimensions.height, self.dimensions.width)
+    }
+
+    ///
+    /// Swap the two lines given in parameter
+    ///
+    /// Panics if input is wrong (line out of bound)
+    ///
+    pub(super) fn swap_line(&mut self, first_line: usize, second_line: usize) {
+        if first_line == second_line {
+            return;
+        }
+        let (min, max) = (first_line.min(second_line), first_line.max(second_line));
+        let split_index = self.dimensions.width * (min + 1);
+        let (left, right) = self.content.as_mut_slice().split_at_mut(split_index);
+        let max_slice_begin = max * self.dimensions.width - split_index;
+        left[split_index - self.dimensions.width..]
+            .swap_with_slice(&mut right[max_slice_begin..max_slice_begin + self.dimensions.width])
     }
 
     ///
@@ -355,6 +397,60 @@ impl<'a, K: Clone> Matrix<K> {
     }
 
     ///
+    /// Returns an iterator that go through the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_line(1).unwrap();
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&4));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line(&'a self, line_number: usize) -> Option<Iter<'a, K>> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(self.content[begin_line..begin_line + self.dimensions.width].iter())
+        }
+    }
+
+    ///
+    /// Returns a slice of the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut slice = mat.get_line_slice(1).unwrap();
+    /// assert_eq!(slice, &[3, 4]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_slice(&self, line_number: usize) -> Option<&[K]> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(&self.content[begin_line..begin_line + self.dimensions.width])
+        }
+    }
+
+    ///
     /// Returns an iterator that go through the column `column_number`, yielding
     /// mutable references
     ///
@@ -383,6 +479,61 @@ impl<'a, K: Clone> Matrix<K> {
                 column_number,
                 self.dimensions.width,
             ))
+        }
+    }
+
+    ///
+    /// Returns an iterator that go through the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mut mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut iter = mat.get_line_mut(1).unwrap();
+    /// for elt in iter {
+    ///     *elt *= 2;
+    /// }
+    /// assert_eq!(mat, [[1, 2], [6, 8]]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_mut(&'a mut self, line_number: usize) -> Option<IterMut<'a, K>> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(self.content[begin_line..begin_line + self.dimensions.width].iter_mut())
+        }
+    }
+
+    ///
+    /// Returns a mutable slice of the line `line_number`.
+    ///
+    /// Returns None if `line_number` is off bounds.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[1, 2], [3, 4]]);
+    /// let mut slice = mat.get_line_slice(1).unwrap();
+    /// assert_eq!(slice, &[3, 4]);
+    /// ```
+    ///
+    /// # Complexity:
+    /// Constant
+    ///
+    pub fn get_line_mut_slice(&mut self, line_number: usize) -> Option<&mut [K]> {
+        if self.dimensions.height < line_number || self.dimensions.width == 0 {
+            None
+        } else {
+            let begin_line = self.dimensions.width * line_number;
+            Some(&mut self.content[begin_line..begin_line + self.dimensions.width])
         }
     }
 
@@ -457,6 +608,28 @@ impl<'a, K: Clone> Matrix<K> {
     }
 
     ///
+    /// Adds a column at the end of a matrix
+    ///
+    /// Returns true if the operation succeeded, false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::Matrix;
+    /// let mut mat = Matrix::from([[1, 2], [3, 4]]);
+    /// mat.append_line(&[5, 6]);
+    /// assert_eq!(mat, [[1, 2], [3, 4], [5, 6]]);
+    /// ```
+    ///
+    pub fn append_line(&mut self, content: &[K]) -> bool {
+        if self.dimensions.width != content.len() {
+            return false;
+        }
+        self.content.extend_from_slice(content);
+        self.dimensions.height += 1;
+        true
+    }
+
+    ///
     /// Creates a matrix filled with the default value of the type `K`.
     ///
     /// If one of the parameters is equal to 0, returns `None`.
@@ -525,5 +698,19 @@ mod test {
         let mut mat = Matrix::from([[1, 2], [4, 5]]);
         mat.append_column(&[3, 6]);
         assert_eq!(mat, [[1, 2, 3], [4, 5, 6]]);
+    }
+
+    #[test]
+    fn swap_line() {
+        {
+            let mut mat: Matrix<u64> = Matrix::identity(&1, 3).unwrap();
+            mat.swap_line(0, 2);
+            assert_eq!(mat, [[0, 0, 1], [0, 1, 0], [1, 0, 0]]);
+        }
+        {
+            let mut mat: Matrix<u64> = Matrix::identity(&1, 3).unwrap();
+            mat.swap_line(2, 1);
+            assert_eq!(mat, [[1, 0, 0], [0, 0, 1], [0, 1, 0]]);
+        }
     }
 }
