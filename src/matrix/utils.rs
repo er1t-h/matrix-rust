@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Add, Deref, DerefMut, Sub, SubAssign},
+    ops::{Add, Deref, DerefMut, Sub},
     slice::{Iter, IterMut},
 };
 
