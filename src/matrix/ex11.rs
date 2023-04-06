@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul, Sub};
 
-use crate::Matrix;
+use crate::{error::DeterminantError, Matrix};
 
 // Matrix:
 // 0 1
@@ -96,8 +96,18 @@ where
     for<'b> &'b K: Sub<&'b K, Output = K> + Mul<&'b K, Output = K> + Add<&'b K, Output = K>,
 {
     // ! I know it looks terrible, but it's the only way to do it without cloning the matrix
-    // ! Moreover, it's
-    pub fn determinant(&self) -> Result<K, ()> {
+    // ! Moreover, it's the way that takes the less time to compute
+    ///
+    /// Returns the determinant of a matrix.
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mat = Matrix::from([[2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]);
+    /// assert_eq!(mat.determinant().unwrap(), 8.)
+    /// ```
+    pub fn determinant(&self) -> Result<K, DeterminantError> {
         match self.size() {
             (1, 1) => Ok(self.content[0].clone()),
             (2, 2) => Ok(determinant_2(&[&self[0], &self[1], &self[2], &self[3]])),
@@ -110,7 +120,8 @@ where
                 &self[8], &self[9], &self[10], &self[11], &self[12], &self[13], &self[14],
                 &self[15],
             ])),
-            _ => Err(()),
+            (x, y) if x == y => Err(DeterminantError::TooBigMatrix),
+            _ => Err(DeterminantError::NotSquareMatrix),
         }
     }
 }

@@ -88,3 +88,14 @@ pub enum MulMatError {
 pub enum TraceError {
     NotSquareMatrix,
 }
+
+///
+/// Describes the reason the determinant of a [Matrix](crate::Matrix) can fail.
+///
+/// See [`determinant`](crate::Matrix#method.determinant).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum DeterminantError {
+    NotSquareMatrix,
+    TooBigMatrix,
+}
