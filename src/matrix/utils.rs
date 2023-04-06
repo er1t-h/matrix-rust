@@ -262,6 +262,32 @@ where
 // Utils
 impl<'a, K: Clone> Matrix<K> {
     ///
+    /// Returns a clone of the matrix, without all elements on the line `line`
+    /// or on the column `column`.
+    ///
+    pub fn submatrix(&self, column: usize, line: usize) -> Result<Self, ()> {
+        if self.dimensions.height < 2 || self.dimensions.width < 2 {
+            return Err(());
+        }
+        let content: Vec<K> = self
+            .content
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| {
+                index % self.dimensions.width != column && index / self.dimensions.width != line
+            })
+            .map(|(_, elt)| elt.clone())
+            .collect();
+        Ok(Self {
+            content,
+            dimensions: Dimensions {
+                width: self.dimensions.width - 1,
+                height: self.dimensions.height - 1,
+            },
+        })
+    }
+
+    ///
     /// Returns the number of (`lines`, `columns`) in the `Matrix`.
     ///
     /// # Example

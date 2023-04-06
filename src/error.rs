@@ -97,5 +97,4 @@ pub enum TraceError {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DeterminantError {
     NotSquareMatrix,
-    TooBigMatrix,
 }

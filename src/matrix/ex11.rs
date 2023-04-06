@@ -1,6 +1,13 @@
-use std::ops::{Add, Mul, Sub};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+};
 
-use crate::{error::DeterminantError, Matrix};
+use crate::{
+    error::DeterminantError,
+    traits::{IsZero, MulIdentity},
+    Matrix,
+};
 
 // Matrix:
 // 0 1
@@ -92,8 +99,16 @@ where
 
 impl<'a, K> Matrix<K>
 where
-    K: Clone + Default + 'a,
+    K: Clone + Default + 'a + Neg<Output = K> + MulIdentity,
     for<'b> &'b K: Sub<&'b K, Output = K> + Mul<&'b K, Output = K> + Add<&'b K, Output = K>,
+    for<'b> K: Display
+        + Clone
+        + Default
+        + MulAssign<&'b K>
+        + SubAssign<&'b K>
+        + AddAssign<&'b K>
+        + DivAssign<&'b K>,
+    for<'b> &'b K: PartialEq + Mul<&'b K, Output = K> + Div<&'b K, Output = K> + IsZero,
 {
     // ! I know it looks terrible, but it's the only way to do it without cloning the matrix
     // ! Moreover, it's the way that takes the less time to compute
@@ -120,7 +135,16 @@ where
                 &self[8], &self[9], &self[10], &self[11], &self[12], &self[13], &self[14],
                 &self[15],
             ])),
-            (x, y) if x == y => Err(DeterminantError::TooBigMatrix),
+            (x, y) if x == y => {
+                let (row_echelon, swaps, factor) = self.row_echelon_internal();
+                let mut trace = row_echelon.multiplicative_trace_internal();
+                trace *= &factor;
+                if swaps % 2 == 0 {
+                    Ok(trace)
+                } else {
+                    Ok(-trace)
+                }
+            }
             _ => Err(DeterminantError::NotSquareMatrix),
         }
     }
@@ -128,6 +152,7 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::assert_eq_float;
     use crate::Matrix;
 
     #[test]
@@ -135,21 +160,21 @@ mod test {
         {
             let u = Matrix::from([[1., -1.], [-1., 1.]]);
             let res = u.determinant().unwrap();
-            assert_eq!(res, 0.);
+            assert_eq_float!(res, 0.);
             println!("det({}) = {:?}", u, res);
             // 0.0
         }
         {
             let u = Matrix::from([[2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]);
             let res = u.determinant().unwrap();
-            assert_eq!(res, 8.);
+            assert_eq_float!(res, 8.);
             println!("det({}) = {:?}", u, res);
             // 8.0
         }
         {
             let u = Matrix::from([[8., 5., -2.], [4., 7., 20.], [7., 6., 1.]]);
             let res = u.determinant().unwrap();
-            assert_eq!(res, -174.);
+            assert_eq_float!(res, -174.);
             println!("det({}) = {:?}", u, res);
             // -174.0
         }
@@ -161,7 +186,7 @@ mod test {
                 [28., -4., 17., 1.],
             ]);
             let res = u.determinant().unwrap();
-            assert_eq!(res, 1032.);
+            assert_eq_float!(res, 1032.);
             println!("det({}) = {:?}", u, res);
             // 1032
         }

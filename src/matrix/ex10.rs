@@ -3,11 +3,20 @@ use std::{
     ops::{Div, DivAssign, Mul, MulAssign, SubAssign},
 };
 
-use crate::{traits::IsZero, Matrix};
+use crate::{
+    traits::{IsZero, MulIdentity},
+    Matrix,
+};
 
 impl<K> Matrix<K>
 where
-    for<'a> K: Display + Clone + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
+    for<'a> K: Display
+        + Clone
+        + Default
+        + MulAssign<&'a K>
+        + SubAssign<&'a K>
+        + DivAssign<&'a K>
+        + MulIdentity,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
@@ -21,10 +30,12 @@ where
     /// assert_eq!(mat.row_echelon(), [[1., 2.], [0., 1.]]);
     /// ```
     ///
-    pub fn row_echelon(&self) -> Self {
+    pub(crate) fn row_echelon_internal(&self) -> (Self, usize, K) {
         // First, we skip all zero columns
         let mut first_non_zero_column = 0;
         let mut rows_set = 0;
+        let mut swap_number = 0;
+        let mut factor = K::mul_identity();
         let mut return_matrix = self.clone();
         while first_non_zero_column < self.dimensions.width {
             let mut first_non_zero_line = 0;
@@ -49,13 +60,17 @@ where
                 }
             }
             if end {
-                return return_matrix;
+                return (return_matrix, 0, factor);
             }
-            return_matrix.swap_line(rows_set, first_non_zero_line);
+            if rows_set != first_non_zero_line {
+                return_matrix.swap_line(rows_set, first_non_zero_line);
+                swap_number += 1;
+            }
             let first_copy = return_matrix
                 .get(rows_set, first_non_zero_column)
                 .unwrap()
                 .clone();
+            factor *= &first_copy;
             for elt in return_matrix
                 .get_line_mut(rows_set)
                 .unwrap()
@@ -82,7 +97,11 @@ where
             rows_set += 1;
             first_non_zero_column += 1;
         }
-        return_matrix
+        (return_matrix, swap_number, factor)
+    }
+
+    pub fn row_echelon(&self) -> Self {
+        self.row_echelon_internal().0
     }
 
     ///
