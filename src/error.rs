@@ -98,3 +98,14 @@ pub enum TraceError {
 pub enum DeterminantError {
     NotSquareMatrix,
 }
+
+///
+/// Describes the reason the inverse of a [Matrix](crate::Matrix) can fail.
+///
+/// See [`inverse`](crate::Matrix#method.inverse).
+///
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum InverseError {
+    NotSquareMatrix,
+    SingularMatrix,
+}

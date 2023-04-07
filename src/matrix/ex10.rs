@@ -1,7 +1,4 @@
-use std::{
-    fmt::Display,
-    ops::{Div, DivAssign, Mul, MulAssign, SubAssign},
-};
+use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
     traits::{IsZero, MulIdentity},
@@ -10,13 +7,8 @@ use crate::{
 
 impl<K> Matrix<K>
 where
-    for<'a> K: Display
-        + Clone
-        + Default
-        + MulAssign<&'a K>
-        + SubAssign<&'a K>
-        + DivAssign<&'a K>
-        + MulIdentity,
+    for<'a> K:
+        Clone + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K> + MulIdentity,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
@@ -48,7 +40,6 @@ where
                     .any(|x| !x.is_zero())
                 {
                     end = false;
-                    first_non_zero_column = i;
                     first_non_zero_line = return_matrix
                         .get_column(i)
                         .unwrap()
@@ -56,6 +47,7 @@ where
                         .position(|x| !x.is_zero())
                         .unwrap()
                         + rows_set;
+                    first_non_zero_column = i;
                     break;
                 }
             }
@@ -119,7 +111,6 @@ where
         let mut return_matrix = self.row_echelon();
         // For each line
         for index_line in 1..return_matrix.dimensions.height {
-            println!("Before row {}: {}", index_line, &return_matrix);
             // Take the pivot
             let Some(pivot_position) = return_matrix.get_line(index_line).unwrap().position(|x| !x.is_zero()) else {
                 continue;
@@ -129,7 +120,7 @@ where
                 // For each number in that line
                 for i in (pivot_position..return_matrix.dimensions.width).rev() {
                     let ratio = return_matrix.get(changing_index, pivot_position).unwrap();
-                    let to_sub = ratio * &return_matrix.get(index_line, i).unwrap();
+                    let to_sub = ratio * return_matrix.get(index_line, i).unwrap();
                     *return_matrix.get_mut(changing_index, i).unwrap() -= &to_sub;
                 }
             }
@@ -140,6 +131,8 @@ where
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use crate::Matrix;
 
     #[test]
@@ -175,7 +168,7 @@ mod test {
                     [0.0, 0.0, 1.0, 0.0, -3.6666667],
                     [0.0, 0.0, 0.0, 1.0, 29.5]
                 ],
-                &0.0001
+                &0.00001
             ));
             println!("Row echelon of {u} = {res}");
         }

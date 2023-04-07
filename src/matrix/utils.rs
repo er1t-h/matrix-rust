@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Add, Deref, DerefMut, Sub},
+    ops::{Add, Deref, DerefMut, Range, Sub},
     slice::{Iter, IterMut},
 };
 
@@ -166,6 +166,10 @@ where
     for<'a> K: Clone + PartialOrd<K>,
     for<'a> &'a K: Sub<&'a K, Output = K> + Add<&'a K, Output = K>,
 {
+    ///
+    /// Returns true if each element of `other` are equal to those of `self`,
+    /// plus or minus `delta`.
+    ///
     pub fn approx_eq<const LINE_SIZE: usize, const COLUMN_SIZE: usize>(
         &self,
         other: &[[K; COLUMN_SIZE]; LINE_SIZE],
@@ -262,10 +266,60 @@ where
 // Utils
 impl<'a, K: Clone> Matrix<K> {
     ///
+    /// Returns the augmented matrix composed of `left` and `right`.
+    ///
+    pub fn augmented_matrix(left: &Self, right: &Self) -> Result<Self, ()> {
+        if left.dimensions.height != right.dimensions.height {
+            return Err(());
+        }
+        let mut content: Vec<K> = Vec::with_capacity(
+            (left.dimensions.width + right.dimensions.width) * left.dimensions.height,
+        );
+        for i in 0..left.dimensions.height {
+            content.extend(left.get_line(i).unwrap().cloned());
+            content.extend(right.get_line(i).unwrap().cloned());
+        }
+        Ok(Self {
+            content,
+            dimensions: Dimensions {
+                width: left.dimensions.width + right.dimensions.width,
+                height: left.dimensions.height,
+            },
+        })
+    }
+
+    ///
+    /// Returns the submatrix contained between `columns` and `lines`.
+    ///
+    pub fn submatrix(&self, columns: Range<usize>, lines: Range<usize>) -> Result<Self, ()> {
+        if self.dimensions.height < lines.end
+            || self.dimensions.width < columns.end
+            || columns.start == columns.end
+            || lines.start == lines.end
+        {
+            return Err(());
+        }
+        let column = (columns.start, columns.end);
+        let line = (lines.start, lines.end);
+        let mut content: Vec<K> =
+            Vec::with_capacity((columns.end - columns.start) * (lines.end - lines.start));
+        for line in lines {
+            content.extend_from_slice(&self.get_line_slice(line).unwrap()[columns.clone()]);
+        }
+        Ok(Self {
+            content,
+            dimensions: Dimensions {
+                width: column.1 - column.0,
+                height: line.1 - line.0,
+            },
+        })
+    }
+
+    ///
     /// Returns a clone of the matrix, without all elements on the line `line`
     /// or on the column `column`.
     ///
-    pub fn submatrix(&self, column: usize, line: usize) -> Result<Self, ()> {
+    pub fn without_line_column(&self, column: usize, line: usize) -> Result<Self, ()> {
         if self.dimensions.height < 2 || self.dimensions.width < 2 {
             return Err(());
         }
@@ -690,7 +744,7 @@ impl<'a, K: Clone> Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::Matrix;
-    // use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn columns_iter() {
@@ -737,6 +791,23 @@ mod test {
             let mut mat: Matrix<u64> = Matrix::identity(&1, 3).unwrap();
             mat.swap_line(2, 1);
             assert_eq!(mat, [[1, 0, 0], [0, 0, 1], [0, 1, 0]]);
+        }
+    }
+
+    #[test]
+    fn submatrix() {
+        let matrix = Matrix::from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+        {
+            let submat = matrix.submatrix(0..2, 0..2).unwrap();
+            assert_eq!(submat, [[1, 2], [4, 5]]);
+        }
+        {
+            let submat = matrix.submatrix(1..3, 1..3).unwrap();
+            assert_eq!(submat, [[5, 6], [8, 9]]);
+        }
+        {
+            let submat = matrix.submatrix(0..1, 0..3).unwrap();
+            assert_eq!(submat, [[1], [4], [7]]);
         }
     }
 }
