@@ -46,9 +46,9 @@ impl<'a, K: Clone> DoubleEndedIterator for MatrixColumn<'a, K> {
             None
         } else if self.matrix.len() < self.line_length {
             self.stop = true;
-            self.matrix.get(self.matrix.len() - 1)
+            self.matrix.last()
         } else {
-            let tmp = self.matrix.get(self.matrix.len() - 1);
+            let tmp = self.matrix.last();
             self.matrix = &self.matrix[..self.matrix.len() - self.line_length];
             tmp
         }

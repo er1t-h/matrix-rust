@@ -4,6 +4,7 @@ mod ex08;
 mod ex09;
 mod ex10;
 mod ex11;
+mod ex12;
 mod utils;
 
 ///
