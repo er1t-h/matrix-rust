@@ -5,6 +5,7 @@ mod ex09;
 mod ex10;
 mod ex11;
 mod ex12;
+mod ex13;
 mod multiplicative_trace;
 mod utils;
 
