@@ -167,6 +167,8 @@ where
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use crate::{error::MulVecError, Matrix, Vector};
 
     #[test]

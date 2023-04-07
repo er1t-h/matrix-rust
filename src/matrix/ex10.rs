@@ -131,6 +131,8 @@ where
 
 #[cfg(test)]
 mod test {
+    use pretty_assertions::assert_eq;
+
     use crate::Matrix;
 
     #[test]
@@ -166,7 +168,7 @@ mod test {
                     [0.0, 0.0, 1.0, 0.0, -3.6666667],
                     [0.0, 0.0, 0.0, 1.0, 29.5]
                 ],
-                &0.0001
+                &0.00001
             ));
             println!("Row echelon of {u} = {res}");
         }

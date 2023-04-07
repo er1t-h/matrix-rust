@@ -166,6 +166,10 @@ where
     for<'a> K: Clone + PartialOrd<K>,
     for<'a> &'a K: Sub<&'a K, Output = K> + Add<&'a K, Output = K>,
 {
+    ///
+    /// Returns true if each element of `other` are equal to those of `self`,
+    /// plus or minus `delta`.
+    ///
     pub fn approx_eq<const LINE_SIZE: usize, const COLUMN_SIZE: usize>(
         &self,
         other: &[[K; COLUMN_SIZE]; LINE_SIZE],
@@ -261,6 +265,9 @@ where
 
 // Utils
 impl<'a, K: Clone> Matrix<K> {
+    ///
+    /// Returns the augmented matrix composed of `left` and `right`.
+    ///
     pub fn augmented_matrix(left: &Self, right: &Self) -> Result<Self, ()> {
         if left.dimensions.height != right.dimensions.height {
             return Err(());
@@ -737,7 +744,7 @@ impl<'a, K: Clone> Matrix<K> {
 #[cfg(test)]
 mod test {
     use crate::Matrix;
-    // use pretty_assertions::assert_eq;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn columns_iter() {
