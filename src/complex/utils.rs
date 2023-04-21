@@ -1,4 +1,6 @@
-use std::fmt::Display;
+use std::{fmt::Display, ops::Mul};
+
+use crate::traits::{IsZero, MulIdentity};
 
 use super::Complex;
 
@@ -26,5 +28,17 @@ where
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{} {}i", &self.real, &self.imaginary)
+    }
+}
+
+impl<T: MulIdentity + Default> MulIdentity for Complex<T> {
+    fn mul_identity() -> Self {
+        Complex::new(T::mul_identity(), T::default())
+    }
+}
+
+impl<T: IsZero> IsZero for &Complex<T> {
+    fn is_zero(&self) -> bool {
+        self.real.is_zero() && self.imaginary.is_zero()
     }
 }

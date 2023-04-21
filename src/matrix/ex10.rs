@@ -133,7 +133,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::Matrix;
+    use crate::{complex::cpl, Matrix};
 
     #[test]
     fn example() {
@@ -171,6 +171,24 @@ mod test {
                 &0.00001
             ));
             println!("Row echelon of {u} = {res}");
+        }
+    }
+
+    #[test]
+    fn with_complex() {
+        {
+            let mat = Matrix::from([
+                [cpl!(5., 2.), cpl!(2., 4.), cpl!(3., 5.)],
+                [cpl!(5., 7.), cpl!(4., 2.), cpl!(1., 1.)],
+            ]);
+            let res = mat.reduced_row_echelon();
+            assert_eq!(
+                res,
+                [
+                    [cpl!(1., 0.), cpl!(0., 0.), cpl!(-(46. / 353.), 186. / 353.)],
+                    [cpl!(0., 0.), cpl!(1., 0.), cpl!(703. / 706., 479. / 706.)]
+                ]
+            )
         }
     }
 }

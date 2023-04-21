@@ -21,7 +21,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::Matrix;
+    use crate::{complex::cpl, Matrix};
 
     #[test]
     fn basic() {
@@ -37,5 +37,24 @@ mod test {
         let res = mat.transpose();
         assert_eq!(res, [[1, 2]]);
         println!("Transpose of {} is {}", mat, res);
+    }
+
+    #[test]
+    fn with_complex() {
+        {
+            let mat = Matrix::from([[cpl!(5, -3), cpl!(6, 2)], [cpl!(0, -3), cpl!(-7, 2)]]);
+            let res = mat.transpose();
+            assert_eq!(res, [[cpl!(5, -3), cpl!(0, -3)], [cpl!(6, 2), cpl!(-7, 2)]]);
+            println!("Transpose of {} is {}", mat, res);
+        }
+        {
+            let mat = Matrix::from([[cpl!(65, -12), cpl!(64, 21)], [cpl!(0, -32), cpl!(-71, 20)]]);
+            let res = mat.transpose();
+            assert_eq!(
+                res,
+                [[cpl!(65, -12), cpl!(0, -32)], [cpl!(64, 21), cpl!(-71, 20)]]
+            );
+            println!("Transpose of {} is {}", mat, res);
+        }
     }
 }
