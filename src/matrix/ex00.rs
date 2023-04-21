@@ -227,7 +227,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{matrix::Dimensions, Matrix};
+    use crate::{complex::cpl, matrix::Dimensions, Matrix};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -342,5 +342,40 @@ mod test {
             println!("{}", u);
             assert_eq!(u, [[2., 4.], [6., 8.]]);
         }
+    }
+
+    #[test]
+    fn add_with_complex() {
+        let mut u = Matrix::from([[cpl!(1., 2.), cpl!(3., 4.)], [cpl!(5., 6.), cpl!(7., 8.)]]);
+        let v = Matrix::from([[cpl!(8., 7.), cpl!(6., 5.)], [cpl!(4., 3.), cpl!(2., 1.)]]);
+        u += &v;
+        assert_eq!(u, Matrix::fill(cpl!(9., 9.), 2, 2).unwrap())
+    }
+
+    #[test]
+    fn sub_with_complex() {
+        let mut u = Matrix::from([[cpl!(1., 2.), cpl!(3., 4.)], [cpl!(5., 6.), cpl!(7., 8.)]]);
+        let v = Matrix::from([[cpl!(8., 7.), cpl!(6., 5.)], [cpl!(4., 3.), cpl!(2., 1.)]]);
+        u -= &v;
+        assert_eq!(
+            u,
+            [
+                [cpl!(-7., -5.), cpl!(-3., -1.)],
+                [cpl!(1., 3.), cpl!(5., 7.)]
+            ]
+        );
+    }
+
+    #[test]
+    fn scale_mul_with_complex() {
+        let mut u = Matrix::from([[cpl!(1., 2.), cpl!(3., 4.)], [cpl!(5., 6.), cpl!(7., 8.)]]);
+        u *= cpl!(5., 2.);
+        assert_eq!(
+            u,
+            [
+                [cpl!(1., 12.), cpl!(7., 26.)],
+                [cpl!(13., 40.), cpl!(19., 54.)]
+            ]
+        );
     }
 }

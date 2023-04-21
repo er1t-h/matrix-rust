@@ -35,7 +35,6 @@ where
     /// Time: O(mn)
     /// Space: O(m)
     ///
-    #[must_use = "you might want to use the returned vector"]
     pub fn mul_vec(&self, vec: &Vector<K>) -> Result<Vector<K>, MulVecError> {
         if self.dimensions.width != vec.len() {
             return Err(MulVecError::SizeMismatch(self.dimensions.width, vec.len()));
@@ -67,7 +66,6 @@ where
     /// Time: O(mn)
     /// Space: O(m)
     ///
-    #[must_use = "you might want to use the returned vector"]
     pub unsafe fn mul_vec_unchecked(&self, vec: &Vector<K>) -> Vector<K> {
         self.mul_vec_internal(vec.iter(), vec.size())
     }
@@ -111,7 +109,6 @@ where
     /// Time: O(mnp)
     /// Space: O(mp)
     ///
-    #[must_use = "you might want to use the returned matrix"]
     pub fn mul_mat(&self, rhs: &Self) -> Result<Self, MulMatError> {
         if self.dimensions.width != rhs.dimensions.height {
             return Err(MulMatError::SizeMismatch(
@@ -147,7 +144,6 @@ where
     /// Time: O(mnp)
     /// Space: O(mp)
     ///
-    #[must_use = "you might want to use the returned matrix"]
     pub unsafe fn mul_mat_unchecked(&self, rhs: &Self) -> Self {
         self.mul_mat_internal(rhs)
     }
@@ -169,7 +165,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::{error::MulVecError, Matrix, Vector};
+    use crate::{complex::cpl, error::MulVecError, Matrix, Vector};
 
     #[test]
     fn example_vec() {
@@ -233,5 +229,27 @@ mod test {
             let res = u.mul_vec(&v);
             assert_eq!(res, Err(MulVecError::SizeMismatch(3, 2)));
         }
+    }
+
+    #[test]
+    fn vec_with_complex() {
+        let u = Matrix::from([[cpl!(1, 5), cpl!(3, 2)], [cpl!(9, 0), cpl!(12, -4)]]);
+        let v = Vector::from([cpl!(0, 7), cpl!(2, -7)]);
+        let res = u.mul_vec(&v).unwrap();
+        assert_eq!(res, [cpl!(-15, -10), cpl!(-4, -29)])
+    }
+
+    #[test]
+    fn mat_with_complex() {
+        let u = Matrix::from([[cpl!(1, 5), cpl!(3, 2)], [cpl!(9, 0), cpl!(12, -4)]]);
+        let v = Matrix::from([[cpl!(0, 5), cpl!(32, 1)], [cpl!(21, -7), cpl!(0, 0)]]);
+        let res = u.mul_mat(&v).unwrap();
+        assert_eq!(
+            res,
+            [
+                [cpl!(52, 26), cpl!(27, 161)],
+                [cpl!(224, -123), cpl!(288, 9)]
+            ]
+        )
     }
 }
