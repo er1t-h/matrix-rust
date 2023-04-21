@@ -8,4 +8,5 @@ edition = "2021"
 [dev-dependencies]
 pretty_assertions = "1.0.0"
 
-[dependencies]
+[features]
+bonus = []
