@@ -72,7 +72,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::Matrix;
+    use crate::{complex::cpl, Matrix};
 
     #[test]
     fn example() {
@@ -92,6 +92,26 @@ mod test {
             let u = Matrix::from([[-2., -8., 4.], [1., -23., 4.], [0., 6., 4.]]);
             let res = u.trace().unwrap();
             assert_eq!(res, -21.0);
+            println!("trace({}) = {}", u, res);
+        }
+    }
+
+    #[test]
+    fn with_complex() {
+        {
+            let u = Matrix::from([[cpl!(5, -3), cpl!(6, 2)], [cpl!(0, -3), cpl!(-7, 2)]]);
+            let res = u.trace().unwrap();
+            assert_eq!(res, cpl!(-2, -1));
+            println!("trace({}) = {}", u, res);
+        }
+        {
+            let u = Matrix::from([
+                [cpl!(5, -3), cpl!(6, 2), cpl!(1, -15)],
+                [cpl!(0, -3), cpl!(-7, 2), cpl!(0, 4)],
+                [cpl!(8, 2), cpl!(4, 2), cpl!(5, 4)],
+            ]);
+            let res = u.trace().unwrap();
+            assert_eq!(res, cpl!(3, 3));
             println!("trace({}) = {}", u, res);
         }
     }
