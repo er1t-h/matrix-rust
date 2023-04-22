@@ -153,6 +153,7 @@ where
 #[cfg(test)]
 mod test {
     use crate::assert_eq_float;
+    use crate::complex::cpl;
     use crate::Matrix;
 
     #[test]
@@ -190,5 +191,31 @@ mod test {
             println!("det({}) = {:?}", u, res);
             // 1032
         }
+    }
+
+    #[test]
+    fn matrix5() {
+        let u = Matrix::from([
+            [8., 5., -2., 4., 4.],
+            [2.5, 20., 4., 8., 5.],
+            [1., 4., 28., -4., 17.],
+            [1., 4., 2., 0.5, 41.],
+            [21., 8., 5., 10., 24.],
+        ]);
+        let res = u.determinant().unwrap();
+        assert_eq_float!(res, -627635.25);
+        println!("det({}) = {:?}", u, res);
+    }
+
+    #[test]
+    fn with_complex() {
+        let u = Matrix::from([
+            [cpl!(5., 2.), cpl!(3., 4.), cpl!(1., 0.)],
+            [cpl!(4., 12.), cpl!(-4., 3.), cpl!(8., -5.)],
+            [cpl!(0., 0.), cpl!(7., 3.), cpl!(-5., -7.)],
+        ]);
+        let res = u.determinant().unwrap();
+        assert_eq!(res, cpl!(-750., 164.));
+        println!("det({}) = {:?}", u, res);
     }
 }
