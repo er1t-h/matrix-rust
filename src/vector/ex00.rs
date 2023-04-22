@@ -268,7 +268,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::{error::VectorOperationError, Vector};
+    use crate::{complex::cpl, error::VectorOperationError, Vector};
 
     #[test]
     fn safe_add_assign() {
@@ -403,5 +403,25 @@ mod test {
             println!("{}", u);
             assert_eq!(u, [4., 6.]);
         }
+    }
+
+    #[test]
+    fn add_with_complex() {
+        let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
+        let v = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
+        assert_eq!(u + v, [cpl!(2 + 4 i), cpl!(6 + 8 i)])
+    }
+
+    #[test]
+    fn sub_with_complex() {
+        let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
+        let v = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
+        assert_eq!(u - v, [cpl!(0 + 0 i), cpl!(0 + 0 i)])
+    }
+
+    #[test]
+    fn mul_with_complex() {
+        let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
+        assert_eq!(u * cpl!(5 + 2 i), [cpl!(1 + 12 i), cpl!(7 + 26 i)])
     }
 }

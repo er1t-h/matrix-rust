@@ -1,5 +1,3 @@
-#[cfg(feature = "bonus")]
-mod bonus;
 mod ex00;
 mod ex07;
 mod ex08;
@@ -8,8 +6,7 @@ mod ex10;
 mod ex11;
 mod ex12;
 mod ex13;
-#[cfg(feature = "bonus")]
-pub use bonus::*;
+mod ex14;
 mod multiplicative_trace;
 mod utils;
 

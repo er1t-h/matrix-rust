@@ -67,9 +67,9 @@ mod test {
     #[test]
     fn with_complex() {
         let u = Matrix::from([
-            [cpl!(1 + 2 i), cpl!(2 + 1 i), cpl!(4 - 4 i)],
-            [cpl!(2 + 4 i), cpl!(4 + 2 i), cpl!(8 - 8 i)],
-            [cpl!(3 + 5 i), cpl!(5 - 2 i), cpl!(0 + 3 i)],
+            [cpl!(1. + 2. i), cpl!(2. + 1. i), cpl!(4. - 4. i)],
+            [cpl!(2. + 4. i), cpl!(4. + 2. i), cpl!(8. - 8. i)],
+            [cpl!(3. + 5. i), cpl!(5. - 2. i), cpl!(0. + 3. i)],
         ]);
         let res = u.rank();
         assert_eq!(res, 2);

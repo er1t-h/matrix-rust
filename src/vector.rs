@@ -6,6 +6,9 @@ pub use ex01::{linear_combination, linear_combination_unchecked};
 mod ex03;
 mod ex04;
 
+mod ex05;
+mod ex06;
+
 mod utils;
 
 ///
