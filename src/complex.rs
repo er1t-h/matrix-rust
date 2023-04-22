@@ -12,6 +12,18 @@ macro_rules! cpl {
     ($real: expr, $imag: expr) => {
         crate::Complex::new($real, $imag)
     };
+    ($real: literal + $imag: literal i) => {
+        cpl!($real, $imag)
+    };
+    (-$real: literal + $imag: literal i) => {
+        cpl!(-$real, $imag)
+    };
+    ($real: literal - $imag: literal i) => {
+        cpl!($real, -$imag)
+    };
+    (-$real: literal - $imag: literal i) => {
+        cpl!(-$real, -$imag)
+    };
 }
 
 #[cfg(test)]

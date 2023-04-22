@@ -50,7 +50,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{error::InverseError, Matrix};
+    use crate::{complex::cpl, error::InverseError, Matrix};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -101,5 +101,40 @@ mod test {
             let mat = Matrix::from([[1, 2], [2, 4]]);
             assert_eq!(mat.inverse(), Err(InverseError::SingularMatrix));
         }
+    }
+
+    #[test]
+    #[ignore = "rounding problem, and ordering for two complex numbers is not defined"]
+    fn with_complex() {
+        let u = Matrix::from([
+            [cpl!(5., 2.), cpl!(3., -5.)],
+            [cpl!(-89., 21.), cpl!(15., -4.)],
+        ]);
+        let res = u.inverse().unwrap();
+        assert_eq!(
+            res,
+            Matrix::from([
+                [
+                    cpl!(
+                        8990977669214025. / 488703345768541900.,
+                        5148354073866157. / 244351672884270940.
+                    ),
+                    cpl!(
+                        -4613384500822007. / 440637585861613000.,
+                        -2736400605207637. / 3133422832793692700.
+                    )
+                ],
+                [
+                    cpl!(
+                        300867642724715. / 2872515237914987.,
+                        2922751545492027. / 22980121903319896.
+                    ),
+                    cpl!(
+                        181659951142581. / 244351672884270940.,
+                        2363959189541009. / 244351672884270940.
+                    )
+                ]
+            ])
+        )
     }
 }
