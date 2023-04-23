@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     error::DeterminantError,
-    traits::{IsZero, MulIdentity},
+    traits::{IsZero, One},
     Matrix,
 };
 
@@ -99,7 +99,7 @@ where
 
 impl<'a, K> Matrix<K>
 where
-    K: Clone + Default + 'a + Neg<Output = K> + MulIdentity,
+    K: Clone + Default + 'a + Neg<Output = K> + One,
     for<'b> &'b K: Sub<&'b K, Output = K> + Mul<&'b K, Output = K> + Add<&'b K, Output = K>,
     for<'b> K: Display
         + Clone

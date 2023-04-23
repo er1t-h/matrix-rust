@@ -1,10 +1,12 @@
 use std::cmp::Ord;
 
-pub trait AddIdentity {
-    fn add_identity() -> Self;
+use crate::Complex;
+
+pub trait Zero {
+    fn zero() -> Self;
 }
-pub trait MulIdentity {
-    fn mul_identity() -> Self;
+pub trait One {
+    fn one() -> Self;
 }
 
 pub trait Abs {
@@ -37,9 +39,9 @@ macro_rules! impl_mul_identity {
         impl_mul_identity!($value, $($types),+);
     };
     ($value: expr, $current: ident) => {
-        impl MulIdentity for $current {
+        impl One for $current {
             #[inline(always)]
-            fn mul_identity() -> Self {
+            fn one() -> Self {
                 $value
             }
         }
@@ -52,9 +54,9 @@ macro_rules! impl_add_identity {
         impl_add_identity!($value, $($types),+);
     };
     ($value: expr, $current: ident) => {
-        impl AddIdentity for $current {
+        impl Zero for $current {
             #[inline(always)]
-            fn add_identity() -> Self {
+            fn zero() -> Self {
                 $value
             }
         }

@@ -75,7 +75,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{error::CrossProductError, Vector};
+    use crate::{complex::cpl, error::CrossProductError, Vector};
 
     #[test]
     fn example() {
@@ -117,6 +117,17 @@ mod test {
         assert_eq!(
             res,
             Err(CrossProductError::RightVectorShouldBeThreeDimensional)
+        );
+    }
+
+    #[test]
+    fn with_complex() {
+        let u = Vector::from([cpl!(5. + 2. i), cpl!(3. - 4. i), cpl!(0. + 7. i)]);
+        let v = Vector::from([cpl!(8. + 4. i), cpl!(5., 0.), cpl!(-4. - 7. i)]);
+        let res = Vector::cross_product(&u, &v).unwrap();
+        assert_eq!(
+            res,
+            [cpl!(-40. - 40. i), cpl!(-22. + 99. i), cpl!(-15. + 30. i)]
         );
     }
 }

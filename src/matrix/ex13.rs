@@ -1,13 +1,13 @@
 use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
-    traits::{IsZero, MulIdentity},
+    traits::{IsZero, One},
     Matrix,
 };
 
 impl<K> Matrix<K>
 where
-    K: Clone + MulIdentity + Default,
+    K: Clone + One + Default,
     for<'a> K: MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
@@ -23,7 +23,7 @@ where
     /// ```
     ///
     pub fn rank(&self) -> usize {
-        let mul_identity = K::mul_identity();
+        let mul_identity = K::one();
         let return_matrix = self.reduced_row_echelon();
         for i in 0..self.dimensions.height.min(self.dimensions.width) {
             if return_matrix.get(i, i).unwrap() != &mul_identity {

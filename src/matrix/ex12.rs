@@ -2,13 +2,13 @@ use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
     error::InverseError,
-    traits::{IsZero, MulIdentity},
+    traits::{IsZero, One},
     Matrix,
 };
 
 impl<K> Matrix<K>
 where
-    K: Clone + MulIdentity + Default,
+    K: Clone + One + Default,
     for<'a> K: MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
@@ -27,7 +27,7 @@ where
         if !self.is_square() {
             return Err(InverseError::NotSquareMatrix);
         }
-        let mul_identity = K::mul_identity();
+        let mul_identity = K::one();
         let mut return_matrix = Matrix::augmented_matrix(
             self,
             &Matrix::identity(&mul_identity, self.dimensions.height).unwrap(),

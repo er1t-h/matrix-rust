@@ -1,14 +1,13 @@
 use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
-    traits::{IsZero, MulIdentity},
+    traits::{IsZero, One},
     Matrix,
 };
 
 impl<K> Matrix<K>
 where
-    for<'a> K:
-        Clone + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K> + MulIdentity,
+    for<'a> K: Clone + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K> + One,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
@@ -27,7 +26,7 @@ where
         let mut first_non_zero_column = 0;
         let mut rows_set = 0;
         let mut swap_number = 0;
-        let mut factor = K::mul_identity();
+        let mut factor = K::one();
         let mut return_matrix = self.clone();
         while first_non_zero_column < self.dimensions.width {
             let mut first_non_zero_line = 0;
