@@ -107,7 +107,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{error::LinearCombinationError, Vector};
+    use crate::{complex::cpl, error::LinearCombinationError, Vector};
     use pretty_assertions::assert_eq;
 
     use super::linear_combination;
@@ -171,5 +171,19 @@ mod test {
         let coefs = [5., 3., 6.];
         let res = linear_combination(&[e1, e2, e3], &coefs).unwrap();
         assert_eq!(res, [11., 7., 12.])
+    }
+
+    #[test]
+    fn with_complex() {
+        let e1 = Vector::from([cpl!(1. + 0. i), cpl!(2. + 3. i), cpl!(2. + 5. i)]);
+        let e2 = Vector::from([cpl!(0., 0.), cpl!(-1. + 1. i), cpl!(0. - 2. i)]);
+        let e3 = Vector::from([cpl!(1. + 10. i), cpl!(0., 0.), cpl!(-5. - 3. i)]);
+
+        let coefs = [cpl!(1. + 0. i), cpl!(4. + 1. i), cpl!(0. + 3. i)];
+        let res = linear_combination(&[e1, e2, e3], &coefs).unwrap();
+        assert_eq!(
+            res,
+            Vector::from([cpl!(-29. + 3. i), cpl!(-3. + 6. i), cpl!(13. - 18. i)])
+        );
     }
 }

@@ -1,7 +1,7 @@
 use std::{iter::Sum, ops::Mul};
 
 use crate::{
-    traits::{Abs, AddIdentity, Max, Sqrt},
+    traits::{Abs, Max, Sqrt, Zero},
     Vector,
 };
 
@@ -56,7 +56,7 @@ where
 
 impl<K> Vector<K>
 where
-    K: Clone + AddIdentity + Abs + Max,
+    K: Clone + Zero + Abs + Max,
 {
     ///
     /// Returns the [supremum norm](https://en.wikipedia.org/wiki/Uniform_norm)
@@ -79,13 +79,13 @@ where
             .cloned()
             .map(|x| x.abs())
             .reduce(K::max)
-            .unwrap_or(K::add_identity())
+            .unwrap_or(K::zero())
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::assert_eq_float;
+    use crate::{assert_eq_float, complex::cpl};
     use pretty_assertions::assert_eq;
 
     use crate::Vector;
@@ -165,6 +165,29 @@ mod test {
             let res = u.norm_inf();
             assert_eq!(res, 2.);
             println!("norm_inf({}) = {}", u, res);
+        }
+    }
+
+    #[test]
+    #[ignore = "rounding problem + approx eq feels strange"]
+    fn with_complex() {
+        let u = Vector::from([cpl!(-5. - 7. i), cpl!(8. + 9. i), cpl!(0. - 2. i)]);
+        {
+            let res = u.norm_1();
+            assert_eq!(res, cpl!(8.60232526704262677 + 12.041594578792 + 2., 0.));
+            println!("norm1({}) = {}", u, res);
+        }
+        {
+            // * A complex number may have multiple sqrt
+            // let res = u.norm();
+            // assert_eq_float!(res, 3.23883);
+            // println!("norm({}) = {}", u, res);
+        }
+        {
+            // * Comparing two complex number has no sense
+            // let res = u.norm_inf();
+            // assert_eq!(res, 2.);
+            // println!("norm_inf({}) = {}", u, res);
         }
     }
 }

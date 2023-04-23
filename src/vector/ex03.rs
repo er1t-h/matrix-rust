@@ -71,7 +71,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::Vector;
+    use crate::{complex::cpl, Vector};
 
     #[test]
     fn example() {
@@ -107,5 +107,13 @@ mod test {
             res,
             Err(crate::error::VectorOperationError::NotSameSize(3, 2))
         );
+    }
+
+    #[test]
+    fn with_complex() {
+        let u = Vector::from([cpl!(1. + 5. i), cpl!(4. - 2. i), cpl!(-3. - 8. i)]);
+        let v = Vector::from([cpl!(4. + 9. i), cpl!(-3. + 8. i), cpl!(0. + 2. i)]);
+        let res = u.dot(&v);
+        assert_eq!(res, Ok(cpl!(-21. + 61. i)))
     }
 }

@@ -1,6 +1,9 @@
-use std::{fmt::Display, ops::Mul};
+use std::{
+    fmt::Display,
+    ops::{Add, Mul},
+};
 
-use crate::traits::{IsZero, MulIdentity};
+use crate::traits::{Abs, IsZero, One, Sqrt, Zero};
 
 use super::Complex;
 
@@ -31,14 +34,34 @@ where
     }
 }
 
-impl<T: MulIdentity + Default> MulIdentity for Complex<T> {
-    fn mul_identity() -> Self {
-        Complex::new(T::mul_identity(), T::default())
+impl<T: Zero> Zero for Complex<T> {
+    fn zero() -> Self {
+        Complex::new(T::zero(), T::zero())
+    }
+}
+
+impl<T: One + Zero> One for Complex<T> {
+    fn one() -> Self {
+        Complex::new(T::one(), T::zero())
     }
 }
 
 impl<T: IsZero> IsZero for &Complex<T> {
     fn is_zero(&self) -> bool {
         self.real.is_zero() && self.imaginary.is_zero()
+    }
+}
+
+impl<T> Abs for Complex<T>
+where
+    T: Add<T, Output = T> + Sqrt + Zero,
+    for<'a> &'a T: Mul<&'a T, Output = T>,
+{
+    fn abs(&self) -> Self {
+        let real = (&self.real * &self.real + &self.imaginary * &self.imaginary).sqrt();
+        Self {
+            real,
+            imaginary: T::zero(),
+        }
     }
 }
