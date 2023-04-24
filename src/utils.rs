@@ -1,3 +1,3 @@
 mod ex02;
 
-pub use ex02::LinearInterpolation;
+pub use ex02::lerp;
