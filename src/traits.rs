@@ -1,7 +1,5 @@
 use std::cmp::Ord;
 
-use crate::Complex;
-
 pub trait Zero {
     fn zero() -> Self;
 }
