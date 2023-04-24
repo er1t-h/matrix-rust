@@ -16,6 +16,7 @@ impl Matrix<f64> {
     }
 }
 
+#[cfg(test)]
 mod test {
     use std::{f64::consts::PI, fs::File, io::Write};
 

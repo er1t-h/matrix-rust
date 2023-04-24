@@ -65,3 +65,12 @@ where
         }
     }
 }
+
+impl<T> Complex<T> {
+    pub fn im(&self) -> &T {
+        &self.imaginary
+    }
+    pub fn re(&self) -> &T {
+        &self.real
+    }
+}
