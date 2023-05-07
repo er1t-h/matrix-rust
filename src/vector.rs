@@ -14,7 +14,8 @@ mod utils;
 ///
 /// Implementation of a Vector
 ///
-#[derive(Debug, Clone, PartialEq, Default)]
+#[must_use]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Vector<K: Clone> {
     content: Vec<K>,
 }

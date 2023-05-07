@@ -176,19 +176,23 @@ mod test {
     #[test]
     #[ignore = "rounding problem, and ordering for two complex numbers is not defined"]
     fn with_complex() {
-        {
-            let mat = Matrix::from([
-                [cpl!(5., 2.), cpl!(2., 4.), cpl!(3., 5.)],
-                [cpl!(5., 7.), cpl!(4., 2.), cpl!(1., 1.)],
-            ]);
-            let res = mat.reduced_row_echelon();
-            assert_eq!(
-                res,
-                [
-                    [cpl!(1., 0.), cpl!(0., 0.), cpl!(-(46. / 353.), 186. / 353.)],
-                    [cpl!(0., 0.), cpl!(1., 0.), cpl!(703. / 706., 479. / 706.)]
-                ]
-            )
-        }
+        // {
+        //     let mat = Matrix::from([
+        //         [cpl!(5., 2.), cpl!(2., 4.), cpl!(3., 5.)],
+        //         [cpl!(5., 7.), cpl!(4., 2.), cpl!(1., 1.)],
+        //     ]);
+        //     let res = mat.reduced_row_echelon();
+        //     assert_eq!(
+        //         res,
+        //         [
+        //             [cpl!(1., 0.), cpl!(0., 0.), cpl!(-(46. / 353.), 186. / 353.)],
+        //             [cpl!(0., 0.), cpl!(1., 0.), cpl!(703. / 706., 479. / 706.)]
+        //         ]
+        //     )
+        // }
+
+        let mat: Matrix<f64> = Matrix::from([[1., 3., 6.], [18., 9., 7.]]);
+        let res = mat.reduced_row_echelon();
+        println!("{}", res);
     }
 }

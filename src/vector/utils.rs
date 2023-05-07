@@ -116,8 +116,8 @@ impl<K: Clone> DerefMut for Vector<K> {
 impl<K> FMA<K> for Vector<K>
 where
     K: Clone,
-    for<'a> &'a Vector<K>: Mul<&'a K, Output = Vector<K>>,
-    for<'a> Vector<K>: AddAssign<&'a Vector<K>>,
+    for<'a> &'a Self: Mul<&'a K, Output = Self>,
+    for<'a> Self: AddAssign<&'a Self>,
 {
     fn fma(&self, a: &K, b: &Self) -> Self {
         let mut tmp = self * a;
@@ -138,6 +138,7 @@ impl<K: Clone> Vector<K> {
     /// assert_eq!(vec.size(), 3);
     /// ```
     ///
+    #[must_use]
     #[inline(always)]
     pub fn size(&self) -> usize {
         self.content.len()
@@ -196,14 +197,14 @@ impl<K: Clone> Vector<K> {
         self.content.push(number);
     }
 
-    pub fn new() -> Self {
-        Vector {
+    pub const fn new() -> Self {
+        Self {
             content: Vec::new(),
         }
     }
 
     pub fn with_capacity(cap: usize) -> Self {
-        Vector {
+        Self {
             content: Vec::with_capacity(cap),
         }
     }
@@ -211,7 +212,7 @@ impl<K: Clone> Vector<K> {
     pub fn fill(item: &K, size: usize) -> Self {
         let mut vec: Vec<K> = Vec::with_capacity(size);
         vec.resize(size, item.clone());
-        Vector { content: vec }
+        Self { content: vec }
     }
 }
 

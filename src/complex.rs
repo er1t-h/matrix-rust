@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, PartialEq, Debug, Default, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Hash)]
 pub struct Complex<T> {
     real: T,
     imaginary: T,

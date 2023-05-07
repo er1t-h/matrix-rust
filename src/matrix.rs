@@ -13,7 +13,7 @@ mod utils;
 ///
 /// A structure that store the size of a Matrix
 ///
-#[derive(Clone, Copy, PartialEq, Debug, Default, Hash)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Hash, Eq)]
 pub struct Dimensions {
     /// The number of `columns` of the `Matrix`
     pub width: usize,
@@ -21,7 +21,7 @@ pub struct Dimensions {
     pub height: usize,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 ///
 /// Implementation of a Matrix
 ///

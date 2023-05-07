@@ -2,6 +2,9 @@ use std::ops::{AddAssign, MulAssign, SubAssign};
 
 use crate::error::LinearInterpolationError;
 
+///
+/// Returns the linear interpolation between 2 numbers
+///
 pub fn lerp<V, Ratio>(u: &V, v: &V, ratio: &Ratio) -> Result<V, LinearInterpolationError>
 where
     Ratio: BetweenZeroAndOne,

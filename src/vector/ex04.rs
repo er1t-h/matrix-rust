@@ -79,7 +79,7 @@ where
             .cloned()
             .map(|x| x.abs())
             .reduce(K::max)
-            .unwrap_or(K::zero())
+            .unwrap_or_else(K::zero)
     }
 }
 
