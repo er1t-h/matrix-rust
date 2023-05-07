@@ -8,8 +8,8 @@ use crate::traits::{Abs, IsZero, One, Sqrt, Zero};
 use super::Complex;
 
 impl<T> Complex<T> {
-    pub fn new(real: T, imaginary: T) -> Self {
-        Complex { real, imaginary }
+    pub const fn new(real: T, imaginary: T) -> Self {
+        Self { real, imaginary }
     }
 }
 
@@ -36,13 +36,13 @@ where
 
 impl<T: Zero> Zero for Complex<T> {
     fn zero() -> Self {
-        Complex::new(T::zero(), T::zero())
+        Self::new(T::zero(), T::zero())
     }
 }
 
 impl<T: One + Zero> One for Complex<T> {
     fn one() -> Self {
-        Complex::new(T::one(), T::zero())
+        Self::new(T::one(), T::zero())
     }
 }
 
@@ -67,10 +67,10 @@ where
 }
 
 impl<T> Complex<T> {
-    pub fn im(&self) -> &T {
+    pub const fn im(&self) -> &T {
         &self.imaginary
     }
-    pub fn re(&self) -> &T {
+    pub const fn re(&self) -> &T {
         &self.real
     }
 }

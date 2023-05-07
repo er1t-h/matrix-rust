@@ -14,9 +14,9 @@ where
     for<'a> &'a K: Mul<&'a K, Output = K>,
 {
     ///
-    /// Multiply a [Vector] by a [Matrix], and returns the corresponding [Vector].
-    /// If the dimensions of the [Vector] doesn't correspond to those of the
-    /// [Matrix], a [MulVecError] is returned.
+    /// Multiply a [`Vector`] by a [`Matrix`], and returns the corresponding [`Vector`].
+    /// If the dimensions of the [`Vector`] doesn't correspond to those of the
+    /// [`Matrix`], a [`MulVecError`] is returned.
     ///
     /// # Example:
     /// ```
@@ -28,6 +28,10 @@ where
     /// let res = u.mul_vec(&v).unwrap();
     /// assert_eq!(res, [4., 2.]);
     /// ```
+    ///
+    /// # Errors
+    /// If the width of `self` is not equal to the length of `rhs`, returns a
+    /// [`SizeMismatch`](MulVecError::SizeMismatch)
     ///
     /// # Complexity:
     /// For a `m` * `n` matrix and an `n`-vector.
@@ -91,7 +95,7 @@ where
     /// Matrix.
     ///
     /// If your input is already verified, you can use
-    /// [mul_mat_unchecked](Matrix#method.mul_mat_unchecked).
+    /// [`mul_mat_unchecked`](Matrix#method.mul_mat_unchecked).
     ///
     /// # Example
     /// ```
@@ -102,6 +106,10 @@ where
     /// let mat2 = Matrix::from([[1, 2], [3, 4], [5, 6]]);
     /// assert_eq!(mat1.mul_mat(&mat2), Err(MulMatError::SizeMismatch(2, 3)));
     /// ```
+    ///
+    /// # Errors
+    /// If the width of `self` is not equal to the height of `rhs`, returns a
+    /// [`SizeMismatch`](MulMatError::SizeMismatch)
     ///
     /// # Complexity
     /// For a `m` * `n` matrix, and a `n` * `p` matrix.
@@ -125,7 +133,7 @@ where
     ///
     /// # Safety
     /// The number of column of the left matrix must match the number of line of
-    /// the right matrix. See [mul_mat](Matrix#method.mul_mat) for a safe
+    /// the right matrix. See [`mul_mat`](Matrix#method.mul_mat) for a safe
     /// method.
     ///
     /// # Example
@@ -151,7 +159,7 @@ where
     #[inline(always)]
     fn mul_mat_internal(&self, rhs: &Self) -> Self {
         let mut return_matrix =
-            Matrix::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
+            Self::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
         for index in 1..rhs.dimensions.width {
             let return_vec =
                 self.mul_vec_internal(rhs.get_column(index).unwrap(), rhs.dimensions.height);
@@ -180,7 +188,7 @@ mod test {
             let u = Matrix::from([[2., 0.], [0., 2.]]);
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
-            unsafe { u.mul_vec_unchecked(&v) };
+            let _ = unsafe { u.mul_vec_unchecked(&v) };
             assert_eq!(res, [8., 4.]);
             println!("{} * {} = {}", u, v, res);
         }

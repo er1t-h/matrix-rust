@@ -29,7 +29,7 @@ impl<K: Clone + Display> Display for Matrix<K> {
             str.push('[');
             str += &self.content[y..y + self.dimensions.width]
                 .iter()
-                .map(|x| x.to_string())
+                .map(ToString::to_string)
                 .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
             str += "], ";
@@ -72,7 +72,7 @@ impl<K: Clone + Copy> From<&[&[K]]> for Matrix<K> {
             content: value.iter().flat_map(|x| *x).copied().collect(),
             dimensions: Dimensions {
                 width: value.len(),
-                height: value.get(0).map(|x| x.len()).unwrap_or(0),
+                height: value.get(0).map_or(0, |x| x.len()),
             },
         }
     }
@@ -81,7 +81,7 @@ impl<K: Clone> From<Vector<K>> for Matrix<K> {
     #[inline(always)]
     fn from(value: Vector<K>) -> Self {
         let len = value.len();
-        Matrix {
+        Self {
             content: value.into_iter().collect(),
             dimensions: Dimensions {
                 width: 1,
@@ -249,6 +249,7 @@ where
     /// assert_eq!(mat, [[0.], [0.]]);
     /// ```
     ///
+    #[must_use]
     pub fn fill_default(number_of_column: usize, number_of_line: usize) -> Option<Self> {
         if number_of_column == 0 || number_of_line == 0 {
             return None;
@@ -270,6 +271,12 @@ where
 impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns the augmented matrix composed of `left` and `right`.
+    ///
+    /// # Panics
+    /// Never.
+    ///
+    /// # Errors
+    /// If the height of the two matrix doesn't match, returns a [`DimensionMismatch`](AugmentedMatrixError::DimensionMismatch)
     ///
     pub fn augmented_matrix(left: &Self, right: &Self) -> Result<Self, AugmentedMatrixError> {
         if left.dimensions.height != right.dimensions.height {
@@ -293,6 +300,12 @@ impl<'a, K: Clone> Matrix<K> {
 
     ///
     /// Returns the submatrix contained between `columns` and `lines`.
+    ///
+    /// # Panics
+    /// Never.
+    ///
+    /// # Errors
+    /// If one of the range is out of bounds, returns [`InvalidRanges`](SubmatrixError::InvalidRanges)
     ///
     pub fn submatrix(
         &self,
@@ -325,6 +338,9 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns a clone of the matrix, without all elements on the line `line`
     /// or on the column `column`.
+    ///
+    /// # Errors
+    /// If the matrix has only one line or one column, returns [`TooSmallMatrix`](WithoutLineColumnError::TooSmallMatrix)
     ///
     pub fn without_line_column(
         &self,
@@ -366,7 +382,8 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
-    pub fn size(&self) -> (usize, usize) {
+    #[must_use]
+    pub const fn size(&self) -> (usize, usize) {
         (self.dimensions.height, self.dimensions.width)
     }
 
@@ -384,7 +401,7 @@ impl<'a, K: Clone> Matrix<K> {
         let (left, right) = self.content.as_mut_slice().split_at_mut(split_index);
         let max_slice_begin = max * self.dimensions.width - split_index;
         left[split_index - self.dimensions.width..]
-            .swap_with_slice(&mut right[max_slice_begin..max_slice_begin + self.dimensions.width])
+            .swap_with_slice(&mut right[max_slice_begin..max_slice_begin + self.dimensions.width]);
     }
 
     ///
@@ -403,7 +420,8 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
-    pub fn is_square(&self) -> bool {
+    #[must_use]
+    pub const fn is_square(&self) -> bool {
         self.dimensions.height == self.dimensions.width
     }
 
@@ -425,6 +443,7 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
+    #[must_use]
     pub fn get(&'a self, line: usize, column: usize) -> Option<&'a K> {
         if column < self.dimensions.width {
             self.content.get(line * self.dimensions.width + column)
@@ -448,6 +467,7 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
+    #[must_use]
     pub fn get_mut(&'a mut self, line: usize, column: usize) -> Option<&'a mut K> {
         if column < self.dimensions.width {
             self.content.get_mut(line * self.dimensions.width + column)
@@ -475,6 +495,7 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
+    #[must_use]
     pub fn get_column(&'a self, column_number: usize) -> Option<MatrixColumn<'a, K>> {
         if self.dimensions.width < column_number || self.dimensions.height == 0 {
             None
@@ -506,6 +527,7 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
+    #[must_use]
     pub fn get_line(&'a self, line_number: usize) -> Option<Iter<'a, K>> {
         if self.dimensions.height < line_number || self.dimensions.width == 0 {
             None
@@ -532,6 +554,7 @@ impl<'a, K: Clone> Matrix<K> {
     /// # Complexity:
     /// Constant
     ///
+    #[must_use]
     pub fn get_line_slice(&self, line_number: usize) -> Option<&[K]> {
         if self.dimensions.height < line_number || self.dimensions.width == 0 {
             None
@@ -644,7 +667,8 @@ impl<'a, K: Clone> Matrix<K> {
     /// assert_eq!(iter.next(), None);
     /// ```
     #[inline(always)]
-    pub fn columns(&'a self) -> MatrixIterByColumn<'a, K> {
+    #[must_use]
+    pub const fn columns(&'a self) -> MatrixIterByColumn<'a, K> {
         MatrixIterByColumn::new(self)
     }
 

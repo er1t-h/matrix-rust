@@ -8,12 +8,14 @@ use crate::{
 
 impl<K> Matrix<K>
 where
-    K: Clone + One + Default,
-    for<'a> K: MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
+    for<'a> K: Clone + One + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
     /// Returns the inverse of a matrix.
+    ///
+    /// # Panics
+    /// Never.
     ///
     /// # Example
     /// ```
@@ -23,14 +25,17 @@ where
     /// assert_eq!(u.inverse().unwrap(), [[0.5, 0., 0.], [0., 0.5, 0.], [0., 0., 0.5]]);
     /// ```
     ///
+    /// # Errors
+    /// If the matrix is not a square, returns a [`NotSquareMatrix`](InverseError::NotSquareMatrix)
+    ///
     pub fn inverse(&self) -> Result<Self, InverseError> {
         if !self.is_square() {
             return Err(InverseError::NotSquareMatrix);
         }
         let mul_identity = K::one();
-        let mut return_matrix = Matrix::augmented_matrix(
+        let mut return_matrix = Self::augmented_matrix(
             self,
-            &Matrix::identity(&mul_identity, self.dimensions.height).unwrap(),
+            &Self::identity(&mul_identity, self.dimensions.height).unwrap(),
         )
         .unwrap();
         return_matrix = return_matrix.reduced_row_echelon();

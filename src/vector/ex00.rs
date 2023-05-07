@@ -4,8 +4,7 @@ use crate::{error::VectorOperationError, Vector};
 
 impl<K> AddAssign<&Self> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     #[inline]
     fn add_assign(&mut self, rhs: &Self) {
@@ -14,8 +13,7 @@ where
 }
 impl<K> AddAssign for Vector<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
@@ -24,8 +22,7 @@ where
 }
 impl<K> Add<&Self> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -36,8 +33,7 @@ where
 }
 impl<K> Add for Vector<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -49,8 +45,7 @@ where
 
 impl<K> SubAssign<&Self> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     #[inline]
     fn sub_assign(&mut self, rhs: &Self) {
@@ -59,8 +54,7 @@ where
 }
 impl<K> SubAssign for Vector<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
@@ -69,8 +63,7 @@ where
 }
 impl<K> Sub<&Self> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -81,8 +74,7 @@ where
 }
 impl<K> Sub for Vector<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -93,8 +85,7 @@ where
 
 impl<K> MulAssign<&K> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     ///
     /// Multiplies a scalar into self.
@@ -113,15 +104,14 @@ where
     ///
     #[inline]
     fn mul_assign(&mut self, rhs: &K) {
-        for elt in self.content.iter_mut() {
+        for elt in &mut self.content {
             *elt *= rhs;
         }
     }
 }
-impl<K: Clone> MulAssign<K> for Vector<K>
+impl<K> MulAssign<K> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     #[inline]
     fn mul_assign(&mut self, rhs: K) {
@@ -130,28 +120,25 @@ where
 }
 impl<K> MulAssign<&K> for &mut Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     #[inline]
     fn mul_assign(&mut self, rhs: &K) {
         **self *= rhs;
     }
 }
-impl<K: Clone> MulAssign<K> for &mut Vector<K>
+impl<K> MulAssign<K> for &mut Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     #[inline]
     fn mul_assign(&mut self, rhs: K) {
         **self *= &rhs;
     }
 }
-impl<K: Clone> Mul<&K> for Vector<K>
+impl<K> Mul<&K> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -160,10 +147,9 @@ where
         self
     }
 }
-impl<K: Clone> Mul<&K> for &Vector<K>
+impl<K> Mul<&K> for &Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     type Output = Vector<K>;
     #[inline]
@@ -173,10 +159,9 @@ where
         tmp
     }
 }
-impl<K: Clone> Mul<K> for Vector<K>
+impl<K> Mul<K> for Vector<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     type Output = Self;
     #[inline]
@@ -185,7 +170,7 @@ where
         self
     }
 }
-impl<K: Clone> Mul<K> for &Vector<K>
+impl<K> Mul<K> for &Vector<K>
 where
     K: Clone,
     for<'a, 'b> &'a Vector<K>: MulAssign<&'b K>,
@@ -200,12 +185,11 @@ where
 
 impl<K> Vector<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     ///
     /// Adds another `Vector` to self.
-    /// If the size of the two Vectors differ, a [VectorOperationError] is returned.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
     ///
     /// # Example:
     /// ```
@@ -216,6 +200,9 @@ where
     /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
     /// assert_eq!(lhs, [18, 59])
     /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
     ///
     /// # Complexity:
     /// Linear in the `size` of the `Vectors`.
@@ -233,12 +220,11 @@ where
 
 impl<K> Vector<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     ///
     /// Substracts another `Vector` from self.
-    /// If the size of the two Vectors differ, a [VectorOperationError] is returned.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
     ///
     /// # Example:
     /// ```
@@ -249,6 +235,9 @@ where
     /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
     /// assert_eq!(lhs, [12, -55])
     /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
     ///
     /// # Complexity:
     /// Linear in the `size` of the `Vectors`.

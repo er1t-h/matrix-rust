@@ -6,6 +6,7 @@ impl<T> Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + SubAssign<&'a T> + AddAssign<&'a T> + Clone,
 {
+    #[allow(clippy::similar_names)]
     #[inline(always)]
     fn default_mul_assign(&mut self, rhs: &Self) {
         let mut tmp_1a = self.real.clone();
@@ -73,22 +74,22 @@ where
     }
 }
 
-impl<T> Mul<&Complex<T>> for Complex<T>
+impl<T> Mul<&Self> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + SubAssign<&'a T> + AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn mul(self, rhs: &Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn mul(self, rhs: &Self) -> Self::Output {
         self.default_mul(rhs)
     }
 }
 
-impl<T> Mul<Complex<T>> for Complex<T>
+impl<T> Mul<Self> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + SubAssign<&'a T> + AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn mul(self, rhs: Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
         self.default_mul(&rhs)
     }
 }

@@ -98,6 +98,9 @@ where
     ///
     /// Returns the reduced row echelon form of a matrix
     ///
+    /// # Panics
+    /// Never.
+    ///
     /// # Example
     /// ```
     /// use matrix::Matrix;
@@ -132,7 +135,7 @@ where
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::{complex::cpl, Matrix};
+    use crate::Matrix;
 
     #[test]
     fn example() {

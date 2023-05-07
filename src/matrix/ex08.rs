@@ -4,8 +4,7 @@ use crate::{error::TraceError, Matrix};
 
 impl<K> Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     ///
     /// Returns the trace of a matrix.
@@ -21,6 +20,9 @@ where
     /// let mat = Matrix::from([[2, 1], [5, 3]]);
     /// assert_eq!(mat.trace(), Ok(5));
     /// ```
+    ///
+    /// # Errors
+    /// If the matrix is not a square matrix, returns [`NotSquareMatrix`](TraceError::NotSquareMatrix)
     ///
     /// # Complexity
     /// For an `n` * `n` matrix:
@@ -54,6 +56,7 @@ where
     /// Time: O(n)
     /// Space: O(1)
     ///
+    #[must_use]
     pub unsafe fn trace_unchecked(&self) -> K {
         self.trace_internal()
     }
@@ -62,7 +65,7 @@ where
     fn trace_internal(&self) -> K {
         let mut accumulator = self.content.get(0).unwrap().clone();
         for i in 1..self.dimensions.height {
-            accumulator += self.get(i, i).unwrap()
+            accumulator += self.get(i, i).unwrap();
         }
         accumulator
     }

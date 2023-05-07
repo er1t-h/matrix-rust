@@ -2,7 +2,7 @@ use crate::Matrix;
 
 impl Matrix<f64> {
     pub fn projection(fov: f64, ratio: f64, near: f64, far: f64) -> Self {
-        Matrix::from([
+        Self::from([
             [1.0 / (ratio * (fov / 2.0).tan()), 0.0, 0.0, 0.0],
             [0.0, 1.0 / (fov / 2.0).tan(), 0.0, 0.0],
             [

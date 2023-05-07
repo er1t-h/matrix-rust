@@ -7,7 +7,7 @@ where
     for<'a> T: AddAssign<&'a T> + Default,
 {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
-        iter.fold(Complex::default(), |mut acc, new| {
+        iter.fold(Self::default(), |mut acc, new| {
             acc += new;
             acc
         })

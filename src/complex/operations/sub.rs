@@ -62,22 +62,22 @@ where
     }
 }
 
-impl<T> Sub<&Complex<T>> for Complex<T>
+impl<T> Sub<&Self> for Complex<T>
 where
     for<'a> T: SubAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn sub(self, rhs: &Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn sub(self, rhs: &Self) -> Self::Output {
         self.default_sub(rhs)
     }
 }
 
-impl<T> Sub<Complex<T>> for Complex<T>
+impl<T> Sub<Self> for Complex<T>
 where
     for<'a> T: SubAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn sub(self, rhs: Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self::Output {
         self.default_sub(&rhs)
     }
 }

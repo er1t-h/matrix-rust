@@ -66,7 +66,7 @@ impl<T> Mul<&T> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
+    type Output = Self;
     fn mul(self, rhs: &T) -> Self::Output {
         self.default_mul_t(rhs)
     }
@@ -76,7 +76,7 @@ impl<T> Mul<T> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
+    type Output = Self;
     fn mul(self, rhs: T) -> Self::Output {
         self.default_mul_t(&rhs)
     }

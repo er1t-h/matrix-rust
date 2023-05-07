@@ -1,10 +1,10 @@
 ///
-/// An iterator that go through a single column of a [Matrix](crate::Matrix).
+/// An iterator that go through a single column of a [`Matrix`](crate::Matrix).
 ///
 /// # Notes:
 ///
-/// See [MatrixIterByColumn](crate::matrix::utils::iterator::MatrixIterByColumn)
-/// to go through all the columns of a [Matrix](crate::Matrix)
+/// See [`MatrixIterByColumn`](crate::matrix::utils::iterator::MatrixIterByColumn)
+/// to go through all the columns of a [`Matrix`](crate::Matrix)
 ///
 pub struct MatrixColumn<'a, K: Clone> {
     matrix: &'a [K],
@@ -16,7 +16,7 @@ impl<'a, K: Clone> MatrixColumn<'a, K> {
     pub(super) fn new(matrix: &'a [K], column_nb: usize, line_length: usize) -> Self {
         let end_index = matrix.len() - (line_length - column_nb);
         Self {
-            matrix: &matrix[column_nb..end_index + 1],
+            matrix: &matrix[column_nb..=end_index],
             line_length,
             stop: false,
         }
@@ -56,13 +56,13 @@ impl<'a, K: Clone> DoubleEndedIterator for MatrixColumn<'a, K> {
 }
 
 ///
-/// An iterator that go through a single column of a [Matrix](crate::Matrix),
+/// An iterator that go through a single column of a [`Matrix`](crate::Matrix),
 /// yielding mutable references.
 ///
 /// # Notes:
 ///
-/// See [MatrixIterByColumnMut](crate::matrix::utils::iterator::MatrixIterByColumnMut)
-/// to go through all the columns of a [Matrix](crate::Matrix).
+/// See [`MatrixIterByColumnMut`](crate::matrix::utils::iterator::MatrixIterByColumnMut)
+/// to go through all the columns of a [`Matrix`](crate::Matrix).
 ///
 pub struct MatrixColumnMut<'a, K: Clone> {
     matrix: &'a mut [K],
@@ -74,7 +74,7 @@ impl<'a, K: Clone> MatrixColumnMut<'a, K> {
     pub(super) fn new(matrix: &'a mut [K], column_nb: usize, line_length: usize) -> Self {
         let end_index = matrix.len() - (line_length - column_nb);
         Self {
-            matrix: &mut matrix[column_nb..end_index + 1],
+            matrix: &mut matrix[column_nb..=end_index],
             line_length,
             stop: false,
         }
