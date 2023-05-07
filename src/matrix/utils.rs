@@ -4,7 +4,10 @@ use std::{
     slice::{Iter, IterMut},
 };
 
-use crate::{Matrix, Vector};
+use crate::{
+    error::{AugmentedMatrixError, SubmatrixError, WithoutLineColumnError},
+    Matrix, Vector,
+};
 
 use self::{
     columns::{MatrixColumn, MatrixColumnMut},
@@ -268,9 +271,9 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns the augmented matrix composed of `left` and `right`.
     ///
-    pub fn augmented_matrix(left: &Self, right: &Self) -> Result<Self, ()> {
+    pub fn augmented_matrix(left: &Self, right: &Self) -> Result<Self, AugmentedMatrixError> {
         if left.dimensions.height != right.dimensions.height {
-            return Err(());
+            return Err(AugmentedMatrixError::DimensionMismatch);
         }
         let mut content: Vec<K> = Vec::with_capacity(
             (left.dimensions.width + right.dimensions.width) * left.dimensions.height,
@@ -291,13 +294,17 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns the submatrix contained between `columns` and `lines`.
     ///
-    pub fn submatrix(&self, columns: Range<usize>, lines: Range<usize>) -> Result<Self, ()> {
+    pub fn submatrix(
+        &self,
+        columns: Range<usize>,
+        lines: Range<usize>,
+    ) -> Result<Self, SubmatrixError> {
         if self.dimensions.height < lines.end
             || self.dimensions.width < columns.end
             || columns.start == columns.end
             || lines.start == lines.end
         {
-            return Err(());
+            return Err(SubmatrixError::InvalidRanges);
         }
         let column = (columns.start, columns.end);
         let line = (lines.start, lines.end);
@@ -319,9 +326,13 @@ impl<'a, K: Clone> Matrix<K> {
     /// Returns a clone of the matrix, without all elements on the line `line`
     /// or on the column `column`.
     ///
-    pub fn without_line_column(&self, column: usize, line: usize) -> Result<Self, ()> {
+    pub fn without_line_column(
+        &self,
+        column: usize,
+        line: usize,
+    ) -> Result<Self, WithoutLineColumnError> {
         if self.dimensions.height < 2 || self.dimensions.width < 2 {
-            return Err(());
+            return Err(WithoutLineColumnError::TooSmallMatrix);
         }
         let content: Vec<K> = self
             .content

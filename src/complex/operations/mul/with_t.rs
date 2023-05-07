@@ -1,10 +1,10 @@
-use std::ops::{AddAssign, Mul, MulAssign, SubAssign};
+use std::ops::{Mul, MulAssign};
 
 use crate::Complex;
 
 impl<T> Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     #[inline(always)]
     fn default_mul_assign_t(&mut self, rhs: &T) {
@@ -14,7 +14,7 @@ where
 }
 impl<T> Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     #[inline(always)]
     fn default_mul_t(&self, rhs: &T) -> Self {
@@ -26,7 +26,7 @@ where
 
 impl<T> MulAssign<&T> for Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     fn mul_assign(&mut self, rhs: &T) {
         self.default_mul_assign_t(rhs);
@@ -35,7 +35,7 @@ where
 
 impl<T> MulAssign<T> for Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     fn mul_assign(&mut self, rhs: T) {
         self.default_mul_assign_t(&rhs);
@@ -44,7 +44,7 @@ where
 
 impl<T> Mul<&T> for &Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     type Output = Complex<T>;
     fn mul(self, rhs: &T) -> Self::Output {
@@ -54,7 +54,7 @@ where
 
 impl<T> Mul<T> for &Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     type Output = Complex<T>;
     fn mul(self, rhs: T) -> Self::Output {
@@ -64,7 +64,7 @@ where
 
 impl<T> Mul<&T> for Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     type Output = Complex<T>;
     fn mul(self, rhs: &T) -> Self::Output {
@@ -74,7 +74,7 @@ where
 
 impl<T> Mul<T> for Complex<T>
 where
-    for<'a> T: MulAssign<&'a T>,
+    for<'a> T: MulAssign<&'a T> + Clone,
 {
     type Output = Complex<T>;
     fn mul(self, rhs: T) -> Self::Output {
