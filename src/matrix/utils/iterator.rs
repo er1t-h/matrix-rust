@@ -1,12 +1,12 @@
 use crate::Matrix;
 
 ///
-/// An iterator that go through a [Matrix] column by column instead of line by
+/// An iterator that go through a [`Matrix`] column by column instead of line by
 /// line.
 ///
 /// # Notes
 ///
-/// See [MatrixColumn](crate::matrix::utils::columns::MatrixColumn) to go
+/// See [`MatrixColumn`](crate::matrix::utils::columns::MatrixColumn) to go
 /// through only one column.
 ///
 pub struct MatrixIterByColumn<'a, K: Clone> {
@@ -30,7 +30,7 @@ impl<'a, K: Clone> Iterator for MatrixIterByColumn<'a, K> {
 }
 
 impl<'a, K: Clone> MatrixIterByColumn<'a, K> {
-    pub(super) fn new(matrix: &'a Matrix<K>) -> MatrixIterByColumn<'a, K> {
+    pub(super) const fn new(matrix: &'a Matrix<K>) -> MatrixIterByColumn<'a, K> {
         Self {
             matrix,
             current_line: 0,
@@ -40,12 +40,12 @@ impl<'a, K: Clone> MatrixIterByColumn<'a, K> {
 }
 
 ///
-/// An iterator that go through a [Matrix] column by column instead of line by
+/// An iterator that go through a [`Matrix`] column by column instead of line by
 /// line, yielding mutable references.
 ///
 /// # Notes
 ///
-/// See [MatrixColumnMut](crate::matrix::utils::columns::MatrixColumnMut) to go
+/// See [`MatrixColumnMut`](crate::matrix::utils::columns::MatrixColumnMut) to go
 /// through only one column.
 ///
 pub struct MatrixIterByColumnMut<'a, K: Clone> {

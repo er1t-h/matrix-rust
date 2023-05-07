@@ -5,20 +5,22 @@ use crate::error::LinearInterpolationError;
 ///
 /// Returns the linear interpolation between 2 numbers
 ///
+/// # Errors
+/// Returns a [`RatioOffBound`](LinearInterpolationError::RatioOffBound) if ratio is not between 0 and 1
+///
 pub fn lerp<V, Ratio>(u: &V, v: &V, ratio: &Ratio) -> Result<V, LinearInterpolationError>
 where
     Ratio: BetweenZeroAndOne,
-    V: Clone,
-    for<'a> V: AddAssign<&'a V> + SubAssign<&'a V> + MulAssign<&'a Ratio>,
+    for<'a> V: Clone + AddAssign<&'a V> + SubAssign<&'a V> + MulAssign<&'a Ratio>,
 {
-    if !ratio.is_between_zero_and_one() {
-        Err(LinearInterpolationError::RatioOffBound)
-    } else {
+    if ratio.is_between_zero_and_one() {
         let mut accumulator = v.clone();
         accumulator -= u;
         accumulator *= ratio;
         accumulator += u;
         Ok(accumulator)
+    } else {
+        Err(LinearInterpolationError::RatioOffBound)
     }
 }
 

@@ -7,12 +7,14 @@ use crate::{
 
 impl<K> Matrix<K>
 where
-    K: Clone + One + Default,
-    for<'a> K: MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
+    for<'a> K: Clone + One + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
     /// Returns the rank of a matrix.
+    ///
+    /// # Panics
+    /// Never.
     ///
     /// # Example
     /// ```
@@ -22,6 +24,7 @@ where
     /// assert_eq!(u.rank(), 2);
     /// ```
     ///
+    #[must_use]
     pub fn rank(&self) -> usize {
         let mul_identity = K::one();
         let return_matrix = self.reduced_row_echelon();

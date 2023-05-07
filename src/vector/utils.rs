@@ -11,16 +11,16 @@ use super::Vector;
 
 impl<K: Clone + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if !self.content.is_empty() {
+        if self.content.is_empty() {
+            write!(f, "[]")
+        } else {
             let buff = self
                 .content
                 .iter()
-                .map(|x| x.to_string())
+                .map(ToString::to_string)
                 .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
             write!(f, "[{}]", buff)
-        } else {
-            write!(f, "[]")
         }
     }
 }

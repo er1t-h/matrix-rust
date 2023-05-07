@@ -5,13 +5,12 @@ use crate::{error::MatrixOperationError, Matrix};
 // Add/Sub implementation
 impl<K> Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     ///
     /// Adds another `Matrix` to self.
     ///
-    /// If the size of the two Matrixes differ, a [MatrixOperationError] is returned
+    /// If the size of the two Matrixes differ, a [`MatrixOperationError`] is returned
     ///
     /// # Example:
     /// ```
@@ -22,7 +21,12 @@ where
     /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
     /// assert_eq!(lhs, [[10, 10], [10, 10]])
     /// ```
-    /// Complexity:
+    ///
+    /// # Errors
+    /// If the dimensions of the two matrix are different, returns a
+    /// [`NotSameSize`](MatrixOperationError::NotSameSize)
+    ///
+    /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
     pub fn safe_add_assign(&mut self, rhs: &Self) -> Result<(), MatrixOperationError> {
@@ -41,13 +45,12 @@ where
 
 impl<K> Matrix<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     ///
     /// Subs another `Matrix` from self.
     ///
-    /// If the size of the two Matrixes differ, a [MatrixOperationError] is returned
+    /// If the size of the two Matrixes differ, a [`MatrixOperationError`] is returned
     ///
     /// # Example:
     /// ```
@@ -58,7 +61,12 @@ where
     /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
     /// assert_eq!(lhs, [[5, 4], [3, 2]])
     /// ```
-    /// Complexity:
+    ///
+    /// # Errors
+    /// If the dimensions of the two matrix are different, returns a
+    /// [`NotSameSize`](MatrixOperationError::NotSameSize)
+    ///
+    /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
     pub fn safe_sub_assign(&mut self, rhs: &Self) -> Result<(), MatrixOperationError> {
@@ -78,8 +86,7 @@ where
 // Add traits
 impl<K> AddAssign<&Self> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: &Self) {
@@ -88,8 +95,7 @@ where
 }
 impl<K> AddAssign for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: Self) {
@@ -98,8 +104,7 @@ where
 }
 impl<K> Add<&Self> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     type Output = Self;
     #[inline(always)]
@@ -110,8 +115,7 @@ where
 }
 impl<K> Add for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<&'a K>,
 {
     type Output = Self;
     #[inline(always)]
@@ -123,8 +127,7 @@ where
 // Sub traits
 impl<K> SubAssign<&Self> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     #[inline(always)]
     fn sub_assign(&mut self, rhs: &Self) {
@@ -133,8 +136,7 @@ where
 }
 impl<K> SubAssign for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     #[inline(always)]
     fn sub_assign(&mut self, rhs: Self) {
@@ -143,8 +145,7 @@ where
 }
 impl<K> Sub<&Self> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     type Output = Self;
     #[inline(always)]
@@ -155,8 +156,7 @@ where
 }
 impl<K> Sub for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<&'a K>,
 {
     type Output = Self;
     #[inline(always)]
@@ -168,8 +168,7 @@ where
 // Multiplication by a scalar
 impl<K> MulAssign<&K> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     ///
     /// Multiply a scalar into self.
@@ -186,15 +185,14 @@ where
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
     fn mul_assign(&mut self, rhs: &K) {
-        for nb in self.content.iter_mut() {
+        for nb in &mut self.content {
             *nb *= rhs;
         }
     }
 }
 impl<K> MulAssign<K> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     #[inline(always)]
     fn mul_assign(&mut self, rhs: K) {
@@ -203,10 +201,9 @@ where
 }
 impl<K> Mul<&K> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
-    type Output = Matrix<K>;
+    type Output = Self;
     #[inline(always)]
     fn mul(mut self, rhs: &K) -> Self::Output {
         self *= rhs;
@@ -215,10 +212,9 @@ where
 }
 impl<K> Mul<K> for Matrix<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
-    type Output = Matrix<K>;
+    type Output = Self;
     #[inline(always)]
     fn mul(self, rhs: K) -> Self::Output {
         self * &rhs

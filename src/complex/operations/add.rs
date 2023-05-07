@@ -62,22 +62,22 @@ where
     }
 }
 
-impl<T> Add<&Complex<T>> for Complex<T>
+impl<T> Add<&Self> for Complex<T>
 where
     for<'a> T: AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn add(self, rhs: &Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn add(self, rhs: &Self) -> Self::Output {
         self.default_add(rhs)
     }
 }
 
-impl<T> Add<Complex<T>> for Complex<T>
+impl<T> Add<Self> for Complex<T>
 where
     for<'a> T: AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn add(self, rhs: Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self::Output {
         self.default_add(&rhs)
     }
 }

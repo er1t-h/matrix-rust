@@ -4,8 +4,7 @@ use crate::{error::TraceError, Matrix};
 
 impl<K> Matrix<K>
 where
-    K: Clone,
-    for<'a> K: MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<&'a K>,
 {
     ///
     /// Returns the product of all diagonal elements of a matrix.
@@ -21,6 +20,9 @@ where
     /// let mat = Matrix::from([[2, 1], [5, 3]]);
     /// assert_eq!(mat.multiplicative_trace(), Ok(6));
     /// ```
+    ///
+    /// # Errors
+    /// If the matrix is not a square matrix, returns [`NotSquareMatrix`](TraceError::NotSquareMatrix)
     ///
     /// # Complexity
     /// For an `n` * `n` matrix:
@@ -54,15 +56,23 @@ where
     /// Time: O(n)
     /// Space: O(1)
     ///
+    #[must_use]
     pub unsafe fn multiplicative_trace_unchecked(&self) -> K {
         self.multiplicative_trace_internal()
     }
 
+    ///
+    /// Returns the multiplicative trace of a matrix
+    ///
+    /// # Panics
+    /// The Matrix must be a Square matrix
+    ///
     #[inline(always)]
+    #[must_use]
     pub(crate) fn multiplicative_trace_internal(&self) -> K {
         let mut accumulator = self.content.get(0).unwrap().clone();
         for i in 1..self.dimensions.height {
-            accumulator *= self.get(i, i).unwrap()
+            accumulator *= self.get(i, i).unwrap();
         }
         accumulator
     }

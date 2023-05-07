@@ -1,7 +1,7 @@
 use std::{iter::Sum, ops::Mul};
 
 use crate::{
-    traits::{Abs, Max, Sqrt, Zero},
+    traits::{self, Abs, Max, Sqrt, Zero},
     Vector,
 };
 
@@ -10,7 +10,7 @@ where
     K: Clone + Abs + Sum,
 {
     ///
-    /// Returns the [taxicab norm](https://en.wikipedia.org/wiki/Taxicab_geometry)
+    /// Returns the [`taxicab norm`](https://en.wikipedia.org/wiki/Taxicab_geometry)
     /// of a Vector.
     ///
     /// # Example:
@@ -24,8 +24,9 @@ where
     /// # Complexity:
     /// Linear: O(n) with `n` the size of the vector.
     ///
+    #[must_use]
     pub fn norm_1(&self) -> K {
-        self.content.iter().map(|x| x.abs()).sum()
+        self.content.iter().map(traits::Abs::abs).sum()
     }
 }
 
@@ -35,7 +36,7 @@ where
     for<'a> &'a K: Mul<&'a K, Output = K>,
 {
     ///
-    /// Returns the [euclidean norm](https://en.wikipedia.org/wiki/Norm_(mathematics))
+    /// Returns the [`euclidean norm`](https://en.wikipedia.org/wiki/Norm_(mathematics))
     /// of a Vector.
     ///
     /// # Example:
@@ -49,6 +50,7 @@ where
     /// # Complexity:
     /// Linear: O(n) with `n` the size of the vector.
     ///
+    #[must_use]
     pub fn norm(&self) -> K {
         self.content.iter().map(|x| x * x).sum::<K>().sqrt()
     }
@@ -59,7 +61,7 @@ where
     K: Clone + Zero + Abs + Max,
 {
     ///
-    /// Returns the [supremum norm](https://en.wikipedia.org/wiki/Uniform_norm)
+    /// Returns the [`supremum norm`](https://en.wikipedia.org/wiki/Uniform_norm)
     /// of a Vector.
     ///
     /// # Example:

@@ -17,7 +17,7 @@ where
     ///
     /// Returns the cosine of the angle formed by the two vectors.
     ///
-    /// Consider using [angle_cos_unchecked] if you're sure that your inputs are correct.
+    /// Consider using [`angle_cos_unchecked`](Vector#method.angle_cos_unchecked) if you're sure that your inputs are correct.
     ///
     /// # Example:
     /// ```
@@ -28,6 +28,10 @@ where
     /// let v2 = Vector::from([0.0, 0.0]);
     /// assert_eq!(Vector::angle_cos(&v1, &v2), Err(VectorOperationError::ZeroVector));
     /// ```
+    ///
+    /// # Errors
+    /// If the two vectors does not have the same len, returns [`NotSameSize`](VectorOperationError::NotSameSize)
+    /// If the product of the norm of the two vector is zero, returns [`ZeroVector`](VectorOperationError::ZeroVector)
     ///
     /// # Complexity:
     /// Linear: O(n) with `n` the total number of coordinates
@@ -49,7 +53,7 @@ where
     /// # Safety
     /// A  zero vector or size difference between the vectors can cause undefined
     /// behaviour or can panic the program.
-    /// Consider using [angle_cos] if you're not sure that your inputs are
+    /// Consider using [`angle_cos`](crate::Vector#method.angle_cos) if you're not sure that your inputs are
     /// correct.
     ///
     /// # Example:
@@ -65,6 +69,7 @@ where
     /// # Complexity:
     /// Linear: O(n) with `n` the total number of coordinates
     ///
+    #[must_use]
     pub unsafe fn angle_cos_unchecked(u: &Self, v: &Self) -> K {
         let tmp = u.dot_internal(v);
         tmp / (u.norm() * v.norm())

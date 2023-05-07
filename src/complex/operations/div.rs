@@ -113,22 +113,22 @@ where
     }
 }
 
-impl<T> Div<&Complex<T>> for Complex<T>
+impl<T> Div<&Self> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + DivAssign<&'a T> + SubAssign<&'a T> + AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn div(self, rhs: &Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn div(self, rhs: &Self) -> Self::Output {
         self.default_div(rhs)
     }
 }
 
-impl<T> Div<Complex<T>> for Complex<T>
+impl<T> Div<Self> for Complex<T>
 where
     for<'a> T: MulAssign<&'a T> + DivAssign<&'a T> + SubAssign<&'a T> + AddAssign<&'a T> + Clone,
 {
-    type Output = Complex<T>;
-    fn div(self, rhs: Complex<T>) -> Self::Output {
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self::Output {
         self.default_div(&rhs)
     }
 }

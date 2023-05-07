@@ -1,6 +1,6 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
-#![allow(clippy::inline_always)]
+#![allow(clippy::inline_always, clippy::cargo_common_metadata)]
 
 pub mod complex;
 pub mod error;

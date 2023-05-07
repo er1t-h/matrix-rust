@@ -25,6 +25,7 @@ pub struct Dimensions {
 ///
 /// Implementation of a Matrix
 ///
+#[must_use]
 pub struct Matrix<K: Clone> {
     content: Vec<K>,
     dimensions: Dimensions,

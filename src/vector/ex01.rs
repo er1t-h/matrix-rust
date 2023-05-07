@@ -4,8 +4,11 @@ use crate::{error::LinearCombinationError, Vector};
 
 ///
 /// Returns the linear combination of the `vectors` with each of the `coefficients`
-/// or a [LinearCombinationError] if the parameters don't allow for such operation.
-/// See [linear_combination_unchecked] for more informations.
+/// or a [`LinearCombinationError`] if the parameters don't allow for such operation.
+/// See [`linear_combination_unchecked`] for more informations.
+///
+/// # Panics
+/// Never.
 ///
 /// # Example:
 /// ```
@@ -17,6 +20,11 @@ use crate::{error::LinearCombinationError, Vector};
 /// let vec2 = Vector::from([1, 2, 3]);
 /// assert_eq!(linear_combination(&[vec1, vec2], &[1, 2]), Err(LinearCombinationError::VectorSizeMismatch(2, 3)));
 /// ```
+///
+/// # Errors
+/// If `vectors` and `coefficients` sizes differ, returns a [`VectorsAndCoefficientSizeDifference`](LinearCombinationError::VectorsAndCoefficientSizeDifference)
+/// If `vectors` is empty, returns a [`VectorArrayIsEmpty`](LinearCombinationError::VectorArrayIsEmpty)
+/// If all vectors of `vectors` do not have the same size, returns a [`VectorSizeMismatch`](LinearCombinationError::VectorSizeMismatch)
 ///
 /// # Complexity:
 /// Linear: O(n) with `n` the total number inside the vectors
@@ -56,7 +64,7 @@ where
 /// Returns the linear combination of the `vectors` with each of the `coefficients`
 /// The linear combination is the sum of the multiplication of each vectors by a coefficient.
 ///
-/// Using [linear_combination] returns a [Result], whereas this function will return
+/// Using [`linear_combination`] returns a [Result], whereas this function will return
 /// a wrong answer in case of a bad input.
 ///
 /// # Safety

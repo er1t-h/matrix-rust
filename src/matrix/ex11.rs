@@ -122,6 +122,10 @@ where
     /// let mat = Matrix::from([[2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]);
     /// assert_eq!(mat.determinant().unwrap(), 8.)
     /// ```
+    ///
+    /// # Errors
+    /// If the matrix is not a square, returns a [`NotSquareMatrix`](DeterminantError::NotSquareMatrix)
+    ///
     pub fn determinant(&self) -> Result<K, DeterminantError> {
         match self.size() {
             (1, 1) => Ok(self.content[0].clone()),

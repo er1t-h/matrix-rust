@@ -1,21 +1,26 @@
 use std::cmp::Ord;
 
 pub trait Zero {
+    #[must_use]
     fn zero() -> Self;
 }
 pub trait One {
+    #[must_use]
     fn one() -> Self;
 }
 
 pub trait Abs {
+    #[must_use]
     fn abs(&self) -> Self;
 }
 
 pub trait Sqrt {
+    #[must_use]
     fn sqrt(&self) -> Self;
 }
 
 pub trait Max {
+    #[must_use]
     fn max(self, other: Self) -> Self;
 }
 
@@ -69,6 +74,7 @@ macro_rules! impl_divisor {
     ($value: expr, $current: ident) => {
         impl Divisor for $current {
             #[inline(always)]
+            #[allow(clippy::float_cmp)]
             fn can_be_divisor(&self) -> bool {
                 self != $value
             }
@@ -84,6 +90,7 @@ macro_rules! impl_is_zero {
     ($value: expr, $current: ident) => {
         impl IsZero for $current {
             #[inline(always)]
+            #[allow(clippy::float_cmp)]
             fn is_zero(&self) -> bool {
                 self == $value
             }
@@ -91,6 +98,7 @@ macro_rules! impl_is_zero {
 
         impl IsZero for &$current {
             #[inline(always)]
+            #[allow(clippy::float_cmp)]
             fn is_zero(&self) -> bool {
                 self == &$value
             }
@@ -98,6 +106,7 @@ macro_rules! impl_is_zero {
 
         impl IsZero for &mut $current {
             #[inline(always)]
+            #[allow(clippy::float_cmp)]
             fn is_zero(&self) -> bool {
                 self == &$value
             }

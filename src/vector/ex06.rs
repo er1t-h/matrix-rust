@@ -14,7 +14,7 @@ where
     /// Never.
     ///
     /// # Note:
-    /// You can use [cross_product_unchecked] if your inputs are already checked.
+    /// You can use [`cross_product_unchecked`](crate::Vector#method.cross_product_unchecked) if your inputs are already checked.
     ///
     /// # Example:
     /// ```
@@ -26,6 +26,10 @@ where
     /// assert_eq!(Vector::cross_product(&v1, &v2), Err(CrossProductError::RightVectorShouldBeThreeDimensional));
     /// ```
     ///
+    /// # Errors
+    /// If len of left vector is not 3, returns a [`LeftVectorShouldBeThreeDimensional`](crate::error::CrossProductError::LeftVectorShouldBeThreeDimensional)
+    /// If len of right vector is not 3, returns a [`RightVectorShouldBeThreeDimensional`](crate::error::CrossProductError::RightVectorShouldBeThreeDimensional)
+    ///
     /// # Complexity:
     /// Constant
     ///
@@ -35,7 +39,7 @@ where
         } else if v.len() != 3 {
             Err(CrossProductError::RightVectorShouldBeThreeDimensional)
         } else {
-            Ok(Vector::cross_product_internal(u, v))
+            Ok(Self::cross_product_internal(u, v))
         }
     }
 
@@ -45,7 +49,7 @@ where
     /// # Safety
     /// If one of the two vectors is not three dimensional, the behaviour is
     /// undefined.
-    /// Please use [cross_product] for a safe alternative.
+    /// Please use [`cross_product`](crate::Vector#method.cross_product) for a safe alternative.
     ///
     /// # Example:
     /// ```
@@ -60,12 +64,12 @@ where
     /// Constant
     ///
     pub unsafe fn cross_product_unchecked(u: &Self, v: &Self) -> Self {
-        Vector::cross_product_internal(u, v)
+        Self::cross_product_internal(u, v)
     }
 
     #[inline(always)]
     fn cross_product_internal(u: &Self, v: &Self) -> Self {
-        Vector::from([
+        Self::from([
             &(&u[1] * &v[2]) - &(&u[2] * &v[1]),
             &(&u[2] * &v[0]) - &(&u[0] * &v[2]),
             &(&u[0] * &v[1]) - &(&u[1] * &v[0]),
