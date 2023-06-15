@@ -1,6 +1,7 @@
 use std::{
+    error::Error,
     fmt::Display,
-    ops::{Add, Deref, DerefMut, Range, Sub},
+    ops::{Add, Deref, DerefMut, MulAssign, Range, Sub},
     slice::{Iter, IterMut},
 };
 
@@ -18,6 +19,58 @@ use super::Dimensions;
 pub mod columns;
 pub mod iterator;
 
+pub trait TermByTermMul<Rhs = Self>: Sized {
+    type Error;
+    ///
+    /// Multiplies term by term two objects
+    ///
+    /// # Errors
+    /// If an error is to occur, it should be returned as a `Self::Error`
+    ///
+    fn mul_assign_term_by_term(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
+    ///
+    /// Returns the term by term multiplication of two objects
+    ///
+    /// # Errors
+    /// If an error is to occur, it should be returned as a `Self::Error`
+    ///
+    fn mul_term_by_term(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
+        self.mul_assign_term_by_term(rhs).map(|_| self)
+    }
+}
+
+impl<K> TermByTermMul for Matrix<K>
+where
+    K: Clone + MulAssign<K>,
+{
+    type Error = ();
+    fn mul_assign_term_by_term(&mut self, rhs: Self) -> Result<(), Self::Error> {
+        if self.dimensions() != rhs.dimensions() {
+            return Err(());
+        }
+        for (lhs, rhs) in self.iter_mut().zip(rhs) {
+            *lhs *= rhs;
+        }
+        Ok(())
+    }
+}
+
+impl<'a, K> TermByTermMul<&'a Self> for Matrix<K>
+where
+    K: Clone + MulAssign<&'a K>,
+{
+    type Error = ();
+    fn mul_assign_term_by_term(&mut self, rhs: &'a Self) -> Result<(), Self::Error> {
+        if self.dimensions() != rhs.dimensions() {
+            return Err(());
+        }
+        for (lhs, rhs) in self.iter_mut().zip(rhs) {
+            *lhs *= rhs;
+        }
+        Ok(())
+    }
+}
+
 // Display
 impl<K: Clone + Display> Display for Matrix<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -32,7 +85,7 @@ impl<K: Clone + Display> Display for Matrix<K> {
                 .map(ToString::to_string)
                 .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
-            str += "], ";
+            str += "]; ";
         }
         write!(f, "[{}]", &str[..str.len() - 2])
     }
@@ -53,11 +106,11 @@ impl<K: Clone, const LINE_SIZE: usize, const COLUMN_SIZE: usize> From<[[K; COLUM
         }
     }
 }
-impl<K: Clone + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix<K> {
+impl<K: Clone, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix<K> {
     #[inline(always)]
     fn from(value: &[[K; LINE_SIZE]]) -> Self {
         Self {
-            content: value.iter().flatten().copied().collect(),
+            content: value.iter().flatten().cloned().collect(),
             dimensions: Dimensions {
                 width: value.len(),
                 height: LINE_SIZE,
@@ -65,11 +118,11 @@ impl<K: Clone + Copy, const LINE_SIZE: usize> From<&[[K; LINE_SIZE]]> for Matrix
         }
     }
 }
-impl<K: Clone + Copy> From<&[&[K]]> for Matrix<K> {
+impl<K: Clone> From<&[&[K]]> for Matrix<K> {
     #[inline(always)]
     fn from(value: &[&[K]]) -> Self {
         Self {
-            content: value.iter().flat_map(|x| *x).copied().collect(),
+            content: value.iter().flat_map(|x| *x).cloned().collect(),
             dimensions: Dimensions {
                 width: value.len(),
                 height: value.get(0).map_or(0, |x| x.len()),
@@ -77,10 +130,12 @@ impl<K: Clone + Copy> From<&[&[K]]> for Matrix<K> {
         }
     }
 }
+
 impl<K: Clone> From<Vector<K>> for Matrix<K> {
     #[inline(always)]
     fn from(value: Vector<K>) -> Self {
         let len = value.len();
+
         Self {
             content: value.into_iter().collect(),
             dimensions: Dimensions {
@@ -88,6 +143,41 @@ impl<K: Clone> From<Vector<K>> for Matrix<K> {
                 height: len,
             },
         }
+    }
+}
+#[derive(Debug, Clone, Copy)]
+pub enum MatrixCreationError {
+    EmptyMatrix,
+    NotEqualLines,
+}
+impl Error for MatrixCreationError {}
+impl Display for MatrixCreationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::EmptyMatrix => write!(f, "empty matrix."),
+            Self::NotEqualLines => write!(f, "not all lines have the same size."),
+        }
+    }
+}
+impl<K: Clone> TryFrom<Vec<Vec<K>>> for Matrix<K> {
+    type Error = MatrixCreationError;
+    #[inline(always)]
+    fn try_from(value: Vec<Vec<K>>) -> Result<Self, Self::Error> {
+        let height = value.len();
+        if height == 0 {
+            return Err(MatrixCreationError::EmptyMatrix);
+        }
+        let width = value[0].len();
+        if width == 0 {
+            return Err(MatrixCreationError::EmptyMatrix);
+        }
+        if value.iter().skip(1).any(|x| x.len() != width) {
+            return Err(MatrixCreationError::NotEqualLines);
+        }
+        Ok(Self {
+            content: value.into_iter().flatten().collect(),
+            dimensions: Dimensions { width, height },
+        })
     }
 }
 
