@@ -10,6 +10,8 @@ mod ex14;
 mod multiplicative_trace;
 mod utils;
 
+pub use utils::TermByTermMul;
+
 ///
 /// A structure that store the size of a Matrix
 ///
@@ -29,4 +31,11 @@ pub struct Dimensions {
 pub struct Matrix<K: Clone> {
     content: Vec<K>,
     dimensions: Dimensions,
+}
+
+impl<K: Clone> Matrix<K> {
+    #[must_use]
+    pub const fn dimensions(&self) -> Dimensions {
+        self.dimensions
+    }
 }

@@ -4,6 +4,7 @@
 
 pub mod complex;
 pub mod error;
+pub mod macros;
 pub mod matrix;
 pub mod traits;
 pub mod utils;

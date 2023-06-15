@@ -36,7 +36,47 @@ where
                 rhs.dimensions,
             ));
         }
-        for (lhs, rhs) in self.content.iter_mut().zip(rhs.iter()) {
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs) {
+            *lhs += rhs;
+        }
+        Ok(())
+    }
+}
+
+impl<K> Matrix<K>
+where
+    K: Clone + AddAssign<K>,
+{
+    ///
+    /// Adds another `Matrix` to self.
+    ///
+    /// If the size of the two Matrixes differ, a [`MatrixOperationError`] is returned
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mut lhs = Matrix::from([[5, 4], [3, 2]]);
+    /// let rhs = Matrix::from([[5, 6], [7, 8]]);
+    /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [[10, 10], [10, 10]])
+    /// ```
+    ///
+    /// # Errors
+    /// If the dimensions of the two matrix are different, returns a
+    /// [`NotSameSize`](MatrixOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear: O(m*n) for a `m * n` Matrix
+    ///
+    pub fn safe_add_assign_value(&mut self, rhs: Self) -> Result<(), MatrixOperationError> {
+        if self.dimensions != rhs.dimensions {
+            return Err(MatrixOperationError::NotSameSize(
+                self.dimensions,
+                rhs.dimensions,
+            ));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs) {
             *lhs += rhs;
         }
         Ok(())
@@ -76,7 +116,46 @@ where
                 rhs.dimensions,
             ));
         }
-        for (lhs, rhs) in self.content.iter_mut().zip(rhs.iter()) {
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs) {
+            *lhs -= rhs;
+        }
+        Ok(())
+    }
+}
+impl<K> Matrix<K>
+where
+    K: Clone + SubAssign<K>,
+{
+    ///
+    /// Subs another `Matrix` from self.
+    ///
+    /// If the size of the two Matrixes differ, a [`MatrixOperationError`] is returned
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Matrix;
+    ///
+    /// let mut lhs = Matrix::from([[10, 10], [10, 10]]);
+    /// let rhs = Matrix::from([[5, 6], [7, 8]]);
+    /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [[5, 4], [3, 2]])
+    /// ```
+    ///
+    /// # Errors
+    /// If the dimensions of the two matrix are different, returns a
+    /// [`NotSameSize`](MatrixOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear: O(m*n) for a `m * n` Matrix
+    ///
+    pub fn safe_sub_assign_value(&mut self, rhs: Self) -> Result<(), MatrixOperationError> {
+        if self.dimensions != rhs.dimensions {
+            return Err(MatrixOperationError::NotSameSize(
+                self.dimensions,
+                rhs.dimensions,
+            ));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs) {
             *lhs -= rhs;
         }
         Ok(())
@@ -95,11 +174,11 @@ where
 }
 impl<K> AddAssign for Matrix<K>
 where
-    for<'a> K: Clone + AddAssign<&'a K>,
+    K: Clone + AddAssign<K>,
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: Self) {
-        *self += &rhs;
+        let _ = self.safe_add_assign_value(rhs);
     }
 }
 impl<K> Add<&Self> for Matrix<K>
@@ -115,12 +194,13 @@ where
 }
 impl<K> Add for Matrix<K>
 where
-    for<'a> K: Clone + AddAssign<&'a K>,
+    K: Clone + AddAssign<K>,
 {
     type Output = Self;
     #[inline(always)]
-    fn add(self, rhs: Self) -> Self::Output {
-        self + &rhs
+    fn add(mut self, rhs: Self) -> Self::Output {
+        self += rhs;
+        self
     }
 }
 
@@ -136,11 +216,11 @@ where
 }
 impl<K> SubAssign for Matrix<K>
 where
-    for<'a> K: Clone + SubAssign<&'a K>,
+    K: Clone + SubAssign<K>,
 {
     #[inline(always)]
     fn sub_assign(&mut self, rhs: Self) {
-        *self -= &rhs;
+        let _ = self.safe_sub_assign_value(rhs);
     }
 }
 impl<K> Sub<&Self> for Matrix<K>
@@ -156,12 +236,13 @@ where
 }
 impl<K> Sub for Matrix<K>
 where
-    for<'a> K: Clone + SubAssign<&'a K>,
+    K: Clone + SubAssign<K>,
 {
     type Output = Self;
     #[inline(always)]
-    fn sub(self, rhs: Self) -> Self::Output {
-        self - &rhs
+    fn sub(mut self, rhs: Self) -> Self::Output {
+        self -= rhs;
+        self
     }
 }
 
@@ -192,11 +273,13 @@ where
 }
 impl<K> MulAssign<K> for Matrix<K>
 where
-    for<'a> K: Clone + MulAssign<&'a K>,
+    K: Clone + MulAssign<K>,
 {
     #[inline(always)]
     fn mul_assign(&mut self, rhs: K) {
-        *self *= &rhs;
+        for nb in &mut self.content {
+            *nb *= rhs.clone();
+        }
     }
 }
 impl<K> Mul<&K> for Matrix<K>
@@ -212,12 +295,13 @@ where
 }
 impl<K> Mul<K> for Matrix<K>
 where
-    for<'a> K: Clone + MulAssign<&'a K>,
+    K: Clone + MulAssign<K>,
 {
     type Output = Self;
     #[inline(always)]
-    fn mul(self, rhs: K) -> Self::Output {
-        self * &rhs
+    fn mul(mut self, rhs: K) -> Self::Output {
+        self *= rhs;
+        self
     }
 }
 
@@ -249,7 +333,7 @@ mod test {
                         height: 1
                     }
                 ))
-            )
+            );
         }
         {
             let mut mat1 = Matrix::from([[1, 2], [3, 4]]);
@@ -285,7 +369,7 @@ mod test {
                         height: 1
                     }
                 ))
-            )
+            );
         }
         {
             let mut mat1 = Matrix::from([[1, 2], [3, 4]]);
@@ -345,7 +429,7 @@ mod test {
         let mut u = Matrix::from([[cpl!(1., 2.), cpl!(3., 4.)], [cpl!(5., 6.), cpl!(7., 8.)]]);
         let v = Matrix::from([[cpl!(8., 7.), cpl!(6., 5.)], [cpl!(4., 3.), cpl!(2., 1.)]]);
         u += &v;
-        assert_eq!(u, Matrix::fill(cpl!(9., 9.), 2, 2).unwrap())
+        assert_eq!(u, Matrix::fill(cpl!(9., 9.), 2, 2).unwrap());
     }
 
     #[test]
