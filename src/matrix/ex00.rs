@@ -2,11 +2,51 @@ use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::{error::MatrixOperationError, Matrix};
 
-// Add/Sub implementation
-impl<K> Matrix<K>
+pub trait SafeAdd<Rhs = Self>: Sized {
+    type Error;
+    ///
+    /// Adds `rhs` into self.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_add_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
+
+    ///
+    /// Adds `rhs` and `self`.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_add(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
+        self.safe_add_assign(rhs).map(|_| self)
+    }
+}
+pub trait SafeSub<Rhs = Self>: Sized {
+    type Error;
+    ///
+    /// Subs `rhs` from `self`.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_sub_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
+    ///
+    /// Subs `rhs` from `self`, taking its value.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_sub(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
+        self.safe_sub_assign(rhs).map(|_| self)
+    }
+}
+
+impl<'a, K> SafeAdd<&'a Self> for Matrix<K>
 where
-    for<'a> K: Clone + AddAssign<&'a K>,
+    K: Clone + AddAssign<&'a K>,
 {
+    type Error = MatrixOperationError;
     ///
     /// Adds another `Matrix` to self.
     ///
@@ -15,6 +55,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
+    /// use matrix::matrix::SafeAdd;
     ///
     /// let mut lhs = Matrix::from([[5, 4], [3, 2]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -29,7 +70,7 @@ where
     /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
-    pub fn safe_add_assign(&mut self, rhs: &Self) -> Result<(), MatrixOperationError> {
+    fn safe_add_assign(&mut self, rhs: &'a Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
             return Err(MatrixOperationError::NotSameSize(
                 self.dimensions,
@@ -43,10 +84,11 @@ where
     }
 }
 
-impl<K> Matrix<K>
+impl<K> SafeAdd for Matrix<K>
 where
     K: Clone + AddAssign<K>,
 {
+    type Error = MatrixOperationError;
     ///
     /// Adds another `Matrix` to self.
     ///
@@ -55,6 +97,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
+    /// use matrix::matrix::SafeAdd;
     ///
     /// let mut lhs = Matrix::from([[5, 4], [3, 2]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -69,7 +112,7 @@ where
     /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
-    pub fn safe_add_assign_value(&mut self, rhs: Self) -> Result<(), MatrixOperationError> {
+    fn safe_add_assign(&mut self, rhs: Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
             return Err(MatrixOperationError::NotSameSize(
                 self.dimensions,
@@ -83,10 +126,11 @@ where
     }
 }
 
-impl<K> Matrix<K>
+impl<'a, K> SafeSub<&'a Self> for Matrix<K>
 where
-    for<'a> K: Clone + SubAssign<&'a K>,
+    K: Clone + SubAssign<&'a K>,
 {
+    type Error = MatrixOperationError;
     ///
     /// Subs another `Matrix` from self.
     ///
@@ -95,6 +139,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
+    /// use matrix::matrix::SafeSub;
     ///
     /// let mut lhs = Matrix::from([[10, 10], [10, 10]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -109,7 +154,7 @@ where
     /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
-    pub fn safe_sub_assign(&mut self, rhs: &Self) -> Result<(), MatrixOperationError> {
+    fn safe_sub_assign(&mut self, rhs: &'a Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
             return Err(MatrixOperationError::NotSameSize(
                 self.dimensions,
@@ -122,10 +167,11 @@ where
         Ok(())
     }
 }
-impl<K> Matrix<K>
+impl<K> SafeSub for Matrix<K>
 where
     K: Clone + SubAssign<K>,
 {
+    type Error = MatrixOperationError;
     ///
     /// Subs another `Matrix` from self.
     ///
@@ -134,6 +180,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
+    /// use matrix::matrix::SafeSub;
     ///
     /// let mut lhs = Matrix::from([[10, 10], [10, 10]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -148,7 +195,7 @@ where
     /// # Complexity:
     /// Linear: O(m*n) for a `m * n` Matrix
     ///
-    pub fn safe_sub_assign_value(&mut self, rhs: Self) -> Result<(), MatrixOperationError> {
+    fn safe_sub_assign(&mut self, rhs: Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
             return Err(MatrixOperationError::NotSameSize(
                 self.dimensions,
@@ -178,7 +225,7 @@ where
 {
     #[inline(always)]
     fn add_assign(&mut self, rhs: Self) {
-        let _ = self.safe_add_assign_value(rhs);
+        let _ = self.safe_add_assign(rhs);
     }
 }
 impl<K> Add<&Self> for Matrix<K>
@@ -220,7 +267,7 @@ where
 {
     #[inline(always)]
     fn sub_assign(&mut self, rhs: Self) {
-        let _ = self.safe_sub_assign_value(rhs);
+        let _ = self.safe_sub_assign(rhs);
     }
 }
 impl<K> Sub<&Self> for Matrix<K>
@@ -307,7 +354,14 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{complex::cpl, matrix::Dimensions, Matrix};
+    use crate::{
+        complex::cpl,
+        matrix::{
+            ex00::{SafeAdd, SafeSub},
+            Dimensions,
+        },
+        Matrix,
+    };
     use pretty_assertions::assert_eq;
 
     #[test]
