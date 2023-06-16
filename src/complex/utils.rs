@@ -25,15 +25,6 @@ where
     }
 }
 
-impl<T> Display for Complex<T>
-where
-    T: Display,
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {}i", &self.real, &self.imaginary)
-    }
-}
-
 impl<T: Zero> Zero for Complex<T> {
     fn zero() -> Self {
         Self::new(T::zero(), T::zero())
@@ -72,5 +63,25 @@ impl<T> Complex<T> {
     }
     pub const fn re(&self) -> &T {
         &self.real
+    }
+}
+
+impl<T: Display + IsZero> Display for Complex<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match (!self.real.is_zero(), !self.imaginary.is_zero()) {
+            (true, true) => write!(f, "({} + {}i)", self.re(), self.im()),
+            (_, false) => write!(f, "{}", self.re()),
+            (false, true) => write!(f, "{}i", self.im()),
+        }
+    }
+}
+
+impl<T: IsZero> Complex<T> {
+    pub fn is_real(&self) -> bool {
+        self.imaginary.is_zero()
+    }
+
+    pub fn is_imaginary(&self) -> bool {
+        self.real.is_zero()
     }
 }
