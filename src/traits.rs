@@ -36,6 +36,46 @@ pub trait FMA<Multiple = Self, Add = Self, Output = Self> {
     fn fma(&self, a: &Multiple, b: &Add) -> Output;
 }
 
+pub trait SafeAdd<Rhs = Self>: Sized {
+    type Error;
+    ///
+    /// Adds `rhs` into self.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_add_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
+
+    ///
+    /// Adds `rhs` and `self`.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_add(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
+        self.safe_add_assign(rhs).map(|_| self)
+    }
+}
+pub trait SafeSub<Rhs = Self>: Sized {
+    type Error;
+    ///
+    /// Subs `rhs` from `self`.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_sub_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
+    ///
+    /// Subs `rhs` from `self`, taking its value.
+    ///
+    /// # Errors
+    /// If the two objects can't be added, returns an appropriate error
+    ///
+    fn safe_sub(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
+        self.safe_sub_assign(rhs).map(|_| self)
+    }
+}
+
 macro_rules! impl_mul_identity {
     ($value: expr, $current: ident, $($types: ident),+) => {
         impl_mul_identity!($value, $current);

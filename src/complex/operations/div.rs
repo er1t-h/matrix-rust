@@ -133,6 +133,7 @@ where
     }
 }
 
+#[allow(clippy::op_ref)]
 #[cfg(test)]
 mod test {
     use crate::Complex;

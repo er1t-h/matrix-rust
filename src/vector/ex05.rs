@@ -119,7 +119,7 @@ mod test {
             let u = Vector::from([1., 2., 3.]);
             let v = Vector::from([4., 5., 6.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
-            assert_eq_float!(res, 0.974631846);
+            assert_eq_float!(res, 0.974_631_846);
             println!("cos({}, {}) = {}", u, v, res);
             // 0.974631846
         }

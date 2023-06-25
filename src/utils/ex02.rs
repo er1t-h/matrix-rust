@@ -90,11 +90,11 @@ mod test {
     fn errors() {
         {
             let res = lerp(&1.0, &2.0, &1.01);
-            assert_eq!(res, Err(LinearInterpolationError::RatioOffBound))
+            assert_eq!(res, Err(LinearInterpolationError::RatioOffBound));
         }
         {
             let res = lerp(&1.0, &2.0, &-0.01);
-            assert_eq!(res, Err(LinearInterpolationError::RatioOffBound))
+            assert_eq!(res, Err(LinearInterpolationError::RatioOffBound));
         }
     }
 

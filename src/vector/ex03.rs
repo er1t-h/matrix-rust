@@ -118,6 +118,6 @@ mod test {
         let u = Vector::from([cpl!(1. + 5. i), cpl!(4. - 2. i), cpl!(-3. - 8. i)]);
         let v = Vector::from([cpl!(4. + 9. i), cpl!(-3. + 8. i), cpl!(0. + 2. i)]);
         let res = u.dot(&v);
-        assert_eq!(res, Ok(cpl!(-21. + 61. i)))
+        assert_eq!(res, Ok(cpl!(-21. + 61. i)));
     }
 }

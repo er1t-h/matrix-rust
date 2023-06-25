@@ -10,7 +10,6 @@ mod ex14;
 mod multiplicative_trace;
 mod utils;
 
-pub use ex00::{SafeAdd, SafeSub};
 pub use utils::TermByTermMul;
 
 ///

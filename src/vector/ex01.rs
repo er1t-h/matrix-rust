@@ -178,7 +178,7 @@ mod test {
 
         let coefs = [5., 3., 6.];
         let res = linear_combination(&[e1, e2, e3], &coefs).unwrap();
-        assert_eq!(res, [11., 7., 12.])
+        assert_eq!(res, [11., 7., 12.]);
     }
 
     #[test]

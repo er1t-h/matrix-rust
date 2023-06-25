@@ -121,7 +121,7 @@ mod test {
             }
             {
                 let res = u.norm();
-                assert_eq_float!(res, 3.74165738_f64);
+                assert_eq_float!(res, 3.741_657_38_f64);
                 println!("norm({}) = {}", u, res);
             }
             {
@@ -139,7 +139,7 @@ mod test {
             }
             {
                 let res = u.norm();
-                assert_eq_float!(res, 2.236067977_f64);
+                assert_eq_float!(res, 2.236_067_977_f64);
                 println!("norm({}) = {}", u, res);
             }
             {
@@ -172,11 +172,15 @@ mod test {
 
     #[test]
     #[ignore = "rounding problem + approx eq feels strange"]
+    #[allow(clippy::excessive_precision)]
     fn with_complex() {
         let u = Vector::from([cpl!(-5. - 7. i), cpl!(8. + 9. i), cpl!(0. - 2. i)]);
         {
             let res = u.norm_1();
-            assert_eq!(res, cpl!(8.60232526704262677 + 12.041594578792 + 2., 0.));
+            assert_eq!(
+                res,
+                cpl!(8.602_325_267_042_626_77 + 12.041_594_578_792 + 2., 0.)
+            );
             println!("norm1({}) = {}", u, res);
         }
         {

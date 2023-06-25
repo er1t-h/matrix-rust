@@ -1,46 +1,10 @@
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
-use crate::{error::MatrixOperationError, Matrix};
-
-pub trait SafeAdd<Rhs = Self>: Sized {
-    type Error;
-    ///
-    /// Adds `rhs` into self.
-    ///
-    /// # Errors
-    /// If the two objects can't be added, returns an appropriate error
-    ///
-    fn safe_add_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
-
-    ///
-    /// Adds `rhs` and `self`.
-    ///
-    /// # Errors
-    /// If the two objects can't be added, returns an appropriate error
-    ///
-    fn safe_add(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_add_assign(rhs).map(|_| self)
-    }
-}
-pub trait SafeSub<Rhs = Self>: Sized {
-    type Error;
-    ///
-    /// Subs `rhs` from `self`.
-    ///
-    /// # Errors
-    /// If the two objects can't be added, returns an appropriate error
-    ///
-    fn safe_sub_assign(&mut self, rhs: Rhs) -> Result<(), Self::Error>;
-    ///
-    /// Subs `rhs` from `self`, taking its value.
-    ///
-    /// # Errors
-    /// If the two objects can't be added, returns an appropriate error
-    ///
-    fn safe_sub(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_sub_assign(rhs).map(|_| self)
-    }
-}
+use crate::{
+    error::MatrixOperationError,
+    traits::{SafeAdd, SafeSub},
+    Matrix,
+};
 
 impl<'a, K> SafeAdd<&'a Self> for Matrix<K>
 where

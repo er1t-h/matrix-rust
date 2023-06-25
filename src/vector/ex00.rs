@@ -1,6 +1,84 @@
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
-use crate::{error::VectorOperationError, Vector};
+use crate::{
+    error::VectorOperationError,
+    traits::{SafeAdd, SafeSub},
+    Vector,
+};
+// -----------------------------------------------------------------------------
+// ------------------------------- ADD TRAITS
+//
+impl<K> SafeAdd for Vector<K>
+where
+    for<'a> K: Clone + AddAssign<K>,
+{
+    type Error = VectorOperationError;
+    ///
+    /// Adds another `Vector` to self.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Vector;
+    ///
+    /// let mut lhs = Vector::from([15, 2]);
+    /// let rhs = Vector::from([3, 57]);
+    /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [18, 59])
+    /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear in the `size` of the `Vectors`.
+    ///
+    fn safe_add_assign(&mut self, rhs: Self) -> Result<(), Self::Error> {
+        if self.size() != rhs.size() {
+            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content) {
+            *lhs += rhs;
+        }
+        Ok(())
+    }
+}
+
+impl<K> SafeAdd<&Self> for Vector<K>
+where
+    for<'a> K: Clone + AddAssign<&'a K>,
+{
+    type Error = VectorOperationError;
+    ///
+    /// Adds another `Vector` to self.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Vector;
+    ///
+    /// let mut lhs = Vector::from([15, 2]);
+    /// let rhs = Vector::from([3, 57]);
+    /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [18, 59])
+    /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear in the `size` of the `Vectors`.
+    ///
+    fn safe_add_assign(&mut self, rhs: &Self) -> Result<(), Self::Error> {
+        if self.size() != rhs.size() {
+            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content.iter()) {
+            *lhs += rhs;
+        }
+        Ok(())
+    }
+}
 
 impl<K> AddAssign<&Self> for Vector<K>
 where
@@ -11,15 +89,17 @@ where
         let _ = self.safe_add_assign(rhs);
     }
 }
+
 impl<K> AddAssign for Vector<K>
 where
-    for<'a> K: Clone + AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<K>,
 {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
-        *self += &rhs;
+        let _ = self.safe_add_assign(rhs);
     }
 }
+
 impl<K> Add<&Self> for Vector<K>
 where
     for<'a> K: Clone + AddAssign<&'a K>,
@@ -31,15 +111,92 @@ where
         self
     }
 }
+
 impl<K> Add for Vector<K>
 where
-    for<'a> K: Clone + AddAssign<&'a K>,
+    for<'a> K: Clone + AddAssign<K>,
 {
     type Output = Self;
     #[inline]
     fn add(mut self, rhs: Self) -> Self::Output {
         self += rhs;
         self
+    }
+}
+
+// -----------------------------------------------------------------------------
+// ------------------------------- SUB TRAITS
+//
+
+impl<K> SafeSub for Vector<K>
+where
+    for<'a> K: Clone + SubAssign<K>,
+{
+    type Error = VectorOperationError;
+    ///
+    /// Substracts another `Vector` from self.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Vector;
+    ///
+    /// let mut lhs = Vector::from([15, 2]);
+    /// let rhs = Vector::from([3, 57]);
+    /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [12, -55])
+    /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear in the `size` of the `Vectors`.
+    ///
+    fn safe_sub_assign(&mut self, rhs: Self) -> Result<(), VectorOperationError> {
+        if self.size() != rhs.size() {
+            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content) {
+            *lhs -= rhs;
+        }
+        Ok(())
+    }
+}
+
+impl<K> SafeSub<&Self> for Vector<K>
+where
+    for<'a> K: Clone + SubAssign<&'a K>,
+{
+    type Error = VectorOperationError;
+    ///
+    /// Substracts another `Vector` from self.
+    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
+    ///
+    /// # Example:
+    /// ```
+    /// use matrix::Vector;
+    ///
+    /// let mut lhs = Vector::from([15, 2]);
+    /// let rhs = Vector::from([3, 57]);
+    /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
+    /// assert_eq!(lhs, [12, -55])
+    /// ```
+    ///
+    /// # Errors
+    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
+    ///
+    /// # Complexity:
+    /// Linear in the `size` of the `Vectors`.
+    ///
+    fn safe_sub_assign(&mut self, rhs: &Self) -> Result<(), VectorOperationError> {
+        if self.size() != rhs.size() {
+            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
+        }
+        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content.iter()) {
+            *lhs -= rhs;
+        }
+        Ok(())
     }
 }
 
@@ -52,15 +209,17 @@ where
         let _ = self.safe_sub_assign(rhs);
     }
 }
+
 impl<K> SubAssign for Vector<K>
 where
-    for<'a> K: Clone + SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<K>,
 {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
-        *self -= &rhs;
+        let _ = self.safe_sub_assign(rhs);
     }
 }
+
 impl<K> Sub<&Self> for Vector<K>
 where
     for<'a> K: Clone + SubAssign<&'a K>,
@@ -72,16 +231,22 @@ where
         self
     }
 }
+
 impl<K> Sub for Vector<K>
 where
-    for<'a> K: Clone + SubAssign<&'a K>,
+    for<'a> K: Clone + SubAssign<K>,
 {
     type Output = Self;
     #[inline]
-    fn sub(self, rhs: Self) -> Self::Output {
-        self - &rhs
+    fn sub(mut self, rhs: Self) -> Self::Output {
+        self -= rhs;
+        self
     }
 }
+
+// -----------------------------------------------------------------------------
+// ------------------------------- MUL TRAITS
+//
 
 impl<K> MulAssign<&K> for Vector<K>
 where
@@ -109,33 +274,19 @@ where
         }
     }
 }
+
 impl<K> MulAssign<K> for Vector<K>
 where
-    for<'a> K: Clone + MulAssign<&'a K>,
+    for<'a> K: Clone + MulAssign<K>,
 {
     #[inline]
     fn mul_assign(&mut self, rhs: K) {
-        *self *= &rhs;
+        for elt in &mut self.content {
+            *elt *= rhs.clone();
+        }
     }
 }
-impl<K> MulAssign<&K> for &mut Vector<K>
-where
-    for<'a> K: Clone + MulAssign<&'a K>,
-{
-    #[inline]
-    fn mul_assign(&mut self, rhs: &K) {
-        **self *= rhs;
-    }
-}
-impl<K> MulAssign<K> for &mut Vector<K>
-where
-    for<'a> K: Clone + MulAssign<&'a K>,
-{
-    #[inline]
-    fn mul_assign(&mut self, rhs: K) {
-        **self *= &rhs;
-    }
-}
+
 impl<K> Mul<&K> for Vector<K>
 where
     for<'a> K: Clone + MulAssign<&'a K>,
@@ -147,6 +298,19 @@ where
         self
     }
 }
+
+impl<K> Mul<K> for Vector<K>
+where
+    for<'a> K: Clone + MulAssign<K>,
+{
+    type Output = Self;
+    #[inline]
+    fn mul(mut self, rhs: K) -> Self::Output {
+        self *= rhs;
+        self
+    }
+}
+
 impl<K> Mul<&K> for &Vector<K>
 where
     for<'a> K: Clone + MulAssign<&'a K>,
@@ -154,110 +318,39 @@ where
     type Output = Vector<K>;
     #[inline]
     fn mul(self, rhs: &K) -> Self::Output {
-        let mut tmp = self.clone();
-        tmp *= rhs;
-        tmp
+        let mut ret = self.clone();
+        ret *= rhs;
+        ret
     }
 }
-impl<K> Mul<K> for Vector<K>
-where
-    for<'a> K: Clone + MulAssign<&'a K>,
-{
-    type Output = Self;
-    #[inline]
-    fn mul(mut self, rhs: K) -> Self::Output {
-        self *= &rhs;
-        self
-    }
-}
+
 impl<K> Mul<K> for &Vector<K>
 where
-    K: Clone,
-    for<'a, 'b> &'a Vector<K>: MulAssign<&'b K>,
+    for<'a> K: Clone + MulAssign<K>,
 {
-    type Output = Self;
+    type Output = Vector<K>;
     #[inline]
-    fn mul(mut self, rhs: K) -> Self::Output {
-        self *= &rhs;
-        self
+    fn mul(self, rhs: K) -> Self::Output {
+        let mut ret = self.clone();
+        ret *= rhs;
+        ret
     }
 }
 
-impl<K> Vector<K>
-where
-    for<'a> K: Clone + AddAssign<&'a K>,
-{
-    ///
-    /// Adds another `Vector` to self.
-    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
-    ///
-    /// # Example:
-    /// ```
-    /// use matrix::Vector;
-    ///
-    /// let mut lhs = Vector::from([15, 2]);
-    /// let rhs = Vector::from([3, 57]);
-    /// assert_eq!(lhs.safe_add_assign(&rhs), Ok(()));
-    /// assert_eq!(lhs, [18, 59])
-    /// ```
-    ///
-    /// # Errors
-    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
-    ///
-    /// # Complexity:
-    /// Linear in the `size` of the `Vectors`.
-    ///
-    pub fn safe_add_assign(&mut self, rhs: &Self) -> Result<(), VectorOperationError> {
-        if self.size() != rhs.size() {
-            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
-        }
-        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content.iter()) {
-            *lhs += rhs;
-        }
-        Ok(())
-    }
-}
-
-impl<K> Vector<K>
-where
-    for<'a> K: Clone + SubAssign<&'a K>,
-{
-    ///
-    /// Substracts another `Vector` from self.
-    /// If the size of the two Vectors differ, a [`VectorOperationError`] is returned.
-    ///
-    /// # Example:
-    /// ```
-    /// use matrix::Vector;
-    ///
-    /// let mut lhs = Vector::from([15, 2]);
-    /// let rhs = Vector::from([3, 57]);
-    /// assert_eq!(lhs.safe_sub_assign(&rhs), Ok(()));
-    /// assert_eq!(lhs, [12, -55])
-    /// ```
-    ///
-    /// # Errors
-    /// If the size of `self` and `rhs` don't match, return a [`NotSameSize`](VectorOperationError::NotSameSize)
-    ///
-    /// # Complexity:
-    /// Linear in the `size` of the `Vectors`.
-    ///
-    pub fn safe_sub_assign(&mut self, rhs: &Self) -> Result<(), VectorOperationError> {
-        if self.size() != rhs.size() {
-            return Err(VectorOperationError::NotSameSize(self.size(), rhs.size()));
-        }
-        for (lhs, rhs) in self.content.iter_mut().zip(rhs.content.iter()) {
-            *lhs -= rhs;
-        }
-        Ok(())
-    }
-}
+// -----------------------------------------------------------------------------
+// ------------------------------- TESTS
+//
 
 #[cfg(test)]
 mod test {
     use pretty_assertions::assert_eq;
 
-    use crate::{complex::cpl, error::VectorOperationError, Vector};
+    use crate::{
+        complex::cpl,
+        error::VectorOperationError,
+        traits::{SafeAdd, SafeSub},
+        Vector,
+    };
 
     #[test]
     fn safe_add_assign() {
@@ -272,7 +365,7 @@ mod test {
             assert_eq!(
                 lhs.safe_add_assign(&trash),
                 Err(VectorOperationError::NotSameSize(9, 2))
-            )
+            );
         }
         {
             let mut vec1 = Vector::from([9, 2, 5]);
@@ -312,10 +405,7 @@ mod test {
     #[test]
     fn add() {
         let vec1 = Vector::from([1, 2, 3]);
-        assert_eq!(
-            vec1.clone() + vec1.clone() + vec1.clone() + &vec1,
-            [4, 8, 12]
-        );
+        assert_eq!(vec1.clone() + &vec1 + &vec1 + &vec1, [4, 8, 12]);
         assert_eq!(vec1, [1, 2, 3]);
     }
 
@@ -332,7 +422,7 @@ mod test {
             assert_eq!(
                 lhs.safe_sub_assign(&trash),
                 Err(VectorOperationError::NotSameSize(9, 2))
-            )
+            );
         }
         {
             let mut vec1 = Vector::from([9, 2, 5]);
@@ -398,19 +488,19 @@ mod test {
     fn add_with_complex() {
         let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
         let v = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
-        assert_eq!(u + v, [cpl!(2 + 4 i), cpl!(6 + 8 i)])
+        assert_eq!(u + v, [cpl!(2 + 4 i), cpl!(6 + 8 i)]);
     }
 
     #[test]
     fn sub_with_complex() {
         let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
         let v = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
-        assert_eq!(u - v, [cpl!(0 + 0 i), cpl!(0 + 0 i)])
+        assert_eq!(u - v, [cpl!(0 + 0 i), cpl!(0 + 0 i)]);
     }
 
     #[test]
     fn mul_with_complex() {
         let u = Vector::from([cpl!(1 + 2 i), cpl!(3 + 4 i)]);
-        assert_eq!(u * cpl!(5 + 2 i), [cpl!(1 + 12 i), cpl!(7 + 26 i)])
+        assert_eq!(u * cpl!(5 + 2 i), [cpl!(1 + 12 i), cpl!(7 + 26 i)]);
     }
 }

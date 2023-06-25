@@ -207,7 +207,7 @@ mod test {
             [21., 8., 5., 10., 24.],
         ]);
         let res = u.determinant().unwrap();
-        assert_eq_float!(res, -627635.25);
+        assert_eq_float!(res, -627_635.25);
         println!("det({}) = {:?}", u, res);
     }
 

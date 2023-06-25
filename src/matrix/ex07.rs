@@ -188,7 +188,7 @@ mod test {
             let u = Matrix::from([[2., 0.], [0., 2.]]);
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
-            let _ = unsafe { u.mul_vec_unchecked(&v) };
+            let _didnt_crash = unsafe { u.mul_vec_unchecked(&v) };
             assert_eq!(res, [8., 4.]);
             println!("{} * {} = {}", u, v, res);
         }
@@ -244,7 +244,7 @@ mod test {
         let u = Matrix::from([[cpl!(1, 5), cpl!(3, 2)], [cpl!(9, 0), cpl!(12, -4)]]);
         let v = Vector::from([cpl!(0, 7), cpl!(2, -7)]);
         let res = u.mul_vec(&v).unwrap();
-        assert_eq!(res, [cpl!(-15, -10), cpl!(-4, -29)])
+        assert_eq!(res, [cpl!(-15, -10), cpl!(-4, -29)]);
     }
 
     #[test]
@@ -258,6 +258,6 @@ mod test {
                 [cpl!(52, 26), cpl!(27, 161)],
                 [cpl!(224, -123), cpl!(288, 9)]
             ]
-        )
+        );
     }
 }
