@@ -265,7 +265,7 @@ mod test {
     #[test]
     fn from_tab() {
         let test = Vector::from([45, 454, 42, 48884, 33154]);
-        assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]")
+        assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]");
     }
 
     #[test]

@@ -82,6 +82,7 @@ where
     }
 }
 
+#[allow(clippy::op_ref, clippy::misrefactored_assign_op)]
 #[cfg(test)]
 mod test {
     use crate::Complex;
@@ -96,6 +97,6 @@ mod test {
         assert_eq!(&nb + other, Complex::new(0, 12));
         nb += other + nb;
         nb += &other;
-        assert_eq!(nb, Complex::new(0, 24))
+        assert_eq!(nb, Complex::new(0, 24));
     }
 }

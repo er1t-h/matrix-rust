@@ -83,6 +83,7 @@ where
 }
 
 #[cfg(test)]
+#[allow(clippy::op_ref)]
 mod test {
     use crate::Complex;
 
@@ -96,6 +97,6 @@ mod test {
         assert_eq!(&nb - other, Complex::new(20, 0));
         nb -= other - nb;
         nb -= &other;
-        assert_eq!(nb, Complex::new(40, 0))
+        assert_eq!(nb, Complex::new(40, 0));
     }
 }
