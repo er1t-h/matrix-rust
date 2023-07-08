@@ -4,6 +4,8 @@
 #![allow(clippy::float_cmp)]
 
 pub mod complex;
+pub mod const_matrix;
+pub mod const_vector;
 pub mod error;
 pub mod macros;
 pub mod matrix;

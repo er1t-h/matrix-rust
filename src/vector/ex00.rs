@@ -20,6 +20,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -56,6 +57,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -140,6 +142,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use matrix::traits::SafeSub;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -176,6 +179,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use matrix::traits::SafeSub;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
