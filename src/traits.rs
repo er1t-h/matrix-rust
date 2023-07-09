@@ -249,3 +249,15 @@ impl_max!(f32, f64);
 impl_max_ord!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_fma!(float, f32, f64);
 impl_fma!(int, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+
+pub trait TermToTerm<Rhs = Self> {
+    fn term_to_term_mul_assign(&mut self, rhs: Rhs);
+
+    fn term_to_term_mul(mut self, rhs: Rhs) -> Self
+    where
+        Self: Sized,
+    {
+        self.term_to_term_mul_assign(rhs);
+        self
+    }
+}

@@ -1,18 +1,6 @@
 use std::ops::MulAssign;
 
-use crate::const_matrix::ConstMatrix;
-
-pub trait TermToTerm<Rhs = Self> {
-    fn term_to_term_mul_assign(&mut self, rhs: Rhs);
-
-    fn term_to_term_mul(mut self, rhs: Rhs) -> Self
-    where
-        Self: Sized,
-    {
-        self.term_to_term_mul_assign(rhs);
-        self
-    }
-}
+use crate::{const_matrix::ConstMatrix, traits::TermToTerm};
 
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> TermToTerm
     for ConstMatrix<K, ROW_NUMBER, COL_NUMBER>

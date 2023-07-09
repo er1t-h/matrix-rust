@@ -13,6 +13,8 @@ pub mod traits;
 pub mod utils;
 pub mod vector;
 
+mod static_asserts;
+
 pub use crate::complex::Complex;
 pub use crate::matrix::Matrix;
 pub use crate::vector::Vector;

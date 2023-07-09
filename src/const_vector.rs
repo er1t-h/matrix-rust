@@ -1,5 +1,7 @@
 use std::ops::Index;
 
+use crate::static_asserts::AssertNonZero;
+
 mod operations;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -8,7 +10,9 @@ pub struct ConstVector<K, const SIZE: usize> {
 }
 
 impl<K, const SIZE: usize> From<[K; SIZE]> for ConstVector<K, SIZE> {
+    #[allow(clippy::no_effect, path_statements)]
     fn from(vector: [K; SIZE]) -> Self {
+        AssertNonZero::<SIZE>::OK;
         Self { content: vector }
     }
 }
