@@ -1,3 +1,41 @@
+//!
+//! Implementation for addition, substraction and multiplication by a scalar.
+//!
+//! # [`SafeAdd`] and [`SafeSub`] for [`Vector`] addition and substraction
+//!
+//! ## Error return
+//!
+//! Since size is checked at runtime, both addition and substraction can fail.
+//! To prevent that, [`Vector`] implements [`SafeAdd`] and [`SafeSub`].
+//! If an error occurs (dimensions differs), a [`VectorOperationError`] is returned.
+//!
+//! ## Operation traits
+//!
+//! However, it's still practical to use the `+`, `+=`, `-` and `-=` operators.
+//! Therefore, those traits are also implemented.
+//! If a simple operation fails, the value of the left operand is returned, left
+//! unmodified.
+//!
+//! If an assign operation fails, `self` is not modified either.
+//!
+//!
+//! # [`MulAssign`] for scalar multiplication
+//!
+//! The trait is implemented as follow:
+//! - If the scalar is given as a reference, it multiplies that reference with
+//!     every element of the vector.
+//! - If the scalar is given as a value, it multiplies clones of that value with
+//!     every element of the vector.
+//!
+//! If you want to use custom types, you'll probably want to use the former.
+//! If you want to use primitives ([`f32`], [`f64`]), you'll probably want the
+//! latter.
+//!
+//! # Complexity
+//! Each of these operations have a complexity of `O(n)`, for an `n`-element
+//! vector.
+//!
+
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::{
@@ -20,6 +58,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use crate::matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -56,6 +95,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use crate::matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -140,6 +180,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use crate::matrix::traits::SafeSub;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -176,6 +217,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Vector;
+    /// use crate::matrix::traits::SafeSub;
     ///
     /// let mut lhs = Vector::from([15, 2]);
     /// let rhs = Vector::from([3, 57]);
@@ -466,20 +508,20 @@ mod test {
             let mut u = Vector::from([2., 3.]);
             let v = Vector::from([5., 7.]);
             u += v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [7., 10.]);
         }
         {
             let mut u = Vector::from([2., 3.]);
             let v = Vector::from([5., 7.]);
             u -= v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [-3., -4.]);
         }
         {
             let mut u = Vector::from([2., 3.]);
             u *= 2.;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [4., 6.]);
         }
     }

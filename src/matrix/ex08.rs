@@ -1,3 +1,7 @@
+//!
+//! Implementation of the `trace` of a [`Matrix`].
+//!
+
 use std::ops::AddAssign;
 
 use crate::{error::TraceError, Matrix};
@@ -83,19 +87,19 @@ mod test {
             let u = Matrix::from([[1., 0.], [0., 1.]]);
             let res = u.trace().unwrap();
             assert_eq!(res, 2.0);
-            println!("trace({}) = {}", u, res);
+            println!("trace({u}) = {res}");
         }
         {
             let u = Matrix::from([[2., -5., 0.], [4., 3., 7.], [-2., 3., 4.]]);
             let res = u.trace().unwrap();
             assert_eq!(res, 9.0);
-            println!("trace({}) = {}", u, res);
+            println!("trace({u}) = {res}");
         }
         {
             let u = Matrix::from([[-2., -8., 4.], [1., -23., 4.], [0., 6., 4.]]);
             let res = u.trace().unwrap();
             assert_eq!(res, -21.0);
-            println!("trace({}) = {}", u, res);
+            println!("trace({u}) = {res}");
         }
     }
 
@@ -105,7 +109,7 @@ mod test {
             let u = Matrix::from([[cpl!(5, -3), cpl!(6, 2)], [cpl!(0, -3), cpl!(-7, 2)]]);
             let res = u.trace().unwrap();
             assert_eq!(res, cpl!(-2, -1));
-            println!("trace({}) = {}", u, res);
+            println!("trace({u}) = {res}");
         }
         {
             let u = Matrix::from([
@@ -115,7 +119,7 @@ mod test {
             ]);
             let res = u.trace().unwrap();
             assert_eq!(res, cpl!(3, 3));
-            println!("trace({}) = {}", u, res);
+            println!("trace({u}) = {res}");
         }
     }
 }

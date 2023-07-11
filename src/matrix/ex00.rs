@@ -1,3 +1,41 @@
+//!
+//! Implementation for matrix addition, substraction and multiplication by a scalar.
+//!
+//! # [`SafeAdd`] and [`SafeSub`] for [`Matrix`] addition and substraction
+//!
+//! ## Error return
+//!
+//! Since size is checked at runtime, both addition and substraction can fail.
+//! To prevent that, [`Matrix`] implements [`SafeAdd`] and [`SafeSub`].
+//! If an error occurs (dimensions differs), a [`MatrixOperationError`] is returned.
+//!
+//! ## Operation traits
+//!
+//! However, it's still practical to use the `+`, `+=`, `-` and `-=` operators.
+//! Therefore, those traits are also implemented.
+//! If a simple operation fails, the value of the left operand is returned, left
+//! unmodified.
+//!
+//! If an assign operation fails, `self` is not modified either.
+//!
+//!
+//! # [`MulAssign`] for scalar multiplication
+//!
+//! The trait is implemented as follow:
+//! - If the scalar is given as a reference, it multiplies that reference with
+//!     every element of the matrix.
+//! - If the scalar is given as a value, it multiplies clones of that value with
+//!     every element of the matrix.
+//!
+//! If you want to use custom types, you'll probably want to use the former.
+//! If you want to use primitives ([`f32`], [`f64`]), you'll probably want the
+//! latter.
+//!
+//! # Complexity
+//! Each of these operations have a complexity of `O(n)`, for an `n`-element
+//! matrix.
+//!
+
 use std::ops::{Add, AddAssign, Mul, MulAssign, Sub, SubAssign};
 
 use crate::{
@@ -19,7 +57,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
-    /// use matrix::matrix::SafeAdd;
+    /// use matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Matrix::from([[5, 4], [3, 2]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -61,7 +99,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
-    /// use matrix::matrix::SafeAdd;
+    /// use matrix::traits::SafeAdd;
     ///
     /// let mut lhs = Matrix::from([[5, 4], [3, 2]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -74,7 +112,7 @@ where
     /// [`NotSameSize`](MatrixOperationError::NotSameSize)
     ///
     /// # Complexity:
-    /// Linear: O(m*n) for a `m * n` Matrix
+    /// Linear: O(n) for a `n`-element Matrix.
     ///
     fn safe_add_assign(&mut self, rhs: Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
@@ -103,7 +141,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
-    /// use matrix::matrix::SafeSub;
+    /// use matrix::traits::SafeSub;
     ///
     /// let mut lhs = Matrix::from([[10, 10], [10, 10]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -116,7 +154,7 @@ where
     /// [`NotSameSize`](MatrixOperationError::NotSameSize)
     ///
     /// # Complexity:
-    /// Linear: O(m*n) for a `m * n` Matrix
+    /// Linear: O(n) for a `n`-element Matrix
     ///
     fn safe_sub_assign(&mut self, rhs: &'a Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
@@ -144,7 +182,7 @@ where
     /// # Example:
     /// ```
     /// use matrix::Matrix;
-    /// use matrix::matrix::SafeSub;
+    /// use matrix::traits::SafeSub;
     ///
     /// let mut lhs = Matrix::from([[10, 10], [10, 10]]);
     /// let rhs = Matrix::from([[5, 6], [7, 8]]);
@@ -157,7 +195,7 @@ where
     /// [`NotSameSize`](MatrixOperationError::NotSameSize)
     ///
     /// # Complexity:
-    /// Linear: O(m*n) for a `m * n` Matrix
+    /// Linear: O(n) for a `n`-element Matrix
     ///
     fn safe_sub_assign(&mut self, rhs: Self) -> Result<(), Self::Error> {
         if self.dimensions != rhs.dimensions {
@@ -424,20 +462,20 @@ mod test {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             let v = Matrix::from([[7., 4.], [-2., 2.]]);
             u += v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[8., 6.], [1., 6.]]);
         }
         {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             let v = Matrix::from([[7., 4.], [-2., 2.]]);
             u -= v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[-6., -2.], [5., 2.]]);
         }
         {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             u *= 2.;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[2., 4.], [6., 8.]]);
         }
     }

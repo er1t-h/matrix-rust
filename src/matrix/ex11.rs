@@ -1,3 +1,13 @@
+//!
+//! Implementation of `determinant` for a [`Matrix`]
+//!
+//! # Implementations details
+//!
+//! Determinant for a matrix of up to `4×4` does not allocate.
+//! For bigger dimensions, the process passes by a reduced row echelon, taking
+//! far more time and space.
+//!
+
 use std::{
     fmt::Display,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
@@ -166,21 +176,21 @@ mod test {
             let u = Matrix::from([[1., -1.], [-1., 1.]]);
             let res = u.determinant().unwrap();
             assert_eq_float!(res, 0.);
-            println!("det({}) = {:?}", u, res);
+            println!("det({u}) = {res:?}");
             // 0.0
         }
         {
             let u = Matrix::from([[2., 0., 0.], [0., 2., 0.], [0., 0., 2.]]);
             let res = u.determinant().unwrap();
             assert_eq_float!(res, 8.);
-            println!("det({}) = {:?}", u, res);
+            println!("det({u}) = {res:?}");
             // 8.0
         }
         {
             let u = Matrix::from([[8., 5., -2.], [4., 7., 20.], [7., 6., 1.]]);
             let res = u.determinant().unwrap();
             assert_eq_float!(res, -174.);
-            println!("det({}) = {:?}", u, res);
+            println!("det({u}) = {res:?}");
             // -174.0
         }
         {
@@ -192,7 +202,7 @@ mod test {
             ]);
             let res = u.determinant().unwrap();
             assert_eq_float!(res, 1032.);
-            println!("det({}) = {:?}", u, res);
+            println!("det({u}) = {res:?}");
             // 1032
         }
     }
@@ -208,7 +218,7 @@ mod test {
         ]);
         let res = u.determinant().unwrap();
         assert_eq_float!(res, -627_635.25);
-        println!("det({}) = {:?}", u, res);
+        println!("det({u}) = {res:?}");
     }
 
     #[test]
@@ -220,6 +230,6 @@ mod test {
         ]);
         let res = u.determinant().unwrap();
         assert_eq!(res, cpl!(-750., 164.));
-        println!("det({}) = {:?}", u, res);
+        println!("det({u}) = {res:?}");
     }
 }

@@ -1,3 +1,7 @@
+//!
+//! Implementation of a reduced row echelon form for a [`Matrix`]
+//!
+
 use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
@@ -196,6 +200,6 @@ mod test {
 
         let mat: Matrix<f64> = Matrix::from([[1., 3., 6.], [18., 9., 7.]]);
         let res = mat.reduced_row_echelon();
-        println!("{}", res);
+        println!("{res}");
     }
 }

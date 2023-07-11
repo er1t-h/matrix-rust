@@ -1,3 +1,7 @@
+//!
+//! OpenGL projection [`Matrix`]
+//!
+
 use crate::Matrix;
 
 impl Matrix<f64> {
@@ -40,6 +44,6 @@ mod test {
                 });
             str.push('\n');
         }
-        write!(file, "{}", str).unwrap();
+        write!(file, "{str}").unwrap();
     }
 }

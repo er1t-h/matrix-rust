@@ -1,3 +1,7 @@
+//!
+//! Linear Combination
+//!
+
 use std::ops::{AddAssign, Mul};
 
 use crate::{error::LinearCombinationError, Vector};
@@ -129,7 +133,7 @@ mod test {
 
             let res = linear_combination(&[e1, e2, e3], &[10., -2., 0.5]).unwrap();
             assert_eq!(res, [10., -2., 0.5]);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let v1 = Vector::from([1., 2., 3.]);
@@ -137,7 +141,7 @@ mod test {
 
             let res = linear_combination(&[v1, v2], &[10., -2.]).unwrap();
             assert_eq!(res, [10., 0., 230.]);
-            println!("{}", res);
+            println!("{res}");
         }
     }
 
