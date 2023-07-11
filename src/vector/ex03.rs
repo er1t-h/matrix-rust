@@ -1,3 +1,7 @@
+//!
+//! Dot product.
+//!
+
 use std::{iter::Sum, ops::Mul};
 
 use crate::{error::VectorOperationError, Vector};
@@ -84,21 +88,21 @@ mod test {
             let v = Vector::from([1., 1.]);
             let res = u.dot(&v).unwrap();
             assert_eq!(res, 0.0);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let u = Vector::from([1., 1.]);
             let v = Vector::from([1., 1.]);
             let res = u.dot(&v).unwrap();
             assert_eq!(res, 2.0);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let u = Vector::from([-1., 6.]);
             let v = Vector::from([3., 2.]);
             let res = u.dot(&v).unwrap();
             assert_eq!(res, 9.0);
-            println!("{}", res);
+            println!("{res}");
         }
     }
 

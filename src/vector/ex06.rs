@@ -1,3 +1,7 @@
+//!
+//! Cross product
+//!
+
 use std::ops::{Mul, Sub};
 
 use crate::{error::CrossProductError, Vector};
@@ -88,21 +92,21 @@ mod test {
             let v = Vector::from([1., 0., 0.]);
             let res = Vector::cross_product(&u, &v).unwrap();
             assert_eq!(res, [0., 1., 0.]);
-            println!("cross({}, {}) = {}", u, v, res);
+            println!("cross({u}, {v}) = {res}");
         }
         {
             let u = Vector::from([1., 2., 3.]);
             let v = Vector::from([4., 5., 6.]);
             let res = Vector::cross_product(&u, &v).unwrap();
             assert_eq!(res, [-3., 6., -3.]);
-            println!("cross({}, {}) = {}", u, v, res);
+            println!("cross({u}, {v}) = {res}");
         }
         {
             let u = Vector::from([4., 2., -3.]);
             let v = Vector::from([-2., -5., 16.]);
             let res = Vector::cross_product(&u, &v).unwrap();
             assert_eq!(res, [17., -58., -16.]);
-            println!("cross({}, {}) = {}", u, v, res);
+            println!("cross({u}, {v}) = {res}");
         }
     }
 

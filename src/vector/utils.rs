@@ -20,7 +20,7 @@ impl<K: Clone + Display> Display for Vector<K> {
                 .map(ToString::to_string)
                 .reduce(|accumulator, elt| accumulator + ", " + &elt)
                 .unwrap();
-            write!(f, "[{}]", buff)
+            write!(f, "[{buff}]")
         }
     }
 }
@@ -226,13 +226,13 @@ mod test {
         let test = Vector {
             content: vec![15, 1, -7],
         };
-        assert_eq!(format!("{}", test), "[15, 1, -7]");
+        assert_eq!(format!("{test}"), "[15, 1, -7]");
         let test = Vector { content: vec![15] };
-        assert_eq!(format!("{}", test), "[15]");
+        assert_eq!(format!("{test}"), "[15]");
         let test: Vector<u64> = Vector {
             content: Vec::new(),
         };
-        assert_eq!(format!("{}", test), "[]");
+        assert_eq!(format!("{test}"), "[]");
     }
 
     #[test]
@@ -265,7 +265,7 @@ mod test {
     #[test]
     fn from_tab() {
         let test = Vector::from([45, 454, 42, 48884, 33154]);
-        assert_eq!(format!("{}", test), "[45, 454, 42, 48884, 33154]");
+        assert_eq!(format!("{test}"), "[45, 454, 42, 48884, 33154]");
     }
 
     #[test]

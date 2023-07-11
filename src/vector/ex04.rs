@@ -1,3 +1,7 @@
+//!
+//! Taxicab, Euclidean and Suprenum norms implementation
+//!
+
 use std::{iter::Sum, ops::Mul};
 
 use crate::{
@@ -99,17 +103,17 @@ mod test {
             {
                 let res = u.norm_1();
                 assert_eq!(res, 0.);
-                println!("norm1({}) = {}", u, res);
+                println!("norm1({u}) = {res}");
             }
             {
                 let res = u.norm();
                 assert_eq!(res, 0.);
-                println!("norm({}) = {}", u, res);
+                println!("norm({u}) = {res}");
             }
             {
                 let res = u.norm_inf();
                 assert_eq!(res, 0.);
-                println!("norm_inf({}) = {}", u, res);
+                println!("norm_inf({u}) = {res}");
             }
         }
         {
@@ -117,17 +121,17 @@ mod test {
             {
                 let res = u.norm_1();
                 assert_eq!(res, 6.);
-                println!("norm1({}) = {}", u, res);
+                println!("norm1({u}) = {res}");
             }
             {
                 let res = u.norm();
                 assert_eq_float!(res, 3.741_657_38_f64);
-                println!("norm({}) = {}", u, res);
+                println!("norm({u}) = {res}");
             }
             {
                 let res = u.norm_inf();
                 assert_eq!(res, 3.);
-                println!("norm_inf({}) = {}", u, res);
+                println!("norm_inf({u}) = {res}");
             }
         }
         {
@@ -135,17 +139,17 @@ mod test {
             {
                 let res = u.norm_1();
                 assert_eq!(res, 3.);
-                println!("norm1({}) = {}", u, res);
+                println!("norm1({u}) = {res}");
             }
             {
                 let res = u.norm();
                 assert_eq_float!(res, 2.236_067_977_f64);
-                println!("norm({}) = {}", u, res);
+                println!("norm({u}) = {res}");
             }
             {
                 let res = u.norm_inf();
                 assert_eq!(res, 2.);
-                println!("norm_inf({}) = {}", u, res);
+                println!("norm_inf({u}) = {res}");
             }
         }
     }
@@ -156,17 +160,17 @@ mod test {
         {
             let res = u.norm_1();
             assert_eq_float!(res, 6.3);
-            println!("norm1({}) = {}", u, res);
+            println!("norm1({u}) = {res}");
         }
         {
             let res = u.norm();
             assert_eq_float!(res, 3.23883);
-            println!("norm({}) = {}", u, res);
+            println!("norm({u}) = {res}");
         }
         {
             let res = u.norm_inf();
             assert_eq!(res, 2.);
-            println!("norm_inf({}) = {}", u, res);
+            println!("norm_inf({u}) = {res}");
         }
     }
 
@@ -181,7 +185,7 @@ mod test {
                 res,
                 cpl!(8.602_325_267_042_626_77 + 12.041_594_578_792 + 2., 0.)
             );
-            println!("norm1({}) = {}", u, res);
+            println!("norm1({u}) = {res}");
         }
         {
             // * A complex number may have multiple sqrt
