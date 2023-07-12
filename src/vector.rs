@@ -1,10 +1,25 @@
+//!
+//! Vector implementation
+//!
+
+mod ex00;
+
+mod ex01;
+pub use ex01::{linear_combination, linear_combination_unchecked};
+
+mod ex03;
+mod ex04;
+
+mod ex05;
+mod ex06;
+
 mod utils;
-mod exercise_1;
 
-use crate::traits::Space;
-
-
-#[derive(Debug)]
-pub struct Vector<K: Space> {
+///
+/// Implementation of a Vector
+///
+#[must_use]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Vector<K: Clone> {
     content: Vec<K>,
 }
