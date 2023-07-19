@@ -1,10 +1,87 @@
 use std::mem::{self, MaybeUninit};
 
+use self::iter_val::SingleColumnIteratorValue;
+
 use super::ConstMatrix;
 
-impl<K: Sized, const ROW_NUMBER: usize, const COL_NUMBER: usize>
-    ConstMatrix<K, ROW_NUMBER, COL_NUMBER>
-{
+mod iter;
+mod iter_mut;
+mod iter_val;
+pub use iter::SingleColumnIterator;
+pub use iter_mut::SingleColumnIteratorMut;
+
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUMBER, COL_NUMBER> {
+    ///
+    /// Returns an iterator over a single column of the matrix.
+    ///
+    /// The iterator yields all reference in the given `column` of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::const_matrix::ConstMatrix;
+    ///
+    /// let mat = ConstMatrix::from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+    /// let mut iter = mat.iter_col(1);
+    /// assert_eq!(iter.next(), Some(&2));
+    /// assert_eq!(iter.next(), Some(&5));
+    /// assert_eq!(iter.next(), Some(&8));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    ///
+    pub fn iter_col(&self, column: usize) -> SingleColumnIterator<'_, K, ROW_NUMBER, COL_NUMBER> {
+        SingleColumnIterator::new(self, column)
+    }
+
+    ///
+    /// Returns an iterator over a single column of the matrix, yielding values.
+    ///
+    /// The iterator yields all values in the given `column` of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::const_matrix::ConstMatrix;
+    ///
+    /// let mat = ConstMatrix::from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+    /// let mut iter = mat.iter_col_value(1);
+    /// assert_eq!(iter.next(), Some(2));
+    /// assert_eq!(iter.next(), Some(5));
+    /// assert_eq!(iter.next(), Some(8));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    ///
+    pub fn iter_col_value(
+        self,
+        column: usize,
+    ) -> SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER> {
+        SingleColumnIteratorValue::new(self, column)
+    }
+
+    ///
+    /// Returns an iterator over a single column of the matrix, yielding mutable references.
+    ///
+    /// The iterator yields all reference in the given `column` of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::const_matrix::ConstMatrix;
+    ///
+    /// let mut mat = ConstMatrix::from([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+    /// let mut iter = mat.iter_col_mut(1);
+    /// *iter.next().unwrap() = 3;
+    /// *iter.next().unwrap() = 6;
+    /// *iter.next().unwrap() = 9;
+    /// assert_eq!(mat, ConstMatrix::from([[1, 3, 3], [4, 6, 6], [7, 9, 9]]));
+    /// ```
+    ///
+    pub fn iter_col_mut(
+        &mut self,
+        column: usize,
+    ) -> SingleColumnIteratorMut<'_, K, ROW_NUMBER, COL_NUMBER> {
+        SingleColumnIteratorMut::new(self, column)
+    }
+}
+
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUMBER, COL_NUMBER> {
     ///
     /// Returns an array containing all the elements of the `index`th column of
     /// `self`.

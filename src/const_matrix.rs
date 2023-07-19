@@ -1,3 +1,5 @@
+use std::mem::MaybeUninit;
+
 use crate::static_asserts::AssertNonZero;
 
 mod column;
@@ -20,12 +22,31 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> From<[[K; COL_NUMBER];
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::ConstMatrix;
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUMBER, COL_NUMBER> {
+    pub fn get(&self, col: usize, row: usize) -> Option<&K> {
+        self.content.get(row).and_then(|x| x.get(col))
+    }
 
-    #[test]
-    fn no_size() {
-        let mat: ConstMatrix<i32, 0, 0> = ConstMatrix::from([]);
+    pub fn get_mut(&mut self, col: usize, row: usize) -> Option<&mut K> {
+        self.content.get_mut(row).and_then(|x| x.get_mut(col))
+    }
+}
+
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
+    ConstMatrix<MaybeUninit<K>, ROW_NUMBER, COL_NUMBER>
+{
+    ///
+    /// Returns the value at the position `col`;`row`.
+    ///
+    /// # Safety
+    ///
+    /// If this function is called twice on the same element, it results in
+    /// Undefined Behaviour.
+    ///
+    unsafe fn get_value(&self, col: usize, row: usize) -> Option<K> {
+        self.content
+            .get(row)
+            .and_then(|x| x.get(col))
+            .and_then(|x| unsafe { Some(x.assume_init_read()) })
     }
 }
