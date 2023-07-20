@@ -14,6 +14,10 @@ pub struct SingleColumnIteratorValue<K, const ROW_NUMBER: usize, const COL_NUMBE
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
     SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>
 {
+    ///
+    /// Creates a new iterator that will yield all values of the column, exactly
+    /// one time, and drops all values not present in this column.
+    ///
     pub fn new(matrix: ConstMatrix<K, ROW_NUMBER, COL_NUMBER>, column: usize) -> Self {
         assert!(
             column < COL_NUMBER,
@@ -42,6 +46,35 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
                 }
             }
         }
+
+        Self {
+            matrix: new_matrix,
+            column,
+            indexes: 0..ROW_NUMBER,
+        }
+    }
+
+    ///
+    /// Creates a new iterator that will yield all values of the column, exactly
+    /// one time.
+    ///
+    /// # Safety
+    /// - The `matrix` must not be freed after a call to this function.
+    /// - This function must never be called twice on the same matrix and column.
+    ///
+    pub unsafe fn new_by_ref(
+        matrix: &ConstMatrix<K, ROW_NUMBER, COL_NUMBER>,
+        column: usize,
+    ) -> Self {
+        assert!(
+            column < COL_NUMBER,
+            "expected column to be in the range 0..{COL_NUMBER}"
+        );
+
+        // We copy our matrix of K into a matrix of MaybeUninit<K> because we
+        // will free all unused values of the matrix.
+        let new_matrix: ConstMatrix<MaybeUninit<K>, ROW_NUMBER, COL_NUMBER> =
+            unsafe { mem::transmute_copy(matrix) };
 
         Self {
             matrix: new_matrix,
