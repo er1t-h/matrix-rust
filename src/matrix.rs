@@ -27,7 +27,7 @@ pub struct Dimensions {
     pub height: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 ///
 /// Implementation of a Matrix
 ///

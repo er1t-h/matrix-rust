@@ -1,7 +1,13 @@
-#[derive(Clone, Copy, PartialEq, Eq, Debug, Default, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub struct Complex<T> {
     real: T,
     imaginary: T,
+}
+
+impl<T: Debug> Debug for Complex<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({:?} + {:?}i)", self.re(), self.im())
+    }
 }
 
 mod operations;
@@ -25,6 +31,8 @@ macro_rules! cpl {
         cpl!(-$real, -$imag)
     };
 }
+
+use std::fmt::Debug;
 
 #[cfg(test)]
 pub(crate) use cpl;

@@ -3,7 +3,7 @@ use std::{
     ops::{Add, Mul},
 };
 
-use crate::traits::{Abs, IsZero, One, Sqrt, Zero};
+use crate::traits::{Abs, IsOne, IsZero, One, Sqrt, Zero};
 
 use super::Complex;
 
@@ -42,6 +42,16 @@ impl<T: IsZero> IsZero for &Complex<T> {
         self.real.is_zero() && self.imaginary.is_zero()
     }
 }
+impl<T: IsZero> IsZero for Complex<T> {
+    fn is_zero(&self) -> bool {
+        self.real.is_zero() && self.imaginary.is_zero()
+    }
+}
+impl<T: IsZero + IsOne> IsOne for Complex<T> {
+    fn is_one(&self) -> bool {
+        self.real.is_one() && self.imaginary.is_zero()
+    }
+}
 
 impl<T> Abs for Complex<T>
 where
@@ -63,6 +73,13 @@ impl<T> Complex<T> {
     }
     pub const fn re(&self) -> &T {
         &self.real
+    }
+
+    pub fn im_mut(&mut self) -> &mut T {
+        &mut self.imaginary
+    }
+    pub fn re_mut(&mut self) -> &mut T {
+        &mut self.real
     }
 }
 

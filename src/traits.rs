@@ -31,6 +31,9 @@ pub trait Divisor {
 pub trait IsZero {
     fn is_zero(&self) -> bool;
 }
+pub trait IsOne {
+    fn is_one(&self) -> bool;
+}
 
 pub trait FMA<Multiple = Self, Add = Self, Output = Self> {
     fn fma(&self, a: &Multiple, b: &Add) -> Output;
