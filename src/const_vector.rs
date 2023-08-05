@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::static_asserts::AssertNonZero;
+use crate::static_asserts::{AssertNonZero, AssertNonZeroSizeType};
 
 mod operations;
 
@@ -13,6 +13,8 @@ impl<K, const SIZE: usize> From<[K; SIZE]> for ConstVector<K, SIZE> {
     #[allow(clippy::no_effect, path_statements)]
     fn from(vector: [K; SIZE]) -> Self {
         AssertNonZero::<SIZE>::OK;
+        AssertNonZeroSizeType::<K>::OK;
+
         Self { content: vector }
     }
 }

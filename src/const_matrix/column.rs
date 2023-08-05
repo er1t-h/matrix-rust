@@ -88,7 +88,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     ///
     pub fn iter_all_col_value(
         self,
-    ) -> [SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>; ROW_NUMBER] {
+    ) -> [SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>; COL_NUMBER] {
         let mat = ManuallyDrop::new(self);
         std::array::from_fn(|col| unsafe { SingleColumnIteratorValue::new_by_ref(&mat, col) })
     }

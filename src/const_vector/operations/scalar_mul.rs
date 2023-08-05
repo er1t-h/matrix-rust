@@ -71,6 +71,7 @@ mod test {
     }
 
     #[test]
+    #[allow(clippy::op_ref)]
     fn mul_ref() {
         let vec1 = ConstVector::from([1, 2, 3]);
         assert_eq!(vec1 * &3, ConstVector::from([3, 6, 9]));

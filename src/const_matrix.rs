@@ -1,6 +1,6 @@
 use std::mem::MaybeUninit;
 
-use crate::static_asserts::AssertNonZero;
+use crate::static_asserts::{AssertNonZero, AssertNonZeroSizeType};
 
 mod column;
 mod operations;
@@ -17,6 +17,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> From<[[K; COL_NUMBER];
     fn from(matrix: [[K; COL_NUMBER]; ROW_NUMBER]) -> Self {
         AssertNonZero::<COL_NUMBER>::OK;
         AssertNonZero::<ROW_NUMBER>::OK;
+        AssertNonZeroSizeType::<K>::OK;
 
         Self { content: matrix }
     }
@@ -47,6 +48,6 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
         self.content
             .get(row)
             .and_then(|x| x.get(col))
-            .and_then(|x| unsafe { Some(x.assume_init_read()) })
+            .map(|x| unsafe { x.assume_init_read() })
     }
 }
