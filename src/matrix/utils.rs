@@ -388,6 +388,29 @@ impl<'a, K: Clone> Matrix<K> {
         })
     }
 
+    pub fn identity_no_default(diagonal_value: &K, other_value: &K, size: usize) -> Option<Self> {
+        if size == 0 {
+            return None;
+        }
+        let mut content: Vec<K> = Vec::with_capacity(size * size);
+        for i in 0..size {
+            for j in 0..size {
+                if i == j {
+                    content.push(diagonal_value.clone());
+                } else {
+                    content.push(other_value.clone());
+                }
+            }
+        }
+        Some(Self {
+            content,
+            dimensions: Dimensions {
+                width: size,
+                height: size,
+            },
+        })
+    }
+
     ///
     /// Returns the submatrix contained between `columns` and `lines`.
     ///

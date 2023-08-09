@@ -6,13 +6,13 @@ use std::ops::{Div, DivAssign, Mul, MulAssign, SubAssign};
 
 use crate::{
     error::InverseError,
-    traits::{IsZero, One},
+    traits::{IsZero, One, Zero},
     Matrix,
 };
 
 impl<K> Matrix<K>
 where
-    for<'a> K: Clone + One + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
+    for<'a> K: Clone + One + Zero + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K>,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///
@@ -37,9 +37,10 @@ where
             return Err(InverseError::NotSquareMatrix);
         }
         let mul_identity = K::one();
+        let def = K::zero();
         let mut return_matrix = Self::augmented_matrix(
             self,
-            &Self::identity(&mul_identity, self.dimensions.height).unwrap(),
+            &Self::identity_no_default(&mul_identity, &def, self.dimensions.height).unwrap(),
         )
         .unwrap();
         return_matrix = return_matrix.reduced_row_echelon();

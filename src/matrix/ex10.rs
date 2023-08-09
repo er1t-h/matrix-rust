@@ -11,7 +11,7 @@ use crate::{
 
 impl<K> Matrix<K>
 where
-    for<'a> K: Clone + Default + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K> + One,
+    for<'a> K: Clone + MulAssign<&'a K> + SubAssign<&'a K> + DivAssign<&'a K> + One,
     for<'a> &'a K: PartialEq + Mul<&'a K, Output = K> + Div<&'a K, Output = K> + IsZero,
 {
     ///

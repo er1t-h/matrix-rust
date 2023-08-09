@@ -47,7 +47,7 @@ where
         if self.dimensions.width != vec.len() {
             return Err(MulVecError::SizeMismatch(self.dimensions.width, vec.len()));
         }
-        Ok(self.mul_vec_internal(vec.iter(), vec.len()))
+        Ok(self.mul_vec_internal(vec.iter(), self.dimensions.height))
     }
 
     ///
@@ -163,10 +163,10 @@ where
     #[inline(always)]
     fn mul_mat_internal(&self, rhs: &Self) -> Self {
         let mut return_matrix =
-            Self::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
+            Self::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), self.dimensions.height));
         for index in 1..rhs.dimensions.width {
             let return_vec =
-                self.mul_vec_internal(rhs.get_column(index).unwrap(), rhs.dimensions.height);
+                self.mul_vec_internal(rhs.get_column(index).unwrap(), self.dimensions.height);
             return_matrix.append_column(&return_vec);
         }
         return_matrix
@@ -230,6 +230,32 @@ mod test {
             let expect = [[-14., -7.], [44., 22.]];
             assert_eq!(res, expect);
             println!("{u} * {v} = {res}");
+        }
+    }
+
+    #[test]
+    fn mat_vec() {
+        {
+            let u = Matrix::from([[2., 1.], [4., 2.], [6., 3.]]);
+            let v = Vector::from([1., 2.]);
+            let res = u.mul_vec(&v);
+            assert_eq!(res, Ok(Vector::from([4., 8., 12.,])));
+        }
+    }
+
+    #[test]
+    fn mat_with_different_size() {
+        {
+            let u = Matrix::from([[2., 1.]]);
+            let v = Matrix::from([[1.], [2.]]);
+            let res = u.mul_mat(&v);
+            assert_eq!(res, Ok(Matrix::from([[4.],])));
+        }
+        {
+            let u = Matrix::from([[2., 1.], [4., 2.], [6., 3.]]);
+            let v = Matrix::from([[1.], [2.]]);
+            let res = u.mul_mat(&v);
+            assert_eq!(res, Ok(Matrix::from([[4.], [8.], [12.],])));
         }
     }
 

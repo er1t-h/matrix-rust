@@ -42,4 +42,17 @@ impl<K: Clone> Matrix<K> {
     pub const fn dimensions(&self) -> Dimensions {
         self.dimensions
     }
+
+    ///
+    /// Creates a matrix from a vector, a width and a height.
+    ///
+    /// # Safety
+    /// The content should have `width` * `height` elements
+    ///
+    pub unsafe fn from_raw_parts(content: Vec<K>, width: usize, height: usize) -> Self {
+        Self {
+            content,
+            dimensions: Dimensions { width, height },
+        }
+    }
 }
