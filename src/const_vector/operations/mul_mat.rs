@@ -12,7 +12,7 @@ where
         let vector_elements = self.content.into_iter();
         let matrix_columns = rhs.iter_all_col_value();
 
-        Self::mul_val_val(vector_elements, matrix_columns)
+        ConstVector::from(Self::mul_val_val(vector_elements, matrix_columns))
     }
 }
 
@@ -23,49 +23,27 @@ where
 {
     type Output = ConstVector<K, ROW_NUMBER>;
     fn mul(self, rhs: &ConstMatrix<K, ROW_NUMBER, COL_NUMBER>) -> Self::Output {
-        let mut vector_elements = self.content.into_iter();
-        let mut matrix_columns = rhs.iter_all_col();
+        let vector_elements = self.content.into_iter();
+        let matrix_columns = rhs.iter_all_col();
 
-        let first_vector_elt = vector_elements.next().unwrap();
-
-        let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| first_vector_elt.clone() * matrix_columns[0].next().unwrap());
-
-        for (vector_element, matrix_column) in
-            vector_elements.zip(matrix_columns.into_iter().skip(1))
-        {
-            for (emplace, matrix_element) in array.iter_mut().zip(matrix_column) {
-                *emplace += vector_element.clone() * matrix_element;
-            }
-        }
-        ConstVector::from(array)
+        ConstVector::from(Self::mul_val_ref(vector_elements, matrix_columns))
     }
 }
 
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
     Mul<ConstMatrix<K, ROW_NUMBER, COL_NUMBER>> for &ConstVector<K, COL_NUMBER>
 where
-    for<'a> K: AddAssign,
-    for<'a> &'a K: Mul<K, Output = K>,
+    for<'a> K: AddAssign + Mul<&'a K, Output = K>,
 {
     type Output = ConstVector<K, ROW_NUMBER>;
     fn mul(self, rhs: ConstMatrix<K, ROW_NUMBER, COL_NUMBER>) -> Self::Output {
-        let mut vector_elements = self.content.iter();
-        let mut matrix_columns = rhs.iter_all_col_value();
+        let vector_elements = self.content.iter();
+        let matrix_columns = rhs.iter_all_col_value();
 
-        let first_vector_elt = vector_elements.next().unwrap();
-
-        let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| first_vector_elt * matrix_columns[0].next().unwrap());
-
-        for (vector_element, matrix_column) in
-            vector_elements.zip(matrix_columns.into_iter().skip(1))
-        {
-            for (emplace, matrix_element) in array.iter_mut().zip(matrix_column) {
-                *emplace += vector_element * matrix_element;
-            }
-        }
-        ConstVector::from(array)
+        ConstVector::from(ConstVector::<K, COL_NUMBER>::mul_ref_val(
+            vector_elements,
+            matrix_columns,
+        ))
     }
 }
 
@@ -77,30 +55,21 @@ where
 {
     type Output = ConstVector<K, ROW_NUMBER>;
     fn mul(self, rhs: &ConstMatrix<K, ROW_NUMBER, COL_NUMBER>) -> Self::Output {
-        let mut vector_elements = self.content.iter();
-        let mut matrix_columns = rhs.iter_all_col();
+        let vector_elements = self.content.iter();
+        let matrix_columns = rhs.iter_all_col();
 
-        let first_vector_elt = vector_elements.next().unwrap();
-
-        let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| first_vector_elt * matrix_columns[0].next().unwrap());
-
-        for (vector_element, matrix_column) in
-            vector_elements.zip(matrix_columns.into_iter().skip(1))
-        {
-            for (emplace, matrix_element) in array.iter_mut().zip(matrix_column) {
-                *emplace += vector_element * matrix_element;
-            }
-        }
-        ConstVector::from(array)
+        ConstVector::from(ConstVector::<K, COL_NUMBER>::mul_ref_ref(
+            vector_elements,
+            matrix_columns,
+        ))
     }
 }
 
 impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
-    fn mul_val_val<IVec, IMat, const ROW_NUMBER: usize>(
+    pub(crate) fn mul_val_val<IVec, IMat, const ROW_NUMBER: usize>(
         mut vector_elements: IVec,
         mut matrix_columns: [IMat; COL_NUMBER],
-    ) -> ConstVector<K, ROW_NUMBER>
+    ) -> [K; ROW_NUMBER]
     where
         IVec: Iterator<Item = K>,
         IMat: Iterator<Item = K>,
@@ -125,17 +94,17 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
                 *emplace += vector_element.clone() * matrix_element;
             }
         }
-        ConstVector::from(array)
+        array
     }
 
-    fn mul_val_ref<IVec, IMat, const ROW_NUMBER: usize>(
+    pub(crate) fn mul_val_ref<'a, IVec, IMat, const ROW_NUMBER: usize>(
         mut vector_elements: IVec,
         mut matrix_columns: [IMat; COL_NUMBER],
-    ) -> ConstVector<K, ROW_NUMBER>
+    ) -> [K; ROW_NUMBER]
     where
         IVec: Iterator<Item = K>,
-        IMat: Iterator<Item = &K>,
-        K: Clone + Mul<K, Output = K> + AddAssign,
+        IMat: Iterator<Item = &'a K>,
+        K: Clone + Mul<&'a K, Output = K> + AddAssign + 'a,
     {
         let first_vector_elt = vector_elements.next().unwrap();
 
@@ -149,7 +118,56 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
                 *emplace += vector_element.clone() * matrix_element;
             }
         }
-        ConstVector::from(array)
+        array
+    }
+
+    pub(crate) fn mul_ref_val<'a, IVec, IMat, const ROW_NUMBER: usize>(
+        mut vector_elements: IVec,
+        mut matrix_columns: [IMat; COL_NUMBER],
+    ) -> [K; ROW_NUMBER]
+    where
+        IVec: Iterator<Item = &'a K>,
+        IMat: Iterator<Item = K>,
+        K: Mul<&'a K, Output = K> + AddAssign + 'a,
+    {
+        let first_vector_elt = vector_elements.next().unwrap();
+
+        let mut array: [K; ROW_NUMBER] =
+            std::array::from_fn(|_| matrix_columns[0].next().unwrap() * first_vector_elt);
+
+        for (vector_element, matrix_column) in
+            vector_elements.zip(matrix_columns.into_iter().skip(1))
+        {
+            for (emplace, matrix_element) in array.iter_mut().zip(matrix_column) {
+                *emplace += matrix_element * vector_element;
+            }
+        }
+        array
+    }
+
+    pub(crate) fn mul_ref_ref<'a, IVec, IMat, const ROW_NUMBER: usize>(
+        mut vector_elements: IVec,
+        mut matrix_columns: [IMat; COL_NUMBER],
+    ) -> [K; ROW_NUMBER]
+    where
+        IVec: Iterator<Item = &'a K>,
+        IMat: Iterator<Item = &'a K>,
+        K: AddAssign + 'a,
+        &'a K: Mul<Output = K>,
+    {
+        let first_vector_elt = vector_elements.next().unwrap();
+
+        let mut array: [K; ROW_NUMBER] =
+            std::array::from_fn(|_| matrix_columns[0].next().unwrap() * first_vector_elt);
+
+        for (vector_element, matrix_column) in
+            vector_elements.zip(matrix_columns.into_iter().skip(1))
+        {
+            for (emplace, matrix_element) in array.iter_mut().zip(matrix_column) {
+                *emplace += matrix_element * vector_element;
+            }
+        }
+        array
     }
 }
 

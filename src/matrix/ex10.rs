@@ -196,6 +196,6 @@ mod test {
 
         let mat: Matrix<f64> = Matrix::from([[1., 3., 6.], [18., 9., 7.]]);
         let res = mat.reduced_row_echelon();
-        println!("{}", res);
+        println!("{res}");
     }
 }

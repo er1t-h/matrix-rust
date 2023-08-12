@@ -101,7 +101,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     ///
     pub fn iter_all_col(
         &self,
-    ) -> [SingleColumnIterator<'_, K, ROW_NUMBER, COL_NUMBER>; ROW_NUMBER] {
+    ) -> [SingleColumnIterator<'_, K, ROW_NUMBER, COL_NUMBER>; COL_NUMBER] {
         std::array::from_fn(|col| self.iter_col(col))
     }
 }

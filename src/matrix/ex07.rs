@@ -182,7 +182,7 @@ mod test {
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
             assert_eq!(res, [4., 2.]);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
         {
             let u = Matrix::from([[2., 0.], [0., 2.]]);
@@ -190,14 +190,14 @@ mod test {
             let res = u.mul_vec(&v).unwrap();
             let _didnt_crash = unsafe { u.mul_vec_unchecked(&v) };
             assert_eq!(res, [8., 4.]);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
         {
             let u = Matrix::from([[2., -2.], [-2., 2.]]);
             let v = Vector::from([4., 2.]);
             let res = u.mul_vec(&v).unwrap();
             assert_eq!(res, [4., -4.]);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
     }
 
@@ -209,7 +209,7 @@ mod test {
             let res = u.mul_mat(&v).unwrap();
             let expect = [[1., 0.], [0., 1.]];
             assert_eq!(res, expect);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
         {
             let u = Matrix::from([[1., 0.], [0., 1.]]);
@@ -217,7 +217,7 @@ mod test {
             let res = u.mul_mat(&v).unwrap();
             let expect = [[2., 1.], [4., 2.]];
             assert_eq!(res, expect);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
         {
             let u = Matrix::from([[3., -5.], [6., 8.]]);
@@ -225,7 +225,7 @@ mod test {
             let res = u.mul_mat(&v).unwrap();
             let expect = [[-14., -7.], [44., 22.]];
             assert_eq!(res, expect);
-            println!("{} * {} = {}", u, v, res);
+            println!("{u} * {v} = {res}");
         }
     }
 

@@ -88,7 +88,7 @@ mod test {
             let v = Vector::from([1., 0.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
             assert_eq_float!(res, 1.0);
-            println!("cos({}, {}) = {}", u, v, res);
+            println!("cos({u}, {v}) = {res}");
             // 1.0
         }
         {
@@ -96,7 +96,7 @@ mod test {
             let v = Vector::from([0., 1.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
             assert_eq_float!(res, 0.0);
-            println!("cos({}, {}) = {}", u, v, res);
+            println!("cos({u}, {v}) = {res}");
             // 0.0
         }
         {
@@ -104,7 +104,7 @@ mod test {
             let v = Vector::from([1., -1.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
             assert_eq_float!(res, -1.0);
-            println!("cos({}, {}) = {}", u, v, res);
+            println!("cos({u}, {v}) = {res}");
             // -1.0
         }
         {
@@ -112,7 +112,7 @@ mod test {
             let v = Vector::from([4., 2.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
             assert_eq_float!(res, 1.0);
-            println!("cos({}, {}) = {}", u, v, res);
+            println!("cos({u}, {v}) = {res}");
             // 1.0
         }
         {
@@ -120,7 +120,7 @@ mod test {
             let v = Vector::from([4., 5., 6.]);
             let res = Vector::angle_cos(&u, &v).unwrap();
             assert_eq_float!(res, 0.974_631_846);
-            println!("cos({}, {}) = {}", u, v, res);
+            println!("cos({u}, {v}) = {res}");
             // 0.974631846
         }
     }

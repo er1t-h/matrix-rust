@@ -28,15 +28,15 @@ mod test {
         let mat = Matrix::from([[1, 2, 3], [4, 5, 6]]);
         let res = mat.transpose();
         assert_eq!(res, [[1, 4], [2, 5], [3, 6]]);
-        println!("Transpose of {} is {}", mat, res);
+        println!("Transpose of {mat} is {res}");
         let mat = Matrix::from([[1]]);
         let res = mat.transpose();
         assert_eq!(res, [[1]]);
-        println!("Transpose of {} is {}", mat, res);
+        println!("Transpose of {mat} is {res}");
         let mat = Matrix::from([[1], [2]]);
         let res = mat.transpose();
         assert_eq!(res, [[1, 2]]);
-        println!("Transpose of {} is {}", mat, res);
+        println!("Transpose of {mat} is {res}");
     }
 
     #[test]
@@ -45,7 +45,7 @@ mod test {
             let mat = Matrix::from([[cpl!(5, -3), cpl!(6, 2)], [cpl!(0, -3), cpl!(-7, 2)]]);
             let res = mat.transpose();
             assert_eq!(res, [[cpl!(5, -3), cpl!(0, -3)], [cpl!(6, 2), cpl!(-7, 2)]]);
-            println!("Transpose of {} is {}", mat, res);
+            println!("Transpose of {mat} is {res}");
         }
         {
             let mat = Matrix::from([[cpl!(65, -12), cpl!(64, 21)], [cpl!(0, -32), cpl!(-71, 20)]]);
@@ -54,7 +54,7 @@ mod test {
                 res,
                 [[cpl!(65, -12), cpl!(0, -32)], [cpl!(64, 21), cpl!(-71, 20)]]
             );
-            println!("Transpose of {} is {}", mat, res);
+            println!("Transpose of {mat} is {res}");
         }
     }
 }

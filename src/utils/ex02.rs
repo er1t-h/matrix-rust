@@ -52,27 +52,27 @@ mod test {
         {
             let res = lerp(&0., &1., &0.).unwrap();
             assert_eq!(res, 0.);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let res = lerp(&0., &1., &1.).unwrap();
             assert_eq!(res, 1.);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let res = lerp(&0., &1., &0.5).unwrap();
             assert_eq!(res, 0.5);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let res = lerp(&21., &42., &0.3).unwrap();
             assert_eq!(res, 27.3);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let res = lerp(&Vector::from([2., 1.]), &Vector::from([4., 2.]), &0.3).unwrap();
             assert_eq!(res, [2.6, 1.3]);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let res = lerp(
@@ -82,7 +82,7 @@ mod test {
             )
             .unwrap();
             assert_eq!(res, [[11., 5.5], [16.5, 22.]]);
-            println!("{}", res);
+            println!("{res}");
         }
     }
 

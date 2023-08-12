@@ -49,20 +49,20 @@ mod test {
             let u = Matrix::from([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]);
             let res = u.rank();
             assert_eq!(res, 3);
-            println!("{}", res);
+            println!("{res}");
         }
         {
             let u = Matrix::from([[1., 2., 0., 0.], [2., 4., 0., 0.], [-1., 2., 1., 1.]]);
             let res = u.rank();
             assert_eq!(res, 2);
-            println!("{}", res);
+            println!("{res}");
             // 2
         }
         {
             let u = Matrix::from([[8., 5., -2.], [4., 7., 20.], [7., 6., 1.], [21., 18., 7.]]);
             let res = u.rank();
             assert_eq!(res, 3);
-            println!("{}", res);
+            println!("{res}");
             // 3
         }
     }

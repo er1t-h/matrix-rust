@@ -40,6 +40,6 @@ mod test {
                 });
             str.push('\n');
         }
-        write!(file, "{}", str).unwrap();
+        write!(file, "{str}").unwrap();
     }
 }

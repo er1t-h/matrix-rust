@@ -424,20 +424,20 @@ mod test {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             let v = Matrix::from([[7., 4.], [-2., 2.]]);
             u += v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[8., 6.], [1., 6.]]);
         }
         {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             let v = Matrix::from([[7., 4.], [-2., 2.]]);
             u -= v;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[-6., -2.], [5., 2.]]);
         }
         {
             let mut u = Matrix::from([[1., 2.], [3., 4.]]);
             u *= 2.;
-            println!("{}", u);
+            println!("{u}");
             assert_eq!(u, [[2., 4.], [6., 8.]]);
         }
     }

@@ -1,26 +1,12 @@
 use std::mem::MaybeUninit;
 
-use crate::static_asserts::{AssertNonZero, AssertNonZeroSizeType};
-
 mod column;
+mod constructor;
 mod operations;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstMatrix<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> {
     content: [[K; COL_NUMBER]; ROW_NUMBER],
-}
-
-impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> From<[[K; COL_NUMBER]; ROW_NUMBER]>
-    for ConstMatrix<K, ROW_NUMBER, COL_NUMBER>
-{
-    #[allow(clippy::no_effect, path_statements)]
-    fn from(matrix: [[K; COL_NUMBER]; ROW_NUMBER]) -> Self {
-        AssertNonZero::<COL_NUMBER>::OK;
-        AssertNonZero::<ROW_NUMBER>::OK;
-        AssertNonZeroSizeType::<K>::OK;
-
-        Self { content: matrix }
-    }
 }
 
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUMBER, COL_NUMBER> {
