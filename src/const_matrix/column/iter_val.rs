@@ -1,4 +1,5 @@
 use std::{
+    iter::FusedIterator,
     mem::{self, MaybeUninit},
     ops::Range,
 };
@@ -117,7 +118,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> DoubleEndedIterator
     // ! About unsafe:
     // !
     // ! Since we get the value depending on self.indexes.end, and that each
-    // ! time we go through next_back we increase the value of self.indexes.end,
+    // ! time we go through next_back we decrease the value of self.indexes.end,
     // ! we can't return twice the same element.
     // !
     fn next_back(&mut self) -> Option<Self::Item> {
@@ -128,6 +129,18 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> DoubleEndedIterator
             unsafe { self.matrix.get_value(self.column, self.indexes.end) }
         }
     }
+}
+
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ExactSizeIterator
+    for SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>
+{
+    fn len(&self) -> usize {
+        self.indexes.len()
+    }
+}
+impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> FusedIterator
+    for SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>
+{
 }
 
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> Drop

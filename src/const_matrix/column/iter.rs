@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{iter::FusedIterator, ops::Range};
 
 use crate::const_matrix::ConstMatrix;
 
@@ -77,6 +77,18 @@ impl<'a, K, const ROW_NUMBER: usize, const COL_NUMBER: usize> DoubleEndedIterato
             self.matrix.get(self.column, self.indexes.end)
         }
     }
+}
+
+impl<'a, K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ExactSizeIterator
+    for SingleColumnIterator<'a, K, ROW_NUMBER, COL_NUMBER>
+{
+    fn len(&self) -> usize {
+        self.indexes.len()
+    }
+}
+impl<'a, K, const ROW_NUMBER: usize, const COL_NUMBER: usize> FusedIterator
+    for SingleColumnIterator<'a, K, ROW_NUMBER, COL_NUMBER>
+{
 }
 
 #[cfg(test)]
