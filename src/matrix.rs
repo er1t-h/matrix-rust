@@ -1,18 +1,14 @@
-//!
-//! Matrix implementation
-//!
-
-mod ex00;
-mod ex07;
-mod ex08;
-mod ex09;
-mod ex10;
-mod ex11;
-mod ex12;
-mod ex13;
-mod ex14;
+mod basic_operations;
+mod determinant;
+mod inverse;
+mod matrix_mul;
 mod multiplicative_trace;
+mod rank;
+mod reduced_row_echelon;
+mod trace;
+mod transpose;
 mod utils;
+mod vector_mul;
 
 pub use utils::TermByTermMul;
 
