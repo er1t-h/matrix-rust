@@ -1,5 +1,14 @@
 use std::cmp::Ord;
 
+pub trait BasicValue {
+    #[must_use]
+    fn zero() -> Self;
+    #[must_use]
+    fn one() -> Self;
+    fn is_zero(&self) -> bool;
+    fn is_one(&self) -> bool;
+}
+
 pub trait Zero {
     #[must_use]
     fn zero() -> Self;
@@ -30,6 +39,9 @@ pub trait Divisor {
 
 pub trait IsZero {
     fn is_zero(&self) -> bool;
+}
+pub trait IsOne {
+    fn is_one(&self) -> bool;
 }
 
 pub trait FMA<Multiple = Self, Add = Self, Output = Self> {
@@ -154,6 +166,38 @@ macro_rules! impl_is_zero {
     };
 }
 
+macro_rules! impl_is_one {
+    ($value: expr, $current: ident, $($types: ident),+) => {
+        impl_is_one!($value, $current);
+        impl_is_one!($value, $($types),+);
+    };
+    ($value: expr, $current: ident) => {
+        impl IsOne for $current {
+            #[inline(always)]
+            #[allow(clippy::float_cmp)]
+            fn is_one(&self) -> bool {
+                self == $value
+            }
+        }
+
+        impl IsOne for &$current {
+            #[inline(always)]
+            #[allow(clippy::float_cmp)]
+            fn is_one(&self) -> bool {
+                self == &$value
+            }
+        }
+
+        impl IsOne for &mut $current {
+            #[inline(always)]
+            #[allow(clippy::float_cmp)]
+            fn is_one(&self) -> bool {
+                self == &$value
+            }
+        }
+    };
+}
+
 macro_rules! impl_abs {
     ($current: ident, $($types: ident),+) => {
         impl_abs!($current);
@@ -242,6 +286,8 @@ impl_divisor!(&0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_divisor!(&0.0, f32, f64);
 impl_is_zero!(&0, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_is_zero!(&0.0, f32, f64);
+impl_is_one!(&1, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+impl_is_one!(&1.0, f32, f64);
 
 impl_abs!(i8, i16, i32, i64, i128, f32, f64);
 impl_sqrt!(f32, f64);
@@ -249,3 +295,31 @@ impl_max!(f32, f64);
 impl_max_ord!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
 impl_fma!(float, f32, f64);
 impl_fma!(int, u8, u16, u32, u64, u128, i8, i16, i32, i64, i128);
+
+pub trait TermToTerm<Rhs = Self> {
+    fn term_to_term_mul_assign(&mut self, rhs: Rhs);
+
+    #[must_use]
+    fn term_to_term_mul(mut self, rhs: Rhs) -> Self
+    where
+        Self: Sized,
+    {
+        self.term_to_term_mul_assign(rhs);
+        self
+    }
+}
+
+impl<K: Zero + One + IsZero + IsOne> BasicValue for K {
+    fn is_one(&self) -> bool {
+        self.is_one()
+    }
+    fn is_zero(&self) -> bool {
+        self.is_zero()
+    }
+    fn one() -> Self {
+        Self::one()
+    }
+    fn zero() -> Self {
+        Self::zero()
+    }
+}

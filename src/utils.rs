@@ -1,3 +1,3 @@
-mod ex02;
+mod linear_interpolation;
 
-pub use ex02::lerp;
+pub use linear_interpolation::lerp;

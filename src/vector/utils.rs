@@ -283,7 +283,7 @@ mod test {
         {
             let test = Vector::from([1, 2, 3, 4, 5_u64]);
             let mut accumulator = 0;
-            for i in test.iter() {
+            for i in &test {
                 accumulator += i;
             }
             assert_eq!(accumulator, 15);
@@ -291,7 +291,7 @@ mod test {
         // Using iter_mut()
         {
             let mut test = Vector::from([1, 2, 3, 4, 5_u64]);
-            for i in test.iter_mut() {
+            for i in &mut test {
                 *i = (*i).pow(2);
             }
             assert_eq!(test, [1, 4, 9, 16, 25]);

@@ -4,6 +4,8 @@
 #![allow(clippy::float_cmp)]
 
 pub mod complex;
+pub mod const_matrix;
+pub mod const_vector;
 pub mod error;
 pub mod macros;
 pub mod matrix;
@@ -11,7 +13,11 @@ pub mod traits;
 pub mod utils;
 pub mod vector;
 
+mod static_asserts;
+
 pub use crate::complex::Complex;
+pub use crate::const_matrix::ConstMatrix;
+pub use crate::const_vector::ConstVector;
 pub use crate::matrix::Matrix;
 pub use crate::vector::Vector;
 
