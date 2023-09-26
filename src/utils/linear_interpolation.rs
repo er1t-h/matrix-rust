@@ -43,7 +43,7 @@ impl BetweenZeroAndOne for f64 {
 #[cfg(test)]
 mod test {
     use crate::complex::cpl;
-    use crate::utils::ex02::lerp;
+    use crate::utils::linear_interpolation::lerp;
     use crate::{error::LinearInterpolationError, Matrix, Vector};
     use pretty_assertions::assert_eq;
 

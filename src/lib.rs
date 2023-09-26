@@ -16,6 +16,8 @@ pub mod vector;
 mod static_asserts;
 
 pub use crate::complex::Complex;
+pub use crate::const_matrix::ConstMatrix;
+pub use crate::const_vector::ConstVector;
 pub use crate::matrix::Matrix;
 pub use crate::vector::Vector;
 

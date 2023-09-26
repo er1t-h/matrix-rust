@@ -1,13 +1,14 @@
-mod ex00;
-mod ex07;
-mod ex08;
-mod ex09;
-mod ex10;
-mod ex11;
-mod ex12;
-mod ex13;
-mod ex14;
+mod basic_operations;
+mod matrix_mul;
+mod vector_mul;
+// mod ex07;
+mod determinant;
+mod inverse;
 mod multiplicative_trace;
+mod rank;
+mod reduced_row_echelon;
+mod trace;
+mod transpose;
 mod utils;
 
 pub use utils::TermByTermMul;

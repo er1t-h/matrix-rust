@@ -54,7 +54,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
         let content = std::array::from_fn(|_| {
             let line_lhs = lhs_iter.next().unwrap();
             let line_rhs = rhs_iter.next().unwrap();
-            let mut iter = line_lhs.into_iter().chain(line_rhs.into_iter());
+            let mut iter = line_lhs.into_iter().chain(line_rhs);
             std::array::from_fn(|_| iter.next().unwrap())
         });
         Self { content }

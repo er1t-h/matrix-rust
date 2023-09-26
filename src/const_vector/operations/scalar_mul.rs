@@ -7,7 +7,7 @@ where
     for<'a> K: MulAssign<&'a K>,
 {
     fn mul_assign(&mut self, rhs: K) {
-        for lhs in self.content.iter_mut() {
+        for lhs in &mut self.content {
             *lhs *= &rhs;
         }
     }
@@ -18,7 +18,7 @@ where
     for<'a> K: MulAssign<&'a K>,
 {
     fn mul_assign(&mut self, rhs: &K) {
-        for lhs in self.content.iter_mut() {
+        for lhs in &mut self.content {
             *lhs *= rhs;
         }
     }

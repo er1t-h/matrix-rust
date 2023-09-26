@@ -114,7 +114,11 @@ where
         // For each line
         for index_line in 1..return_matrix.dimensions.height {
             // Take the pivot
-            let Some(pivot_position) = return_matrix.get_line(index_line).unwrap().position(|x| !x.is_zero()) else {
+            let Some(pivot_position) = return_matrix
+                .get_line(index_line)
+                .unwrap()
+                .position(|x| !x.is_zero())
+            else {
                 continue;
             };
             // For each line above it

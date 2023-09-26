@@ -80,24 +80,61 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
         SingleColumnIteratorMut::new(self, column)
     }
 
-    // TODO Add example
     ///
     /// Returns an array of iterator, over each of the columns of the matrix.
     ///
     /// The iterator yields all values in each column of the matrix.
     ///
+    /// # Example
+    /// ```
+    /// use matrix::ConstMatrix;
+    ///
+    /// let matrix = ConstMatrix::from([
+    ///     [1, 2, 3],
+    ///     [4, 5, 6],
+    /// ]);
+    /// let mut iter_columns = matrix.iter_all_col_value();
+    /// assert_eq!(iter_columns[0].next(), Some(1));
+    /// assert_eq!(iter_columns[1].next(), Some(2));
+    /// assert_eq!(iter_columns[2].next(), Some(3));
+    /// assert_eq!(iter_columns[2].next(), Some(6));
+    /// assert_eq!(iter_columns[1].next(), Some(5));
+    /// assert_eq!(iter_columns[0].next(), Some(4));
+    /// ```
+    ///
     pub fn iter_all_col_value(
         self,
     ) -> [SingleColumnIteratorValue<K, ROW_NUMBER, COL_NUMBER>; COL_NUMBER] {
         let mat = ManuallyDrop::new(self);
+        // ! About unsafe:
+        // ! We know that each [`SingleColumnIteratorValue`] will go through their columns only.
+        // ! At each call to the closure, `col` will increment. So we're never creating two iterators going through
+        // ! the same column.
+        // ! We also didn't drop the matrix, which means we won't have any double frees.
         std::array::from_fn(|col| unsafe { SingleColumnIteratorValue::new_by_ref(&mat, col) })
     }
 
-    // TODO Add example
     ///
     /// Returns an array of iterator, over each of the columns of the matrix.
     ///
     /// The iterator yields all references in each column of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use matrix::ConstMatrix;
+    ///
+    /// let matrix = ConstMatrix::from([
+    ///     [1, 2, 3],
+    ///     [4, 5, 6],
+    /// ]);
+    /// let mut iter_columns = matrix.iter_all_col();
+    /// assert_eq!(iter_columns[0].next(), Some(&1));
+    /// assert_eq!(iter_columns[1].next(), Some(&2));
+    /// assert_eq!(iter_columns[2].next(), Some(&3));
+    /// assert_eq!(iter_columns[2].next(), Some(&6));
+    /// assert_eq!(iter_columns[1].next(), Some(&5));
+    /// assert_eq!(iter_columns[0].next(), Some(&4));
+    /// ```
     ///
     pub fn iter_all_col(
         &self,
@@ -116,16 +153,12 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     ///
     pub fn column(self, index: usize) -> [K; ROW_NUMBER] {
         assert!(index < COL_NUMBER, "column out of range");
-        // See `initializing an array element-by-element` in the doc:
-        // https://doc.rust-lang.org/std/mem/union.MaybeUninit.html#initializing-an-array-element-by-element
-        let mut array: [MaybeUninit<K>; ROW_NUMBER] =
-            unsafe { MaybeUninit::uninit().assume_init() };
+        let mut line_iterator = self.content.into_iter();
 
-        for (emplace, row) in array.iter_mut().zip(self.content) {
-            emplace.write(row.into_iter().nth(index).unwrap());
-        }
-
-        unsafe { mem::transmute_copy::<_, [K; ROW_NUMBER]>(&array) }
+        std::array::from_fn(|_| {
+            let line = line_iterator.next().unwrap();
+            line.into_iter().nth(index).unwrap()
+        })
     }
 }
 

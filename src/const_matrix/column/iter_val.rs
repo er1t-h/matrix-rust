@@ -25,8 +25,8 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
             "expected column to be in the range 0..{COL_NUMBER}"
         );
 
-        // We copy our matrix of K into a matrix of MaybeUninit<K> because we
-        // will free all unused values of the matrix.
+        // ! We copy our matrix of K into a matrix of MaybeUninit<K> because we
+        // ! will free all unused values of the matrix.
         let mut new_matrix: ConstMatrix<MaybeUninit<K>, ROW_NUMBER, COL_NUMBER> =
             unsafe { mem::transmute_copy(&matrix) };
 
@@ -36,7 +36,7 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
 
         // We drop all the values of the matrix other than the column we want
         // to iterate on. That way, we free all the values we won't use.
-        for x in new_matrix.content.iter_mut() {
+        for x in &mut new_matrix.content {
             for y in x
                 .iter_mut()
                 .enumerate()

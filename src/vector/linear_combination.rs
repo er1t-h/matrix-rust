@@ -85,6 +85,7 @@ where
 /// # Complexity:
 /// Linear: O(n) with `n` the total number of coordinates inside the vectors.
 ///
+#[allow(clippy::module_name_repetitions)]
 pub unsafe fn linear_combination_unchecked<K>(u: &[Vector<K>], coefs: &[K]) -> Vector<K>
 where
     K: Clone,

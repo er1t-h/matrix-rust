@@ -1,13 +1,13 @@
-mod ex00;
+mod basic_operations;
 
-mod ex01;
-pub use ex01::{linear_combination, linear_combination_unchecked};
+mod linear_combination;
+pub use linear_combination::{linear_combination, linear_combination_unchecked};
 
-mod ex03;
-mod ex04;
+mod dot_product;
+mod norms;
 
-mod ex05;
-mod ex06;
+mod angle_cosine;
+mod cross_product;
 
 mod utils;
 
