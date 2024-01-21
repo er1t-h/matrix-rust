@@ -10,8 +10,12 @@ impl<K, const SIZE: usize> ConstMatrix<K, SIZE, SIZE> {
     /// Never.
     ///
     pub fn trace_init_fn<F: Fn(K, K) -> K>(self, mut init: K, f: F) -> K {
+        // `self` is a square matrix, and i is an index from `self`
         for (i, elt) in self.content.into_iter().enumerate() {
-            init = f(init, elt.into_iter().nth(i).unwrap());
+            init = f(
+                init,
+                elt.into_iter().nth(i).unwrap_or_else(|| unreachable!()),
+            );
         }
         init
     }
@@ -38,9 +42,20 @@ impl<K, const SIZE: usize> ConstMatrix<K, SIZE, SIZE> {
     ///
     pub fn trace_fn<F: Fn(K, K) -> K>(self, f: F) -> K {
         let mut iter = self.content.into_iter().enumerate();
-        let mut acc = iter.next().unwrap().1.into_iter().next().unwrap();
+        // `self` is at least a 1x1 matrix, and this lines takes the first element of the first line
+        let mut acc = iter
+            .next()
+            .unwrap_or_else(|| unreachable!())
+            .1
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| unreachable!());
+        // `self` is a square matrix, so `i` will remain within bounds
         for (i, elt) in iter {
-            acc = f(acc, elt.into_iter().nth(i).unwrap());
+            acc = f(
+                acc,
+                elt.into_iter().nth(i).unwrap_or_else(|| unreachable!()),
+            );
         }
         acc
     }

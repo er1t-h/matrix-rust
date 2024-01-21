@@ -35,7 +35,7 @@ pub trait TermByTermMul<Rhs = Self>: Sized {
     /// If an error is to occur, it should be returned as a `Self::Error`
     ///
     fn mul_term_by_term(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.mul_assign_term_by_term(rhs).map(|_| self)
+        self.mul_assign_term_by_term(rhs).map(|()| self)
     }
 }
 
@@ -391,9 +391,6 @@ impl<'a, K: Clone> Matrix<K> {
     ///
     /// Returns the submatrix contained between `columns` and `lines`.
     ///
-    /// # Panics
-    /// Never.
-    ///
     /// # Errors
     /// If one of the range is out of bounds, returns [`InvalidRanges`](SubmatrixError::InvalidRanges)
     ///
@@ -404,8 +401,8 @@ impl<'a, K: Clone> Matrix<K> {
     ) -> Result<Self, SubmatrixError> {
         if self.dimensions.height < lines.end
             || self.dimensions.width < columns.end
-            || columns.start == columns.end
-            || lines.start == lines.end
+            || columns.is_empty()
+            || lines.is_empty()
         {
             return Err(SubmatrixError::InvalidRanges);
         }

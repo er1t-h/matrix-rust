@@ -48,9 +48,23 @@ where
     T: Add<T, Output = T> + Sqrt + Zero,
     for<'a> &'a T: Mul<&'a T, Output = T>,
 {
-    fn abs(&self) -> Self {
+    type Output = Self;
+
+    fn abs(self) -> Self::Output {
+        (&self).abs()
+    }
+}
+
+impl<'a, T> Abs for &'a Complex<T>
+where
+    T: Add<T, Output = T> + Sqrt + Zero,
+    for<'b> &'b T: Mul<&'b T, Output = T>,
+{
+    type Output = Complex<T>;
+
+    fn abs(self) -> Self::Output {
         let real = (&self.real * &self.real + &self.imaginary * &self.imaginary).sqrt();
-        Self {
+        Self::Output {
             real,
             imaginary: T::zero(),
         }

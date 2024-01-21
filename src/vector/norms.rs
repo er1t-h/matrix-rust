@@ -5,13 +5,14 @@
 use std::{iter::Sum, ops::Mul};
 
 use crate::{
-    traits::{self, Abs, Max, Sqrt, Zero},
+    traits::{Abs, Max, Sqrt, Zero},
     Vector,
 };
 
 impl<K> Vector<K>
 where
-    K: Clone + Abs + Sum,
+    K: Clone + Sum,
+    for<'a> &'a K: Abs<Output = K>,
 {
     ///
     /// Returns the [`taxicab norm`](https://en.wikipedia.org/wiki/Taxicab_geometry)
@@ -30,7 +31,7 @@ where
     ///
     #[must_use]
     pub fn norm_1(&self) -> K {
-        self.content.iter().map(traits::Abs::abs).sum()
+        self.content.iter().map(Abs::abs).sum()
     }
 }
 
@@ -62,7 +63,8 @@ where
 
 impl<K> Vector<K>
 where
-    K: Clone + Zero + Abs + Max,
+    K: Clone + Zero + Max,
+    for<'a> &'a K: Abs<Output = K>,
 {
     ///
     /// Returns the [`supremum norm`](https://en.wikipedia.org/wiki/Uniform_norm)
@@ -82,8 +84,7 @@ where
     pub fn norm_inf(&self) -> K {
         self.content
             .iter()
-            .cloned()
-            .map(|x| x.abs())
+            .map(Abs::abs)
             .reduce(K::max)
             .unwrap_or_else(K::zero)
     }

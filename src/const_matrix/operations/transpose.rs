@@ -9,7 +9,12 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     ///
     pub fn transpose(self) -> ConstMatrix<K, COL_NUMBER, ROW_NUMBER> {
         let mut columns = self.iter_all_col_value();
-        let content = std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap()));
+        // We can index on `y` because `std::array::from_fn` will give index in range `0..COL_NUMBER`
+        // And `columns` is an array of size `COL_NUMBER`
+
+        // Using `next` won't yield `None` because each array inside content are of size `ROW_NUMBER`
+        // And each `SingleColumnIteratorValue` of `columns` has exactly `ROW_NUMBER` elements
+        let content = std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap_or_else(|| unreachable!())));
         ConstMatrix { content }
     }
 }
@@ -25,8 +30,13 @@ impl<K: Clone, const ROW_NUMBER: usize, const COL_NUMBER: usize>
     ///
     pub fn transposed(&self) -> ConstMatrix<K, COL_NUMBER, ROW_NUMBER> {
         let mut columns = self.iter_all_col();
+        // We can index on `y` because `std::array::from_fn` will give index in range `0..COL_NUMBER`
+        // And `columns` is an array of size `COL_NUMBER`
+
+        // Using `next` won't yield `None` because each array inside content are of size `ROW_NUMBER`
+        // And each `SingleColumnIterator` of `columns` has exactly `ROW_NUMBER` elements
         let content =
-            std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap().clone()));
+            std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap_or_else(|| unreachable!()).clone()));
         ConstMatrix { content }
     }
 }

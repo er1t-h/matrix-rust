@@ -76,11 +76,11 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
         K: Clone + Mul<K, Output = K> + AddAssign,
     {
         // A vector has at least one element, so the unwrap never fails
-        let first_vector_elt = vector_elements.next().unwrap();
+        let first_vector_elt = vector_elements.next().unwrap_or_else(|| unreachable!());
 
         // A column of a matrix has ROW_NUMBER entries, so the unwrap never fails
         let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| first_vector_elt.clone() * matrix_columns[0].next().unwrap());
+            std::array::from_fn(|_| first_vector_elt.clone() * matrix_columns[0].next().unwrap_or_else(|| unreachable!()));
 
         // Here:
         //     Vector element starts at [1] (we already consumed the first)
@@ -106,10 +106,12 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
         IMat: Iterator<Item = &'a K>,
         K: Clone + Mul<&'a K, Output = K> + AddAssign + 'a,
     {
-        let first_vector_elt = vector_elements.next().unwrap();
+        // A vector has at least one element, so the unwrap never fails
+        let first_vector_elt = vector_elements.next().unwrap_or_else(|| unreachable!());
 
+        // A column of a matrix has ROW_NUMBER entries, so the unwrap never fails
         let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| first_vector_elt.clone() * matrix_columns[0].next().unwrap());
+            std::array::from_fn(|_| first_vector_elt.clone() * matrix_columns[0].next().unwrap_or_else(|| unreachable!()));
 
         for (vector_element, matrix_column) in
             vector_elements.zip(matrix_columns.into_iter().skip(1))
@@ -130,10 +132,12 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
         IMat: Iterator<Item = K>,
         K: Mul<&'a K, Output = K> + AddAssign + 'a,
     {
-        let first_vector_elt = vector_elements.next().unwrap();
+        // A vector has at least one element, so the unwrap never fails
+        let first_vector_elt = vector_elements.next().unwrap_or_else(|| unreachable!());
 
+        // A column of a matrix has ROW_NUMBER entries, so the unwrap never fails
         let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| matrix_columns[0].next().unwrap() * first_vector_elt);
+            std::array::from_fn(|_| matrix_columns[0].next().unwrap_or_else(|| unreachable!()) * first_vector_elt);
 
         for (vector_element, matrix_column) in
             vector_elements.zip(matrix_columns.into_iter().skip(1))
@@ -155,10 +159,12 @@ impl<K, const COL_NUMBER: usize> ConstVector<K, COL_NUMBER> {
         K: AddAssign + 'a,
         &'a K: Mul<Output = K>,
     {
-        let first_vector_elt = vector_elements.next().unwrap();
+        // A vector has at least one element, so the unwrap never fails
+        let first_vector_elt = vector_elements.next().unwrap_or_else(|| unreachable!());
 
+        // A column of a matrix has ROW_NUMBER entries, so the unwrap never fails
         let mut array: [K; ROW_NUMBER] =
-            std::array::from_fn(|_| matrix_columns[0].next().unwrap() * first_vector_elt);
+            std::array::from_fn(|_| matrix_columns[0].next().unwrap_or_else(|| unreachable!()) * first_vector_elt);
 
         for (vector_element, matrix_column) in
             vector_elements.zip(matrix_columns.into_iter().skip(1))

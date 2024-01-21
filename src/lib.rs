@@ -1,6 +1,12 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 #![warn(
     clippy::all,
+    clippy::perf,
+    clippy::style,
+    clippy::complexity,
+    clippy::correctness,
+    clippy::cognitive_complexity,
+    clippy::suspicious,
     clippy::pedantic,
     clippy::nursery,
     clippy::cargo,

@@ -156,8 +156,17 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
         let mut line_iterator = self.content.into_iter();
 
         std::array::from_fn(|_| {
-            let line = line_iterator.next().unwrap();
-            line.into_iter().nth(index).unwrap()
+            // # Explanation
+            // std::array::from_fn will run ROW_NUMBER times.
+            // line_iterator is an iterator on a [[K; COL_NUMBER]; ROW_NUMBER]
+            // Thus its length is ROW_NUMBER.
+            // `line_iterator.next()` will never return None
+            let line = line_iterator.next().unwrap_or_else(|| unreachable!());
+            // # Explanation
+            // `index` is asserted at the start of the function
+            line.into_iter()
+                .nth(index)
+                .unwrap_or_else(|| unreachable!())
         })
     }
 }

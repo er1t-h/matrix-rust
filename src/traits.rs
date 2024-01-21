@@ -19,8 +19,9 @@ pub trait One {
 }
 
 pub trait Abs {
+    type Output;
     #[must_use]
-    fn abs(&self) -> Self;
+    fn abs(self) -> Self::Output;
 }
 
 pub trait Sqrt {
@@ -65,7 +66,7 @@ pub trait SafeAdd<Rhs = Self>: Sized {
     /// If the two objects can't be added, returns an appropriate error
     ///
     fn safe_add(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_add_assign(rhs).map(|_| self)
+        self.safe_add_assign(rhs).map(|()| self)
     }
 }
 pub trait SafeSub<Rhs = Self>: Sized {
@@ -84,7 +85,7 @@ pub trait SafeSub<Rhs = Self>: Sized {
     /// If the two objects can't be added, returns an appropriate error
     ///
     fn safe_sub(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_sub_assign(rhs).map(|_| self)
+        self.safe_sub_assign(rhs).map(|()| self)
     }
 }
 
@@ -205,7 +206,17 @@ macro_rules! impl_abs {
     };
     ($current: ident) => {
         impl Abs for $current {
-            fn abs(&self) -> Self {
+            type Output = Self;
+
+            fn abs(self) -> Self::Output {
+                <$current>::abs(self)
+            }
+        }
+
+        impl Abs for &$current {
+            type Output = $current;
+
+            fn abs(self) -> Self::Output {
                 <$current>::abs(*self)
             }
         }

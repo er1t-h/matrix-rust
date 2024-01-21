@@ -9,10 +9,12 @@ where
 {
     type Output = ConstMatrix<K, ROW_LHS, COL_RHS>;
     fn mul(self, rhs: ConstMatrix<K, COL_LHS_ROW_RHS, COL_RHS>) -> Self::Output {
+        // `column_rhs` yields exactly `COL_RHS` elements
         let mut columns_rhs = rhs.iter_all_col_value().into_iter();
+        // std::array::from_fn will run exactly `COL_RHS` times
         let to_transpose = std::array::from_fn(|_| {
             ConstVector::<K, COL_LHS_ROW_RHS>::mul_val_val(
-                columns_rhs.next().unwrap(),
+                columns_rhs.next().unwrap_or_else(|| unreachable!()),
                 self.clone().iter_all_col_value(),
             )
         });
@@ -28,10 +30,12 @@ where
 {
     type Output = ConstMatrix<K, ROW_LHS, COL_RHS>;
     fn mul(self, rhs: &ConstMatrix<K, COL_LHS_ROW_RHS, COL_RHS>) -> Self::Output {
+        // `column_rhs` yields exactly `COL_RHS` elements
         let mut columns_rhs = rhs.iter_all_col().into_iter();
+        // std::array::from_fn will run exactly `COL_RHS` times
         let to_transpose = std::array::from_fn(|_| {
             ConstVector::<K, COL_LHS_ROW_RHS>::mul_ref_val(
-                columns_rhs.next().unwrap(),
+                columns_rhs.next().unwrap_or_else(|| unreachable!()),
                 self.clone().iter_all_col_value(),
             )
         });
@@ -47,10 +51,12 @@ where
 {
     type Output = ConstMatrix<K, ROW_LHS, COL_RHS>;
     fn mul(self, rhs: ConstMatrix<K, COL_LHS_ROW_RHS, COL_RHS>) -> Self::Output {
+        // `column_rhs` yields exactly `COL_RHS` elements
         let mut columns_rhs = rhs.iter_all_col_value().into_iter();
+        // std::array::from_fn will run exactly `COL_RHS` times
         let to_transpose = std::array::from_fn(|_| {
             ConstVector::<K, COL_LHS_ROW_RHS>::mul_val_ref(
-                columns_rhs.next().unwrap(),
+                columns_rhs.next().unwrap_or_else(|| unreachable!()),
                 self.iter_all_col(),
             )
         });

@@ -37,23 +37,28 @@ where
             return Err(InverseError::NotSquareMatrix);
         }
         let mul_identity = K::one();
+        // Since the identity matrix is created with `self.dimensions.height` as its size
+        // the height of the two matrix will match. Moreover, a matrix can't be zero-sized.
         let mut return_matrix = Self::augmented_matrix(
             self,
-            &Self::identity(&mul_identity, self.dimensions.height).unwrap(),
+            &Self::identity(&mul_identity, self.dimensions.height).unwrap_or_else(|| unreachable!()),
         )
-        .unwrap();
+        .unwrap_or_else(|_| unreachable!());
         return_matrix = return_matrix.reduced_row_echelon();
+        // `self` is square so `0..self.dimensions.height` will always be within bounds
         for i in 0..self.dimensions.height {
-            if return_matrix.get(i, i).unwrap() != &mul_identity {
+            if return_matrix.get(i, i).unwrap_or_else(|| unreachable!()) != &mul_identity {
                 return Err(InverseError::SingularMatrix);
             }
         }
+        // The augmented matrix is at least 1 column larger than base matrix, and the height of the two match
+        // so no ranges problems!
         Ok(return_matrix
             .submatrix(
                 self.dimensions.width..return_matrix.dimensions.width,
                 0..self.dimensions.height,
             )
-            .unwrap())
+            .unwrap_or_else(|_| unreachable!()))
     }
 }
 
