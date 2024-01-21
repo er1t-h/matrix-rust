@@ -1,4 +1,4 @@
-use std::mem::{self, ManuallyDrop, MaybeUninit};
+use std::mem::ManuallyDrop;
 
 use self::iter_val::SingleColumnIteratorValue;
 

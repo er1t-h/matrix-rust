@@ -1,7 +1,17 @@
 #![deny(unsafe_op_in_unsafe_fn)]
-#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
-#![allow(clippy::inline_always, clippy::cargo_common_metadata)]
-#![allow(clippy::float_cmp)]
+#![warn(
+    clippy::all,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo,
+    clippy::enum_glob_use,
+    clippy::unwrap_used
+)]
+#![allow(
+    clippy::inline_always,
+    clippy::cargo_common_metadata,
+    clippy::float_cmp
+)]
 
 pub mod complex;
 pub mod const_matrix;

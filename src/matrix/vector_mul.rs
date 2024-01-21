@@ -80,8 +80,8 @@ where
         let mut result_vec: Vector<K> = Vector::fill(&K::default(), size);
         for (vector_index, vector_elt) in vec.enumerate() {
             let col = self.get_column(vector_index).unwrap();
-            for (index, matrix_elt) in col.enumerate() {
-                *result_vec.get_mut(index).unwrap() += matrix_elt * vector_elt;
+            for (matrix_elt, result_vec) in col.zip(result_vec.iter_mut()) {
+                *result_vec += matrix_elt * vector_elt;
             }
         }
         result_vec

@@ -12,8 +12,6 @@ mod vector_mul;
 
 pub use utils::TermByTermMul;
 
-pub use utils::TermByTermMul;
-
 ///
 /// A structure that store the size of a Matrix
 ///

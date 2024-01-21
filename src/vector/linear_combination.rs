@@ -48,12 +48,12 @@ where
             coefficients.len(),
         ));
     }
-    if vectors.is_empty() {
+    let Some((first, next)) = vectors.split_first() else {
         return Err(LinearCombinationError::VectorArrayIsEmpty);
-    }
-    let mut iter = vectors.iter();
-    let first_size = iter.next().unwrap().len();
-    for elt in iter {
+    };
+
+    let first_size = first.len();
+    for elt in next {
         if first_size != elt.len() {
             return Err(LinearCombinationError::VectorSizeMismatch(
                 first_size,

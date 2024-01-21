@@ -11,16 +11,12 @@ use super::Vector;
 
 impl<K: Clone + Display> Display for Vector<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.content.is_empty() {
-            write!(f, "[]")
+        if let Some((first, next)) = self.content.split_first() {
+            write!(f, "[{first}")?;
+            next.iter().try_for_each(|x| write!(f, ", {x}"))?;
+            write!(f, "]")
         } else {
-            let buff = self
-                .content
-                .iter()
-                .map(ToString::to_string)
-                .reduce(|accumulator, elt| accumulator + ", " + &elt)
-                .unwrap();
-            write!(f, "[{buff}]")
+            write!(f, "[]")
         }
     }
 }

@@ -413,8 +413,8 @@ impl<'a, K: Clone> Matrix<K> {
         let line = (lines.start, lines.end);
         let mut content: Vec<K> =
             Vec::with_capacity((columns.end - columns.start) * (lines.end - lines.start));
-        for line in lines {
-            content.extend_from_slice(&self.get_line_slice(line).unwrap()[columns.clone()]);
+        for line in self.content.windows(self.dimensions.width) {
+            content.extend_from_slice(&line[columns.clone()]);
         }
         Ok(Self {
             content,
