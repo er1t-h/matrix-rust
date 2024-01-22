@@ -76,9 +76,12 @@ where
     #[inline(always)]
     #[must_use]
     pub(crate) fn multiplicative_trace_internal(&self) -> K {
-        let mut accumulator = self.content.get(0).unwrap().clone();
+        // A `Matrix` is at least a 1x1 matrix, so `self.content.get(0)` will never return a None
+        let mut accumulator = self.content.get(0).unwrap_or_else(|| unreachable!()).clone();
+        // The matrix is a square matrix, so `self.dimensions.height == self.dimensions.width`
+        // `i` will never go out of bounds
         for i in 1..self.dimensions.height {
-            accumulator *= self.get(i, i).unwrap();
+            accumulator *= self.get(i, i).unwrap_or_else(|| unreachable!());
         }
         accumulator
     }

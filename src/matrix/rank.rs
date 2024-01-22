@@ -17,9 +17,6 @@ where
     ///
     /// Returns the rank of a matrix.
     ///
-    /// # Panics
-    /// Never.
-    ///
     /// # Example
     /// ```
     /// use matrix::Matrix;
@@ -32,8 +29,14 @@ where
     pub fn rank(&self) -> usize {
         let mul_identity = K::one();
         let return_matrix = self.reduced_row_echelon();
+        //; `i` will remain in the bounds of the matrix
+        //; For a matrix
+        //; [ a b c ]
+        //; [ d e f ]
+        //; `return_matrix.get(i, i)` will return `a` and `e`, so the diagonal that
+        //; starts at index 0,0
         for i in 0..self.dimensions.height.min(self.dimensions.width) {
-            if return_matrix.get(i, i).unwrap() != &mul_identity {
+            if return_matrix.get(i, i).unwrap_or_else(|| unreachable!()) != &mul_identity {
                 return i;
             }
         }

@@ -77,17 +77,19 @@ impl<K: Clone + Display> Display for Matrix<K> {
         if self.content.is_empty() {
             return write!(f, "[[]]");
         }
-        let mut str = String::new();
-        for y in (0..self.content.len()).step_by(self.dimensions.width) {
-            str.push('[');
-            str += &self.content[y..y + self.dimensions.width]
+        //; self.content has at least one element
+        let first = self.content.first().unwrap_or_else(|| unreachable!());
+        write!(f, "[[{first}")?;
+        self.content[..self.dimensions.width].iter().try_for_each(|x| write!(f, ", {x}"))?;
+        write!(f, "]")?;
+        for y in (0..self.content.len()).step_by(self.dimensions.width).skip(1) {
+            write!(f, "; [")?;
+            self.content[y..y + self.dimensions.width]
                 .iter()
-                .map(ToString::to_string)
-                .reduce(|accumulator, elt| accumulator + ", " + &elt)
-                .unwrap();
-            str += "]; ";
+                .try_for_each(|x| write!(f, "{x}"))?;
+            write!(f, "]")?;
         }
-        write!(f, "[{}]", &str[..str.len() - 2])
+        write!(f, "]")
     }
 }
 
@@ -375,9 +377,10 @@ impl<'a, K: Clone> Matrix<K> {
         let mut content: Vec<K> = Vec::with_capacity(
             (left.dimensions.width + right.dimensions.width) * left.dimensions.height,
         );
+        //; `i` is bound to `left.dimensions.height`, which is equal to `right.dimensions.height`
         for i in 0..left.dimensions.height {
-            content.extend(left.get_line(i).unwrap().cloned());
-            content.extend(right.get_line(i).unwrap().cloned());
+            content.extend(left.get_line(i).unwrap_or_else(|| unreachable!()).cloned());
+            content.extend(right.get_line(i).unwrap_or_else(|| unreachable!()).cloned());
         }
         Ok(Self {
             content,

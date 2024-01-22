@@ -36,20 +36,18 @@ where
             let mut first_non_zero_line = 0;
             let mut end = true;
             for i in first_non_zero_column..self.dimensions.width {
-                if return_matrix
+                //; `i` is bounded by self.dimensions.width, so `get_column(i)`
+                //; will never return None
+                if let Some(non_zero_line) = return_matrix
                     .get_column(i)
-                    .unwrap()
+                    .unwrap_or_else(|| unreachable!())
                     .skip(rows_set)
-                    .any(|x| !x.is_zero())
+                    .position(|x| !x.is_zero())
                 {
                     end = false;
-                    first_non_zero_line = return_matrix
-                        .get_column(i)
-                        .unwrap()
-                        .skip(rows_set)
-                        .position(|x| !x.is_zero())
-                        .unwrap()
-                        + rows_set;
+                    //; `i` is bounded by self.dimensions.width, so `get_column(i)`
+                    //; will never return None
+                    first_non_zero_line = non_zero_line + rows_set;
                     first_non_zero_column = i;
                     break;
                 }
@@ -61,32 +59,46 @@ where
                 return_matrix.swap_line(rows_set, first_non_zero_line);
                 swap_number += 1;
             }
+            //; `rows_set` represents the number of row already treated, so it can't
+            //; more than the number of rows of the matrix itself.
+            //;
+            //; `first_non_zero_column` starts at 0, and is either incremented in loop end
+            //; (but checked on the loop beginning), or set to `i`, which is bounded
+            //; to the width of the matrix
             let first_copy = return_matrix
                 .get(rows_set, first_non_zero_column)
-                .unwrap()
+                .unwrap_or_else(|| unreachable!())
                 .clone();
             factor *= &first_copy;
+            //; `rows_set` represents the number of row already treated, so it can't
+            //; more than the number of rows of the matrix itself.
             for elt in return_matrix
                 .get_line_mut(rows_set)
-                .unwrap()
+                .unwrap_or_else(|| unreachable!())
                 .skip(first_non_zero_column)
             {
                 *elt /= &first_copy;
             }
+            //; `non_treated_line` is bound to `dimensions.height`
+            //;
+            //; `first_non_zero_column` starts at 0, and is either incremented in loop end
+            //; (but checked on the loop beginning), or set to `i`, which is bounded
+            //; to the width of the matrix
             for non_treated_line in rows_set + 1..return_matrix.dimensions.height {
                 let coeff = {
                     let first_number_of_new_line = return_matrix
                         .get(non_treated_line, first_non_zero_column)
-                        .unwrap();
+                        .unwrap_or_else(|| unreachable!());
                     if first_number_of_new_line.is_zero() {
                         continue;
                     }
-                    let pivot = return_matrix.get(rows_set, first_non_zero_column).unwrap();
+                    let pivot = return_matrix.get(rows_set, first_non_zero_column).unwrap_or_else(|| unreachable!());
                     first_number_of_new_line / pivot
                 };
+                //; `elt_index` is bound to `return_matrix.dimensions.width`
                 for elt_index in first_non_zero_column..return_matrix.dimensions.width {
-                    let tmp = &coeff * return_matrix.get(rows_set, elt_index).unwrap();
-                    *return_matrix.get_mut(non_treated_line, elt_index).unwrap() -= &tmp;
+                    let tmp = &coeff * return_matrix.get(rows_set, elt_index).unwrap_or_else(|| unreachable!());
+                    *return_matrix.get_mut(non_treated_line, elt_index).unwrap_or_else(|| unreachable!()) -= &tmp;
                 }
             }
             rows_set += 1;
@@ -115,23 +127,27 @@ where
     ///
     pub fn reduced_row_echelon(&self) -> Self {
         let mut return_matrix = self.row_echelon();
+        //; `index_line` is bound to `return_matrix.dimensions.height`
         // For each line
         for index_line in 1..return_matrix.dimensions.height {
-            // Take the pivot
+            //; `pivot_position` is bound to `return_matrix.dimensions.width`
+            // * Take the pivot
             let Some(pivot_position) = return_matrix
                 .get_line(index_line)
-                .unwrap()
+                .unwrap_or_else(|| unreachable!())
                 .position(|x| !x.is_zero())
             else {
                 continue;
             };
+            //; `changing_index` is bound to `index_line`, which is itself bound
+            //; to `return_matrix.dimensions.height`
             // For each line above it
             for changing_index in 0..index_line {
                 // For each number in that line
                 for i in (pivot_position..return_matrix.dimensions.width).rev() {
-                    let ratio = return_matrix.get(changing_index, pivot_position).unwrap();
-                    let to_sub = ratio * return_matrix.get(index_line, i).unwrap();
-                    *return_matrix.get_mut(changing_index, i).unwrap() -= &to_sub;
+                    let ratio = return_matrix.get(changing_index, pivot_position).unwrap_or_else(|| unreachable!());
+                    let to_sub = ratio * return_matrix.get(index_line, i).unwrap_or_else(|| unreachable!());
+                    *return_matrix.get_mut(changing_index, i).unwrap_or_else(|| unreachable!()) -= &to_sub;
                 }
             }
         }

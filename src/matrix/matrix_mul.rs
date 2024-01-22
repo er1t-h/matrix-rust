@@ -74,13 +74,31 @@ where
         self.mul_mat_internal(rhs)
     }
 
+    ///
+    /// Multiplies a [Matrix] by another one, and returns the corresponding
+    /// Matrix.
+    ///
+    /// # Safety
+    /// The number of column of the left matrix must match the number of line of
+    /// the right matrix. See [`mul_mat`](Matrix#method.mul_mat) for a safe
+    /// method.
+    ///
+    /// # Complexity
+    /// For a `m` * `n` matrix, and a `n` * `p` matrix.
+    ///
+    /// Time: O(mnp)
+    /// Space: O(mp)
+    ///
+
     #[inline(always)]
     fn mul_mat_internal(&self, rhs: &Self) -> Self {
+        // A matrix has is at least a 1x1 matrix, so `get_column(0)` will always return Some
         let mut return_matrix =
-            Self::from(self.mul_vec_internal(rhs.get_column(0).unwrap(), rhs.dimensions.height));
+            Self::from(self.mul_vec_internal(rhs.get_column(0).unwrap_or_else(|| unreachable!()), rhs.dimensions.height));
         for index in 1..rhs.dimensions.width {
+            // We use `index`, which is bounded by `rhs.dimensions.width`
             let return_vec =
-                self.mul_vec_internal(rhs.get_column(index).unwrap(), rhs.dimensions.height);
+                self.mul_vec_internal(rhs.get_column(index).unwrap_or_else(|| unreachable!()), rhs.dimensions.height);
             return_matrix.append_column(&return_vec);
         }
         return_matrix

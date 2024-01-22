@@ -65,11 +65,25 @@ where
         self.trace_internal()
     }
 
+
+    ///
+    /// Returns the trace of a matrix.
+    ///
+    /// # Safety
+    /// Make sure that the matrix is a square matrix.
+    ///
+    /// # Complexity
+    /// For an `n` * `n` matrix:
+    /// Time: O(n)
+    /// Space: O(1)
+    ///
     #[inline(always)]
     fn trace_internal(&self) -> K {
-        let mut accumulator = self.content.get(0).unwrap().clone();
+        //; A `Matrix` is at least 1x1 matrix, so `self.content.get(0)` will never return None
+        let mut accumulator = self.content.get(0).unwrap_or_else(|| unreachable!()).clone();
         for i in 1..self.dimensions.height {
-            accumulator += self.get(i, i).unwrap();
+            //; `self` is square, and i is bound to
+            accumulator += self.get(i, i).unwrap_or_else(|| unreachable!());
         }
         accumulator
     }

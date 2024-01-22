@@ -71,6 +71,19 @@ where
         self.mul_vec_internal(vec.iter(), vec.size())
     }
 
+    ///
+    /// Multiply a [Vector] by a [Matrix], and returns the corresponding [Vector].
+    ///
+    /// # Safety
+    /// Make sure that the number of column of self is the same as the size of
+    /// `vec`, or a non-sensical value might be returned.
+    ///
+    /// # Complexity:
+    /// For a `m` * `n` matrix and an `n`-vector.
+    ///
+    /// Time: O(mn)
+    /// Space: O(m)
+    ///
     #[inline(always)]
     pub(super) fn mul_vec_internal<'a, T>(&self, vec: T, size: usize) -> Vector<K>
     where
@@ -79,7 +92,8 @@ where
     {
         let mut result_vec: Vector<K> = Vector::fill(&K::default(), size);
         for (vector_index, vector_elt) in vec.enumerate() {
-            let col = self.get_column(vector_index).unwrap();
+            //; The number of column of `self` is the same as the size of `vec`
+            let col = self.get_column(vector_index).unwrap_or_else(|| unreachable!());
             for (matrix_elt, result_vec) in col.zip(result_vec.iter_mut()) {
                 *result_vec += matrix_elt * vector_elt;
             }

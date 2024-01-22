@@ -96,10 +96,12 @@ impl<'a, K: Clone> Iterator for MatrixColumnMut<'a, K> {
             None
         } else if self.matrix.len() < self.line_length {
             self.stop = true;
-            let tmp: *mut K = self.matrix.get_mut(0).unwrap();
+            //; A `Matrix` is at least a 1x1 matrix
+            let tmp: *mut K = self.matrix.get_mut(0).unwrap_or_else(|| unreachable!());
             Some(unsafe { &mut *tmp })
         } else {
-            let tmp_value: *mut K = self.matrix.get_mut(0).unwrap();
+            //; A `Matrix` is at least a 1x1 matrix
+            let tmp_value: *mut K = self.matrix.get_mut(0).unwrap_or_else(|| unreachable!());
             let tmp_matrix: *mut [K] = &mut self.matrix[self.line_length..];
             self.matrix = unsafe { &mut *tmp_matrix };
             Some(unsafe { &mut *tmp_value })
@@ -113,11 +115,13 @@ impl<'a, K: Clone> DoubleEndedIterator for MatrixColumnMut<'a, K> {
             None
         } else if self.matrix.len() < self.line_length {
             self.stop = true;
-            let tmp: *mut K = self.matrix.get_mut(self.matrix.len() - 1).unwrap();
+            //; A `Matrix` is at least a 1x1 matrix
+            let tmp: *mut K = self.matrix.last_mut().unwrap_or_else(|| unreachable!());
             Some(unsafe { &mut *tmp })
         } else {
             let matrix_len = self.matrix.len();
-            let tmp_value: *mut K = self.matrix.get_mut(self.matrix.len() - 1).unwrap();
+            //; A `Matrix` is at least a 1x1 matrix
+            let tmp_value: *mut K = self.matrix.last_mut().unwrap_or_else(|| unreachable!());
             let tmp_matrix: *mut [K] = &mut self.matrix[..matrix_len - self.line_length];
             self.matrix = unsafe { &mut *tmp_matrix };
             Some(unsafe { &mut *tmp_value })
