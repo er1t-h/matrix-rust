@@ -13,6 +13,7 @@
     clippy::float_cmp
 )]
 
+pub mod angle;
 pub mod complex;
 pub mod const_matrix;
 pub mod const_vector;

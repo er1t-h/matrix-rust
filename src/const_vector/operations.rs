@@ -1,5 +1,9 @@
 mod add;
+mod cross;
+mod dot;
+mod magnitude;
 mod mul_mat;
+mod normalize;
 mod scalar_mul;
 mod sub;
 mod term_to_term_mul;

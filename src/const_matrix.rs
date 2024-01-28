@@ -4,7 +4,7 @@ mod column;
 mod constructor;
 mod operations;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct ConstMatrix<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> {
     content: [[K; COL_NUMBER]; ROW_NUMBER],
 }
