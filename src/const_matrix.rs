@@ -37,3 +37,8 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize>
             .map(|x| unsafe { x.assume_init_read() })
     }
 }
+
+pub type SquareMat<T, const SIZE: usize> = ConstMatrix<T, SIZE, SIZE>;
+pub type Mat2<T = f64> = SquareMat<T, 2>;
+pub type Mat3<T = f64> = SquareMat<T, 3>;
+pub type Mat4<T = f64> = SquareMat<T, 4>;

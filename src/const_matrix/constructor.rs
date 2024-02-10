@@ -1,9 +1,8 @@
 use crate::{
-    angle::Radian,
+    angle::{Degree, Radian},
     const_vector::Vec3,
     static_asserts::{AssertCompare, AssertNonZero, AssertNonZeroSizeType, AssertOperationEqual},
     traits::BasicValue,
-    ConstVector,
 };
 
 use super::ConstMatrix;
@@ -95,12 +94,31 @@ impl ConstMatrix<f32, 4, 4> {
 }
 
 impl ConstMatrix<f32, 4, 4> {
+    pub fn projection<A: Into<Degree>>(fov: A, ratio: f32, near: f32, far: f32) -> Self {
+        let fov = fov.into().0;
+        Self::from([
+            [1.0 / (ratio * (fov / 2.0).tan()), 0.0, 0.0, 0.0],
+            [0.0, 1.0 / (fov / 2.0).tan(), 0.0, 0.0],
+            [
+                0.0,
+                0.0,
+                -((far + near) / (far - near)),
+                -((2.0 * far * near) / (far - near)),
+            ],
+            [0.0, 0.0, -1.0, 0.0],
+        ])
+    }
+}
+
+impl ConstMatrix<f32, 4, 4> {
     pub fn look_at_rh(eye: Vec3, target: Vec3, up_vector: Vec3) -> Self {
         let forward_vector = (eye - target).normalize();
-        let right_vector = up_vector.cross(forward_vector).normalize();
+        let tmp = Vec3::from([0., 0., 1.]);
+        let right_vector = forward_vector.cross(tmp).normalize();
+        let up_vector = right_vector.cross(forward_vector);
         let translation_x = eye.dot(right_vector);
-        let translation_y = eye.dot(forward_vector);
-        let translation_z = eye.dot(up_vector);
+        let translation_y = eye.dot(up_vector);
+        let translation_z = eye.dot(forward_vector);
         ConstMatrix::from([
             [
                 *right_vector.x(),
@@ -124,12 +142,17 @@ impl ConstMatrix<f32, 4, 4> {
         ])
     }
 
+    ///
+    /// Returns a Vulkan view matrix.
+    ///
     pub fn view_matrix(eye: Vec3, target: Vec3, up_vector: Vec3) -> Self {
         let forward_vector = (eye - target).normalize();
         let right_vector = up_vector.cross(forward_vector).normalize();
+        // In Vulkan, the Y axis is reversed
+        let up_vector = -right_vector.cross(forward_vector).normalize();
         let translation_x = eye.dot(right_vector);
-        let translation_y = eye.dot(forward_vector);
-        let translation_z = eye.dot(up_vector);
+        let translation_y = eye.dot(up_vector);
+        let translation_z = eye.dot(forward_vector);
         ConstMatrix::from([
             [*right_vector.x(), *up_vector.x(), *forward_vector.x(), 0.],
             [*right_vector.y(), *up_vector.y(), *forward_vector.y(), 0.],

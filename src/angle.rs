@@ -1,3 +1,5 @@
+use std::ops::Mul;
+
 #[derive(Debug, PartialEq, Clone, Copy, Default, PartialOrd)]
 pub struct Degree(pub f32);
 #[derive(Debug, PartialEq, Clone, Copy, Default, PartialOrd)]
@@ -40,5 +42,12 @@ impl Degree {
 
     pub fn sin_cos(self) -> (f32, f32) {
         Radian::from(self).sin_cos()
+    }
+}
+
+impl Mul<f32> for Degree {
+    type Output = Self;
+    fn mul(self, rhs: f32) -> Self::Output {
+        Self(self.0 * rhs)
     }
 }

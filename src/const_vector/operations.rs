@@ -3,6 +3,7 @@ mod cross;
 mod dot;
 mod magnitude;
 mod mul_mat;
+mod neg;
 mod normalize;
 mod scalar_mul;
 mod sub;
