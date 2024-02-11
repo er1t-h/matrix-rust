@@ -94,11 +94,11 @@ impl ConstMatrix<f32, 4, 4> {
 }
 
 impl ConstMatrix<f32, 4, 4> {
-    pub fn projection<A: Into<Degree>>(fov: A, ratio: f32, near: f32, far: f32) -> Self {
+    pub fn projection<A: Into<Radian>>(fov: A, ratio: f32, near: f32, far: f32) -> Self {
         let fov = fov.into().0;
         Self::from([
             [1.0 / (ratio * (fov / 2.0).tan()), 0.0, 0.0, 0.0],
-            [0.0, 1.0 / (fov / 2.0).tan(), 0.0, 0.0],
+            [0.0, -(1.0 / (fov / 2.0).tan()), 0.0, 0.0],
             [
                 0.0,
                 0.0,
