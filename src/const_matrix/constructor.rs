@@ -71,7 +71,7 @@ impl ConstMatrix<f32, 3, 3> {
             [
                 x.powi(2).mul_add(osc, cos),
                 (x * y).mul_add(osc, -(z * sin)),
-                (x * z).mul_add(osc, -(y * sin)),
+                (x * z).mul_add(osc, y * sin),
             ],
             [
                 (y * x).mul_add(osc, z * sin),
