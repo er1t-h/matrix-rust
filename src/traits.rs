@@ -65,7 +65,7 @@ pub trait SafeAdd<Rhs = Self>: Sized {
     /// If the two objects can't be added, returns an appropriate error
     ///
     fn safe_add(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_add_assign(rhs).map(|_| self)
+        self.safe_add_assign(rhs).map(|()| self)
     }
 }
 pub trait SafeSub<Rhs = Self>: Sized {
@@ -84,7 +84,7 @@ pub trait SafeSub<Rhs = Self>: Sized {
     /// If the two objects can't be added, returns an appropriate error
     ///
     fn safe_sub(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.safe_sub_assign(rhs).map(|_| self)
+        self.safe_sub_assign(rhs).map(|()| self)
     }
 }
 

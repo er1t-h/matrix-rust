@@ -1,5 +1,5 @@
 use crate::{
-    angle::{Degree, Radian},
+    angle::Radian,
     const_vector::Vec3,
     static_asserts::{AssertCompare, AssertNonZero, AssertNonZeroSizeType, AssertOperationEqual},
     traits::BasicValue,
@@ -67,21 +67,21 @@ impl ConstMatrix<f32, 3, 3> {
     pub fn from_axis_angle<A: Into<Radian>>([x, y, z]: [f32; 3], angle: A) -> Self {
         let (sin, cos) = angle.into().sin_cos();
         let osc = 1.0 - cos;
-        ConstMatrix::from([
+        Self::from([
             [
-                cos + x.powi(2) * osc,
-                x * y * osc - z * sin,
-                x * z * osc - y * sin,
+                x.powi(2).mul_add(osc, cos),
+                (x * y).mul_add(osc, -(z * sin)),
+                (x * z).mul_add(osc, -(y * sin)),
             ],
             [
-                y * x * osc + z * sin,
-                cos + y.powi(2) * osc,
-                y * z * osc - x * sin,
+                (y * x).mul_add(osc, z * sin),
+                y.powi(2).mul_add(osc, cos),
+                (y * z).mul_add(osc, -(x * sin)),
             ],
             [
-                z * x * osc - y * sin,
-                z * y * osc + x * sin,
-                cos + z.powi(2) * osc,
+                (z * x).mul_add(osc, -(y * sin)),
+                (z * y).mul_add(osc, x * sin),
+                z.powi(2).mul_add(osc, cos),
             ],
         ])
     }
@@ -111,15 +111,16 @@ impl ConstMatrix<f32, 4, 4> {
 }
 
 impl ConstMatrix<f32, 4, 4> {
-    pub fn look_at_rh(eye: Vec3, target: Vec3, up_vector: Vec3) -> Self {
+    #[must_use]
+    pub fn look_at_rh(eye: Vec3, target: Vec3, _up_vector: Vec3) -> Self {
         let forward_vector = (eye - target).normalize();
         let tmp = Vec3::from([0., 0., 1.]);
-        let right_vector = forward_vector.cross(tmp).normalize();
-        let up_vector = right_vector.cross(forward_vector);
+        let right_vector = forward_vector.cross(&tmp).normalize();
+        let up_vector = right_vector.cross(&forward_vector);
         let translation_x = eye.dot(right_vector);
         let translation_y = eye.dot(up_vector);
         let translation_z = eye.dot(forward_vector);
-        ConstMatrix::from([
+        Self::from([
             [
                 *right_vector.x(),
                 *right_vector.y(),
@@ -145,15 +146,16 @@ impl ConstMatrix<f32, 4, 4> {
     ///
     /// Returns a Vulkan view matrix.
     ///
+    #[must_use]
     pub fn view_matrix(eye: Vec3, target: Vec3, up_vector: Vec3) -> Self {
         let forward_vector = (eye - target).normalize();
-        let right_vector = up_vector.cross(forward_vector).normalize();
+        let right_vector = up_vector.cross(&forward_vector).normalize();
         // In Vulkan, the Y axis is reversed
-        let up_vector = -right_vector.cross(forward_vector).normalize();
+        let up_vector = -right_vector.cross(&forward_vector).normalize();
         let translation_x = eye.dot(right_vector);
         let translation_y = eye.dot(up_vector);
         let translation_z = eye.dot(forward_vector);
-        ConstMatrix::from([
+        Self::from([
             [*right_vector.x(), *up_vector.x(), *forward_vector.x(), 0.],
             [*right_vector.y(), *up_vector.y(), *forward_vector.y(), 0.],
             [*right_vector.z(), *up_vector.z(), *forward_vector.z(), 0.],
@@ -176,27 +178,32 @@ impl<K, const SIZE_SRC: usize> ConstMatrix<K, SIZE_SRC, SIZE_SRC> {
         zero: Zero,
         one: One,
     ) -> ConstMatrix<K, SIZE_DEST, SIZE_DEST> {
-        #[allow(path_statements)]
+        #[allow(path_statements, clippy::no_effect)]
         {
             AssertCompare::<SIZE_SRC, SIZE_DEST>::LESS_THAN;
         }
 
         let mut iter_on_line = self.content.into_iter();
         ConstMatrix::from(std::array::from_fn(|line_index| {
-            if let Some(line) = iter_on_line.next() {
-                let mut iter_on_element =
-                    line.into_iter().chain(std::iter::from_fn(|| Some(zero())));
-                std::array::from_fn(|_| {
-                    // into_iter will yield all elements, and iter::from_fn will yield indefinitely
-                    iter_on_element.next().unwrap_or_else(|| unreachable!())
-                })
-            } else {
-                let mut iter_on_element = std::iter::from_fn(|| Some(zero()))
-                    .take(line_index)
-                    .chain(std::iter::once_with(|| one()))
-                    .chain(std::iter::from_fn(|| Some(zero())));
-                std::array::from_fn(|_| iter_on_element.next().unwrap_or_else(|| unreachable!()))
-            }
+            iter_on_line.next().map_or_else(
+                || {
+                    let mut iter_on_element = std::iter::from_fn(|| Some(zero()))
+                        .take(line_index)
+                        .chain(std::iter::once_with(&one))
+                        .chain(std::iter::from_fn(|| Some(zero())));
+                    std::array::from_fn(|_| {
+                        iter_on_element.next().unwrap_or_else(|| unreachable!())
+                    })
+                },
+                |line| {
+                    let mut iter_on_element =
+                        line.into_iter().chain(std::iter::from_fn(|| Some(zero())));
+                    std::array::from_fn(|_| {
+                        // into_iter will yield all elements, and iter::from_fn will yield indefinitely
+                        iter_on_element.next().unwrap_or_else(|| unreachable!())
+                    })
+                },
+            )
         }))
     }
 }
@@ -231,6 +238,6 @@ mod test {
         let mat = ConstMatrix::from([[1, 2], [3, 4]]);
         let new_mat = mat.extend_identity(|| 0, || 1);
         let expected = ConstMatrix::from([[1, 2, 0, 0], [3, 4, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]);
-        assert_eq!(new_mat, expected)
+        assert_eq!(new_mat, expected);
     }
 }

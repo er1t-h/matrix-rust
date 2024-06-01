@@ -31,9 +31,9 @@ impl<'a, K: Clone> Iterator for MatrixColumn<'a, K> {
             None
         } else if self.matrix.len() < self.line_length {
             self.stop = true;
-            self.matrix.get(0)
+            self.matrix.first()
         } else {
-            let tmp = self.matrix.get(0);
+            let tmp = self.matrix.first();
             self.matrix = &self.matrix[self.line_length..];
             tmp
         }

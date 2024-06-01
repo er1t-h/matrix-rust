@@ -76,7 +76,7 @@ where
     #[inline(always)]
     #[must_use]
     pub(crate) fn multiplicative_trace_internal(&self) -> K {
-        let mut accumulator = self.content.get(0).unwrap().clone();
+        let mut accumulator = self.content.first().unwrap().clone();
         for i in 1..self.dimensions.height {
             accumulator *= self.get(i, i).unwrap();
         }

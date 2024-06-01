@@ -82,8 +82,7 @@ where
     pub fn norm_inf(&self) -> K {
         self.content
             .iter()
-            .cloned()
-            .map(|x| x.abs())
+            .map(traits::Abs::abs)
             .reduce(K::max)
             .unwrap_or_else(K::zero)
     }

@@ -49,7 +49,7 @@ pub enum LinearInterpolationError {
 ///
 /// Describes the reason a cross product can fail.
 ///
-/// See [`cross_product`](crate::utils::cross_product).
+/// See [`cross_product`](crate::Vector::cross_product).
 ///
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CrossProductError {

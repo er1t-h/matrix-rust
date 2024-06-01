@@ -10,7 +10,8 @@
 #![allow(
     clippy::inline_always,
     clippy::cargo_common_metadata,
-    clippy::float_cmp
+    clippy::float_cmp,
+    clippy::op_ref
 )]
 
 pub mod angle;

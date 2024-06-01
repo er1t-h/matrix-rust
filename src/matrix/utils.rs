@@ -35,7 +35,7 @@ pub trait TermByTermMul<Rhs = Self>: Sized {
     /// If an error is to occur, it should be returned as a `Self::Error`
     ///
     fn mul_term_by_term(mut self, rhs: Rhs) -> Result<Self, Self::Error> {
-        self.mul_assign_term_by_term(rhs).map(|_| self)
+        self.mul_assign_term_by_term(rhs).map(|()| self)
     }
 }
 
@@ -125,7 +125,7 @@ impl<K: Clone> From<&[&[K]]> for Matrix<K> {
             content: value.iter().flat_map(|x| *x).cloned().collect(),
             dimensions: Dimensions {
                 width: value.len(),
-                height: value.get(0).map_or(0, |x| x.len()),
+                height: value.first().map_or(0, |x| x.len()),
             },
         }
     }
@@ -413,7 +413,12 @@ impl<'a, K: Clone> Matrix<K> {
         let line = (lines.start, lines.end);
         let mut content: Vec<K> =
             Vec::with_capacity((columns.end - columns.start) * (lines.end - lines.start));
-        for line in self.content.windows(self.dimensions.width) {
+        for line in self
+            .content
+            .chunks(self.dimensions.width)
+            .skip(line.0)
+            .take(line.1)
+        {
             content.extend_from_slice(&line[columns.clone()]);
         }
         Ok(Self {

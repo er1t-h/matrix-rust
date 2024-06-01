@@ -107,7 +107,7 @@ where
     for<'a> &'a Vector<K>: Mul<&'a K, Output = Vector<K>>,
 {
     let mut return_vector;
-    if let (Some(vec), Some(coef)) = (u.get(0), coefs.get(0)) {
+    if let (Some(vec), Some(coef)) = (u.first(), coefs.first()) {
         return_vector = vec * coef;
     } else {
         return Vector::new();
