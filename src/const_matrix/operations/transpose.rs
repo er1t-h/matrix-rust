@@ -4,12 +4,11 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     ///
     /// Returns the transpose the matrix
     ///
-    /// # Panics
-    /// Never.
-    ///
     pub fn transpose(self) -> ConstMatrix<K, COL_NUMBER, ROW_NUMBER> {
         let mut columns = self.iter_all_col_value();
-        let content = std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap()));
+        // Since we're transposing a COL_NUMBER x ROW_NUMBER into a ROW_NUMBER x COL_NUMBER matrix,
+        // all iterators will be completely used; no more, no less
+        let content = std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap_or_else(|| unreachable!())));
         ConstMatrix { content }
     }
 }
@@ -20,14 +19,8 @@ impl<K: Clone, const ROW_NUMBER: usize, const COL_NUMBER: usize>
     ///
     /// Returns a transposed version of the matrix
     ///
-    /// # Panics
-    /// Never.
-    ///
     pub fn transposed(&self) -> ConstMatrix<K, COL_NUMBER, ROW_NUMBER> {
-        let mut columns = self.iter_all_col();
-        let content =
-            std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap().clone()));
-        ConstMatrix { content }
+        self.clone().transpose()
     }
 }
 

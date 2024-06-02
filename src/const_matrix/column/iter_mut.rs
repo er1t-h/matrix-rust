@@ -109,6 +109,7 @@ impl<'a, K, const ROW_NUMBER: usize, const COL_NUMBER: usize> FusedIterator
 }
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod test {
     use crate::const_matrix::{column::SingleColumnIteratorMut, ConstMatrix};
 

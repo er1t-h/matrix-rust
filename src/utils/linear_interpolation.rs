@@ -49,6 +49,7 @@ macro_rules! impl_bzo {
 impl_bzo!((0. ..=1.), f32, f64);
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used)]
 mod test {
     use crate::complex::cpl;
     use crate::utils::linear_interpolation::lerp;

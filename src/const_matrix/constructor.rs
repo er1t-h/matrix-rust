@@ -51,13 +51,17 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
             AssertOperationEqual::<COL_NUMBER_LHS, COL_NUMBER_RHS, COL_NUMBER>::ADD;
         }
 
+        // We know that lhs_iter and rhs_iter will yield ROW_NUMBER items
         let mut lhs_iter = lhs.content.into_iter();
         let mut rhs_iter = rhs.content.into_iter();
+        // This will loop ROW_NUMBER times
         let content = std::array::from_fn(|_| {
-            let line_lhs = lhs_iter.next().unwrap();
-            let line_rhs = rhs_iter.next().unwrap();
+            // So this unwrap is safe
+            let line_lhs = lhs_iter.next().unwrap_or_else(|| unreachable!());
+            let line_rhs = rhs_iter.next().unwrap_or_else(|| unreachable!());
             let mut iter = line_lhs.into_iter().chain(line_rhs);
-            std::array::from_fn(|_| iter.next().unwrap())
+            // We know that iter will yield COL_NUMBER_LHS + COL_NUMBER_RHS (thanks to the constant time assertion)
+            std::array::from_fn(|_| iter.next().unwrap_or_else(|| unreachable!()))
         });
         Self { content }
     }
