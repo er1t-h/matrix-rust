@@ -13,7 +13,10 @@ impl<K, const SIZE: usize> ConstMatrix<K, SIZE, SIZE> {
         // This is a square matrix
         for (i, line) in self.content.into_iter().enumerate() {
             // So if is a valid line number, then it's a valid column number
-            init = f(init, line.into_iter().nth(i).unwrap_or_else(|| unreachable!()));
+            init = f(
+                init,
+                line.into_iter().nth(i).unwrap_or_else(|| unreachable!()),
+            );
         }
         init
     }
@@ -41,10 +44,19 @@ impl<K, const SIZE: usize> ConstMatrix<K, SIZE, SIZE> {
     pub fn trace_fn<F: Fn(K, K) -> K>(self, f: F) -> K {
         let mut iter = self.content.into_iter().enumerate();
         // We know that there is AT LEAST one line and one column
-        let mut acc = iter.next().unwrap_or_else(|| unreachable!()).1.into_iter().next().unwrap_or_else(|| unreachable!());
+        let mut acc = iter
+            .next()
+            .unwrap_or_else(|| unreachable!())
+            .1
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| unreachable!());
         for (i, elt) in iter {
             // Since the matrix is square, a valid line number is a valid column number
-            acc = f(acc, elt.into_iter().nth(i).unwrap_or_else(|| unreachable!()));
+            acc = f(
+                acc,
+                elt.into_iter().nth(i).unwrap_or_else(|| unreachable!()),
+            );
         }
         acc
     }

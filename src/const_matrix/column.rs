@@ -159,7 +159,9 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
             // We take each line one by one
             let line = line_iterator.next().unwrap_or_else(|| unreachable!());
             // We already checked that the column number is valid
-            line.into_iter().nth(index).unwrap_or_else(|| unreachable!())
+            line.into_iter()
+                .nth(index)
+                .unwrap_or_else(|| unreachable!())
         })
     }
 }

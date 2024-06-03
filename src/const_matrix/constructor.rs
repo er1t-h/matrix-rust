@@ -89,11 +89,73 @@ impl ConstMatrix<f32, 3, 3> {
             ],
         ])
     }
+
+    pub fn rotation(
+        rotation_x: impl Into<Radian>,
+        rotation_y: impl Into<Radian>,
+        rotation_z: impl Into<Radian>,
+    ) -> Self {
+        let (sin_x, cos_x) = rotation_x.into().sin_cos();
+        let (sin_y, cos_y) = rotation_y.into().sin_cos();
+        let (sin_z, cos_z) = rotation_z.into().sin_cos();
+        Self::from([
+            [
+                cos_z * cos_y,
+                (cos_z * sin_y).mul_add(sin_x, -(sin_z * cos_x)),
+                (cos_z * sin_y).mul_add(cos_x, sin_z * sin_x),
+            ],
+            [
+                sin_z * cos_y,
+                (sin_z * sin_y).mul_add(sin_x, cos_z * cos_x),
+                (sin_z * sin_y).mul_add(cos_x, -(cos_z * sin_x)),
+            ],
+            [-sin_y, cos_y * sin_x, cos_y * cos_x],
+        ])
+    }
+
+    pub fn rotation_x(rotation: impl Into<Radian>) -> Self {
+        let (sin, cos) = rotation.into().sin_cos();
+
+        Self::from([[1., 0., 0.], [0., cos, -sin], [0., sin, cos]])
+    }
+
+    pub fn rotation_y(rotation: impl Into<Radian>) -> Self {
+        let (sin, cos) = rotation.into().sin_cos();
+
+        Self::from([[cos, 0., sin], [0., 1., 0.], [-sin, 0., cos]])
+    }
+
+    pub fn rotation_z(rotation: impl Into<Radian>) -> Self {
+        let (sin, cos) = rotation.into().sin_cos();
+
+        Self::from([[cos, -sin, 0.], [sin, cos, 0.], [0., 0., 1.]])
+    }
 }
 
 impl ConstMatrix<f32, 4, 4> {
     pub fn from_axis_angle<A: Into<Radian>>(axis: [f32; 3], angle: A) -> Self {
         ConstMatrix::<f32, 3, 3>::from_axis_angle(axis, angle).extend_identity(|| 0.0, || 1.0)
+    }
+
+    pub fn rotation(
+        rotation_x: impl Into<Radian>,
+        rotation_y: impl Into<Radian>,
+        rotation_z: impl Into<Radian>,
+    ) -> Self {
+        ConstMatrix::<f32, 3, 3>::rotation(rotation_x, rotation_y, rotation_z)
+            .extend_identity(|| 0.0, || 1.0)
+    }
+
+    pub fn rotation_x(rotation: impl Into<Radian>) -> Self {
+        ConstMatrix::<f32, 3, 3>::rotation_x(rotation).extend_identity(|| 0.0, || 1.0)
+    }
+
+    pub fn rotation_y(rotation: impl Into<Radian>) -> Self {
+        ConstMatrix::<f32, 3, 3>::rotation_y(rotation).extend_identity(|| 0.0, || 1.0)
+    }
+
+    pub fn rotation_z(rotation: impl Into<Radian>) -> Self {
+        ConstMatrix::<f32, 3, 3>::rotation_z(rotation).extend_identity(|| 0.0, || 1.0)
     }
 }
 

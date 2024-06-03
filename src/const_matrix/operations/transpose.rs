@@ -8,7 +8,9 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
         let mut columns = self.iter_all_col_value();
         // Since we're transposing a COL_NUMBER x ROW_NUMBER into a ROW_NUMBER x COL_NUMBER matrix,
         // all iterators will be completely used; no more, no less
-        let content = std::array::from_fn(|y| std::array::from_fn(|_| columns[y].next().unwrap_or_else(|| unreachable!())));
+        let content = std::array::from_fn(|y| {
+            std::array::from_fn(|_| columns[y].next().unwrap_or_else(|| unreachable!()))
+        });
         ConstMatrix { content }
     }
 }
