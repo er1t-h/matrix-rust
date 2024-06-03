@@ -5,7 +5,7 @@ use crate::{
     traits::BasicValue,
 };
 
-use super::ConstMatrix;
+use super::{ConstMatrix, SquareMat};
 
 impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> From<[[K; COL_NUMBER]; ROW_NUMBER]>
     for ConstMatrix<K, ROW_NUMBER, COL_NUMBER>
@@ -67,7 +67,20 @@ impl<K, const ROW_NUMBER: usize, const COL_NUMBER: usize> ConstMatrix<K, ROW_NUM
     }
 }
 
-impl ConstMatrix<f32, 3, 3> {
+impl<T: Default> SquareMat<T, 2> {
+    #[must_use]
+    pub fn scale(x: T, y: T) -> Self {
+        Self::generic_scale(x, y, Default::default)
+    }
+}
+impl<T> SquareMat<T, 2> {
+    #[must_use]
+    pub fn generic_scale(x: T, y: T, zero: impl Fn() -> T) -> Self {
+        Self::from([[x, zero()], [zero(), y]])
+    }
+}
+
+impl SquareMat<f32, 3> {
     pub fn from_axis_angle<A: Into<Radian>>([x, y, z]: [f32; 3], angle: A) -> Self {
         let (sin, cos) = angle.into().sin_cos();
         let osc = 1.0 - cos;
@@ -130,11 +143,61 @@ impl ConstMatrix<f32, 3, 3> {
 
         Self::from([[cos, -sin, 0.], [sin, cos, 0.], [0., 0., 1.]])
     }
+
+    #[must_use]
+    pub fn translation(x: f32, y: f32) -> Self {
+        Self::from([[1., 0., x], [0., 1., y], [0., 0., 1.]])
+    }
 }
 
-impl ConstMatrix<f32, 4, 4> {
+impl<T> SquareMat<T, 3> {
+    #[must_use]
+    pub fn generic_translation(x: T, y: T, zero: impl Fn() -> T, one: impl Fn() -> T) -> Self {
+        Self::from([
+            [one(), zero(), x],
+            [zero(), one(), y],
+            [zero(), zero(), one()],
+        ])
+    }
+
+    #[must_use]
+    pub fn generic_scale(x: T, y: T, z: T, zero: impl Fn() -> T) -> Self {
+        Self::from([
+            [x, zero(), zero()],
+            [zero(), y, zero()],
+            [zero(), zero(), z],
+        ])
+    }
+}
+
+impl<T: Default> SquareMat<T, 3> {
+    #[must_use]
+    pub fn scale(x: T, y: T, z: T) -> Self {
+        Self::generic_scale(x, y, z, Default::default)
+    }
+}
+
+impl<T> SquareMat<T, 4> {
+    #[must_use]
+    pub fn generic_translation(
+        x: T,
+        y: T,
+        z: T,
+        zero: impl Fn() -> T,
+        one: impl Fn() -> T,
+    ) -> Self {
+        Self::from([
+            [one(), zero(), zero(), x],
+            [zero(), one(), zero(), y],
+            [zero(), zero(), one(), z],
+            [zero(), zero(), zero(), one()],
+        ])
+    }
+}
+
+impl SquareMat<f32, 4> {
     pub fn from_axis_angle<A: Into<Radian>>(axis: [f32; 3], angle: A) -> Self {
-        ConstMatrix::<f32, 3, 3>::from_axis_angle(axis, angle).extend_identity(|| 0.0, || 1.0)
+        SquareMat::<f32, 3>::from_axis_angle(axis, angle).extend_identity(|| 0.0, || 1.0)
     }
 
     pub fn rotation(
@@ -142,24 +205,22 @@ impl ConstMatrix<f32, 4, 4> {
         rotation_y: impl Into<Radian>,
         rotation_z: impl Into<Radian>,
     ) -> Self {
-        ConstMatrix::<f32, 3, 3>::rotation(rotation_x, rotation_y, rotation_z)
+        SquareMat::<f32, 3>::rotation(rotation_x, rotation_y, rotation_z)
             .extend_identity(|| 0.0, || 1.0)
     }
 
     pub fn rotation_x(rotation: impl Into<Radian>) -> Self {
-        ConstMatrix::<f32, 3, 3>::rotation_x(rotation).extend_identity(|| 0.0, || 1.0)
+        SquareMat::<f32, 3>::rotation_x(rotation).extend_identity(|| 0.0, || 1.0)
     }
 
     pub fn rotation_y(rotation: impl Into<Radian>) -> Self {
-        ConstMatrix::<f32, 3, 3>::rotation_y(rotation).extend_identity(|| 0.0, || 1.0)
+        SquareMat::<f32, 3>::rotation_y(rotation).extend_identity(|| 0.0, || 1.0)
     }
 
     pub fn rotation_z(rotation: impl Into<Radian>) -> Self {
-        ConstMatrix::<f32, 3, 3>::rotation_z(rotation).extend_identity(|| 0.0, || 1.0)
+        SquareMat::<f32, 3>::rotation_z(rotation).extend_identity(|| 0.0, || 1.0)
     }
-}
 
-impl ConstMatrix<f32, 4, 4> {
     pub fn projection<A: Into<Radian>>(fov: A, ratio: f32, near: f32, far: f32) -> Self {
         let fov = fov.into().0;
         Self::from([
@@ -174,9 +235,6 @@ impl ConstMatrix<f32, 4, 4> {
             [0.0, 0.0, -1.0, 0.0],
         ])
     }
-}
-
-impl ConstMatrix<f32, 4, 4> {
     #[must_use]
     pub fn look_at_rh(eye: Vec3, target: Vec3, _up_vector: Vec3) -> Self {
         let forward_vector = (eye - target).normalize();
@@ -228,9 +286,19 @@ impl ConstMatrix<f32, 4, 4> {
             [-translation_x, -translation_y, -translation_z, 1.],
         ])
     }
+
+    #[must_use]
+    pub fn translation(x: f32, y: f32, z: f32) -> Self {
+        Self::from([
+            [1., 0., 0., x],
+            [0., 1., 0., y],
+            [0., 0., 1., z],
+            [0., 0., 0., 1.],
+        ])
+    }
 }
 
-impl<K, const SIZE_SRC: usize> ConstMatrix<K, SIZE_SRC, SIZE_SRC> {
+impl<K, const SIZE_SRC: usize> SquareMat<K, SIZE_SRC> {
     ///
     /// Extends the square matrix by adding ones on the diagonal, and zero otherwise
     ///
@@ -250,7 +318,7 @@ impl<K, const SIZE_SRC: usize> ConstMatrix<K, SIZE_SRC, SIZE_SRC> {
         }
 
         let mut iter_on_line = self.content.into_iter();
-        ConstMatrix::from(std::array::from_fn(|line_index| {
+        SquareMat::from(std::array::from_fn(|line_index| {
             iter_on_line.next().map_or_else(
                 || {
                     let mut iter_on_element = std::iter::from_fn(|| Some(zero()))
